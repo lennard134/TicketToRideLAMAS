@@ -79,9 +79,12 @@ Let us define the following:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
 
-Let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where $$S$$ is the set of 
-possible states (card distribution among the players (or hidden), so for $$s \in S$$ we have $$|s|=n$$), 
-$$\pi$$ is the valuation function and $$R_i$$ is the set of relations for player $$i$$, $$i \in \{1,\dots,m\}$$.
+Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
+* $$S = \{(s_1,s_2,\dots,s_n) | s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
+* $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$.
+
+(card distribution among the agents (or hidden), so for $$s \in S$$ we have $$|s|=n$$), 
+$$\pi$$ is the valuation function and $$R_i$$ is the set of relations for agent $$i$$, $$i \in \{1,\dots,m\}$$.
 
 Consider a player's turn, say player $i$.
 Then it has this player has three options: pick two train cards (either from the visible or not visible cards), 
