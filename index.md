@@ -78,31 +78,27 @@ three agents encounter this situation successively.
 Let us define the following:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
-* $$P=\{p_{ij} \vert 1 \leq i \leq m, 1 \leq j \leq m\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$i$$ has card $$j$$.  
+* $$P=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq m\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$i$$ has card $$j$$.  
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_n) \vert s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
-* $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$.
+* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
+* $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$;
+* $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \vert s_j = t_j \text{ for some } j \in \{1, \dots ,n\}\} \text{ for } 1 \leq i \leq m$$.
 
 (card distribution among the agents (or hidden), so for $$s \in S$$ we have $$|s|=n$$), 
 $$\pi$$ is the valuation function and $$R_i$$ is the set of relations for agent $$i$$, $$i \in \{1,\dots,m\}$$.
 
-Consider a agent's turn, say agent $i$.
+Consider a agent's turn, say agent $$i$$.
 Then it has this agent has three options: pick two train cards (either from the visible or not visible cards), 
 obtain a train route (when having the correct amount of cards), or 
 
 We start with m=3 and n=9.
-
-\autoref{fig:exampleModel} shows an example of a Kripke model with three agents and three cards.
-Here, $(1,2,3)$ denotes the state where agent $1$ has destination card $A$, agent $2$ has destination card $B$, and 
-agent $3$ has destination card $C$.
-\textcolor{red}{(Or agents 0,1,2,...}
 
 
 A* path finding voor beslissen waar agent heen gaat. Agent gaat altijd voor route vanaf start/eindpunt.
 Hoe gaan we moves ranken?
 
 Einde van spel: 
-	- Als een speler nog twee treinen over heeft mag iedereen nog 1 ronde spelen
-	- Een speler heeft alle routes gehaald
-	- Als het voor geen een speler meer mogelijk om een route te halen
+* Als een speler nog twee treinen over heeft mag iedereen nog 1 ronde spelen
+* Een speler heeft alle routes gehaald
+* Als het voor geen een speler meer mogelijk om een route te halen
