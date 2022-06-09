@@ -2,11 +2,13 @@
 
 ## Test
 $x^2$
-
-$$
-x^2
-$$
-
+<html>
+    <body>
+        $$
+        x^2
+        $$
+    <body>
+</html>
 ## Introduction
 Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
 The end goal of the game is to build a railway network that yields the highest amount of points. 
