@@ -83,6 +83,8 @@ Let us define the following:
 * $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ 
   denotes agent $$i$$ has destination card $$j$$.
 
+Here we take $$\frac{n}{m} \in \mathbb{N}$$, so the cards are evenly distributed among the agents. 
+
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
 * $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of 
 possible states;
@@ -95,12 +97,25 @@ same amount of destination cards. The valuation function $$\pi$$ assigns for eac
 $$p_{ij} \in \mathbf{P}$$. The set of relations for agent $$i$$ is all relations between two states in which agent $$i$$
 has the same destination cards.
 
-At the start of the game, before the cards are distributed among the agents, each agent knows that one of agents has
-the train card, that is, for all $$j \in \{1,\dots,n\}$$ and $$i \in \{1,\dots,m\}$$:
+At the start of the game, when the cards are evenly distributed among the agents, but the agents have not looked at their 
+destination cards, each agent knows that each agent has $$\frac{n}{m}$$ destination cards. Moreover, each agent
+knows that only one of agents has a specific train card, that is, for all 
+$$j \in \{1,\dots,n\}$$ and $$i \in \{1,\dots,m\}$$
 
-$$M \models K_i (p_{1j} \lor \dots \lor p_{mj})$$
+$$M \models K_i (p_{1j} \lor \dots \lor p_{mj}),$$
 
-Consider an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
+and for all $$i \in \{1,\dots,m\}$$, for all $$l \in \{1,\dots,m\}\backslash\{i\}$$
+
+$$M \models K_i p_{ij} \rightarrow K_i \lnot p_{lj}.$$
+
+After the agents have looked at their destination cards, the agents know which card they have, so for all 
+$$i \in \{1,\dots,m\}$$ and all $$j \in \{1,\dots,n\}$$
+
+$$M \models p_{ij} \rightarrow K_i p_{ij}.$$
+
+### An Agent's turn
+
+Consider now an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
 This agent has two options: 
 * draw train cards (either from the visible or not visible cards);
 * place trains on a connection between two cities (when having the correct amount of cards).
@@ -116,7 +131,9 @@ At the start of the game, the agents
 A* path finding voor beslissen waar agent heen gaat. Agent gaat altijd voor route vanaf start/eindpunt.
 Hoe gaan we moves ranken?
 
-Einde van spel: 
+
+### End-game
+Einde van spel:
 * Als een speler nog twee treinen over heeft mag iedereen nog 1 ronde spelen
 * Een speler heeft alle routes gehaald
 * Als het voor geen een speler meer mogelijk om een route te halen
