@@ -78,10 +78,10 @@ three agents encounter this situation successively.
 Let us define the following:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
-* $$P=\{p_{ij}| 1 \leq i \leq m, 1 \leq j \leq m\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$i$$ has card $$j$$.  
+* $$P=\{p_{ij} \| 1 \leq i \leq m, 1 \leq j \leq m\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$i$$ has card $$j$$.  
 
-Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_n) | s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
+Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle \vert$$ be the Kripke model where
+* $$S = \{(s_1,s_2,\dots,s_n) || s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
 * $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$.
 
 (card distribution among the agents (or hidden), so for $$s \in S$$ we have $$|s|=n$$), 
