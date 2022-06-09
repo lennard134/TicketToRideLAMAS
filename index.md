@@ -1,18 +1,14 @@
 # Ticket to Ride
 
 ## Test
-$x^2$
-hallo niemand
+$$x^2$$
+hallo test
 
-<head>
-<meta name="description" content="Free Web tutorials">
-<meta name="keywords" content="HTML,CSS,XML,JavaScript">
-<html>
-        $$
-        x^2
-        $$
-        </html>
-</head>
+{{< rawhtml >}}
+  <p class="speshal-fancy-custom">
+    This is <strong>raw HTML</strong>, inside Markdown.
+  </p>
+{{< /rawhtml >}}
 ## Introduction
 Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
 The end goal of the game is to build a railway network that yields the highest amount of points. 
