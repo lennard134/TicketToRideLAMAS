@@ -60,7 +60,7 @@ We also make the simplification that all destination cards are distributed among
 Lastly, placement of train stations is omitted.
 
 ## Model
-Let $M=\langle S, \pi, R_1, \dots, R_m \rangle$ be the Kripke model where $S$ is the set of possible states (card distribution among the players (or hidden)), $\pi$ is the valuation function and $R_i$ is the set of relations for player $i$, $i \in \{1,\dots,m\}$.
+Let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where $$S$$ is the set of possible states (card distribution among the players (or hidden)), $$\pi$$ is the valuation function and $$R_i$$ is the set of relations for player $$i$$, $$i \in \{1,\dots,m\}$$.
 
 
 ## Github stuff
