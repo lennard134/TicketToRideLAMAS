@@ -1,7 +1,8 @@
 # Ticket to Ride
 
 ## Test
-$x^2$
+$$x^2$$
+hallo test
 
 $$
 x^2
