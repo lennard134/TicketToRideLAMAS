@@ -84,7 +84,8 @@ Let us define the following:
   denotes agent $$i$$ has destination card $$j$$.
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
+* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of 
+possible states;
 * $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$;
 * $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \, \vert \, s_j = t_j \text{ for all } j \in \{1,\dots,n\} \text{ where } 
 s_j = a_i\} \text{ for } 1 \leq i \leq m$$.
@@ -109,7 +110,7 @@ closed deck.
 In case the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the visible cards or the closed deck. 
 In case an agent chooses to place trains on a connection between two cities, 
 
-We start with m=3 and n=9.
+At the start of the game, the agents 
 
 
 A* path finding voor beslissen waar agent heen gaat. Agent gaat altijd voor route vanaf start/eindpunt.
