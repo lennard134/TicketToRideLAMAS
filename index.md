@@ -75,22 +75,39 @@ three agents encounter this situation successively.
 
 
 ## Model
+Question: should we specify the model (K3, S4, S5, etc.)?
+
 Let us define the following:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
-* $$P=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq m\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$i$$ has card $$j$$.  
+* $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ 
+  denotes agent $$i$$ has destination card $$j$$.
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
 * $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of possible states;
 * $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$;
-* $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \vert s_j = t_j \text{ for some } j \in \{1, \dots ,n\}\} \text{ for } 1 \leq i \leq m$$.
+* $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \, \vert \, s_j = t_j \text{ for all } j \in \{1,\dots,n\} \text{ where } 
+s_j = a_i\} \text{ for } 1 \leq i \leq m$$.
 
-(card distribution among the agents (or hidden), so for $$s \in S$$ we have $$|s|=n$$), 
-$$\pi$$ is the valuation function and $$R_i$$ is the set of relations for agent $$i$$, $$i \in \{1,\dots,m\}$$.
+The set of states, $$S$$ is simply all combinations of destination card distributions over the agents, where each agent has the
+same amount of destination cards. The valuation function $$\pi$$ assigns for each state a truth value to each predicate 
+$$p_{ij} \in \mathbf{P}$$. The set of relations for agent $$i$$ is all relations between two states in which agent $$i$$
+has the same destination cards.
 
-Consider a agent's turn, say agent $$i$$.
-Then it has this agent has three options: pick two train cards (either from the visible or not visible cards), 
-obtain a train route (when having the correct amount of cards), or 
+At the start of the game, before the cards are distributed among the agents, each agent knows that one of agents has
+the train card, that is, for all $$j \in \{1,\dots,n\}$$ and $$i \in \{1,\dots,m\}$$:
+
+$$M \models K_i (p_{1j} \lor \dots \lor p_{mj})$$
+
+Consider an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
+This agent has two options: 
+* draw train cards (either from the visible or not visible cards);
+* place trains on a connection between two cities (when having the correct amount of cards).
+
+In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
+closed deck.
+In case the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the visible cards or the closed deck. 
+In case an agent chooses to place trains on a connection between two cities, 
 
 We start with m=3 and n=9.
 
