@@ -123,11 +123,25 @@ This agent has two options:
 In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
 closed deck.
 In case the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the visible cards or the closed deck. 
-In case an agent chooses to place trains on a connection between two cities, 
+In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
+it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
 
-At the start of the game, the agents 
+### Public announcements
+If an agent completes a route from its route cards, this completion is (instantly) publicly announced to all agents. 
+This means that upon route completion:
+
+$$\[p_{ij}\] p_{ij}$$
+
+With this, all states in which $$\neg p_{ij}$$ holds, can be removed. 
 
 
+### Map
+
+
+
+### Shortest route
+We will use the A* path planner to find the shortest route between two cities. Here the number of train cards that is 
+needed to claim a connection are the edge costs.
 A* path finding voor beslissen waar agent heen gaat. Agent gaat altijd voor route vanaf start/eindpunt.
 Hoe gaan we moves ranken?
 
