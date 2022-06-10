@@ -73,6 +73,11 @@ agent is allowed to claim a new route as there is no possible route that allows 
 opponents. This is a unique situation due to our simplifications and will be a cause for termination of the game when all
 three agents encounter this situation successively.
 
+### Resources
+We still have to think about this, but we have to specify the following:
+* The number of trains each agents has to claim routes;
+* The exact number of routes.
+
 
 ## Model
 __Question: should we specify the model (K3, S4, S5, etc.)?__
@@ -126,30 +131,46 @@ If the agent does not draw a locomotive train card from the visible cards, it ca
 visible cards (but not a locomotive card) or the closed deck. 
 In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
 it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
+With purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a route on the
+shortest route of this opponent.
+
+Lastly, when an agent cannot claim any connection anymore, since, for example, there is no possible route for its 
+destination card anymore, and it cannot purposefully block another agent, the agent 'announces' that it cannot claim 
+any routes (every turn). __(For now, for simplicity reasons, we assume this does not change the model, although it contains useful
+information.)__ This will be explained later and is found to be necessary as otherwise the game might continue infinitely,
+as the agents might always pick train cards. When, after another agent's turn the agent can claim a connection again,
+this will be 'announced' too.
 
 ### Public announcements
 If an agent completes a route from its route cards, this completion is (instantly) publicly announced to all agents. 
 This means that upon route completion:
 
-$$\[p_{ij}\] [p_{ij}]$$
+$$[p_{ij}] p_{ij}$$
 
-With this, all states in which $$\neg p_{ij}$$ holds, can be removed for simplification. 
+With this, the model changes such that all states in which $$\neg p_{ij}$$ holds, can be removed for simplification. 
 
-Another `announcement'
+Another 'announcement' that modifies the model is that of claiming routes. When an agent claims a route, it gives
+information to the other agents. As earlier mentioned, an agent may only claim a route, when it is part of the shortest 
+route of one of its destination cards, or when it purposefully blocks an opponent (see explanation above). Hence, claiming
+routes gives information to other agents as it must be one of the two.
 
 ### Map
-
+Consider the problem as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where each arc (connection) 
+$$a \in \mathcal{A}$$ has weight $$w_a$$, which is the number of trains that is needed to claim the connection.
+The nodes correspond to the cities.
+...
 
 
 ### Shortest route
-We will use the A* path planner to find the shortest route between two cities. Here the number of train cards that is 
+We will use the A* path planner to find the shortest route between two cities. Here the number of trains that is 
 needed to claim a connection are the edge costs.
-A* path finding voor beslissen waar agent heen gaat. Agent gaat altijd voor route vanaf start/eindpunt.
-Hoe gaan we moves ranken?
 
 
 ### End-game
-Einde van spel:
-* Als een speler nog twee treinen over heeft mag iedereen nog 1 ronde spelen
-* Een speler heeft alle routes gehaald
-* Als het voor geen een speler meer mogelijk om een route te halen
+The game can be ended in three ways:
+* When an agent has claimed a connection, and it has left only two trains, every agent has only one turn left;
+* When an agent accomplished all destination cards;
+* When all agents 'announced' in subsequent turns that they cannot claim any routes anymore.
+
+## Findings
+...
