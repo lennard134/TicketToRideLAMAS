@@ -19,7 +19,7 @@
 </style>
 </head>
 
-# Ticket to Ride
+# Modelling Ticket to Ride
 
 ## Introduction
 Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
@@ -41,7 +41,7 @@ Lastly, a player has the possibility to obtain new route cards.
 ## Research goal
 The goal of our research is to simulate and model (a simplification of) Ticket to Ride.
 
-## Simplifications
+## Simplifications of the game
 In the original version of Ticket to Ride Europe there are 47 nodes (cities), 90 edges (connections) and 46 destination
 cards (routes), and the game can be played by 2 to 5 players ([here](https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9)). 
 For our research, this is simply too complex. Therefore, we aim to simplify the game such that we have 3 agents playing 
@@ -75,15 +75,15 @@ three agents encounter this situation successively.
 
 
 ## Model
-Question: should we specify the model (K3, S4, S5, etc.)?
+__Question: should we specify the model (K3, S4, S5, etc.)?__
 
-Let us define the following:
+Let us define the following sets:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
 * $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ 
   denotes agent $$i$$ has destination card $$j$$.
 
-Here we take $$\frac{n}{m} \in \mathbb{N}$$, so the cards are evenly distributed among the agents. 
+Here we take $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distributed among the agents. 
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
 * $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of 
@@ -113,7 +113,7 @@ $$i \in \{1,\dots,m\}$$ and all $$j \in \{1,\dots,n\}$$
 
 $$M \models p_{ij} \rightarrow K_i p_{ij}.$$
 
-### An Agent's turn
+### An agent's turn
 
 Consider now an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
 This agent has two options: 
@@ -122,7 +122,8 @@ This agent has two options:
 
 In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
 closed deck.
-In case the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the visible cards or the closed deck. 
+If the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the 
+visible cards (but not a locomotive card) or the closed deck. 
 In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
 it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
 
@@ -130,10 +131,11 @@ it is part of the resulting shortest route or when it purposefully blocks anothe
 If an agent completes a route from its route cards, this completion is (instantly) publicly announced to all agents. 
 This means that upon route completion:
 
-$$\[p_{ij}\] p_{ij}$$
+$$\[p_{ij}\] [p_{ij}]$$
 
-With this, all states in which $$\neg p_{ij}$$ holds, can be removed. 
+With this, all states in which $$\neg p_{ij}$$ holds, can be removed for simplification. 
 
+Another `announcement'
 
 ### Map
 
