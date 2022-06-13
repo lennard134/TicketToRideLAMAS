@@ -1,5 +1,5 @@
 """
-This class represents the board of
+This class represents the board of the game
 """
 
 # packages
