@@ -12,7 +12,7 @@ class Board(object):
         self.connections = []
         self.cards = []
 
-    def init_cities(self, file_path):
+    def init_cities(self, file_path: str):
         """ Required: data in txt file with name and coordinates """
         with open(file_path, mode='r', encoding='utf-8') as f:
             for line in f:
