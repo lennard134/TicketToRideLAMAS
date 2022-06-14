@@ -35,13 +35,10 @@ class Deck(object):
         """
         Remove a card from the open deck
         """
-        if colour not in self.open_cards:
-            return None
+        assert colour in self.open_cards, "COLOUR NOT IN OPEN CARD"
 
         self.open_cards.remove(colour)
         self.open_cards.append(self.remove_closed_card())
-
-        return colour
 
     def remove_closed_card(self):
         """

@@ -2,6 +2,7 @@
 Object that represents a city
 """
 
+
 class City(object):
 
     def __init__(self, name: str, coordinates: tuple):

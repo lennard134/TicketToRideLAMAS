@@ -6,7 +6,7 @@ Object Ticket to ride board game that has all the functionalities of the game
 import random
 
 from src.model.Deck import Deck
-from src.model.map.board import Board
+from src.model.map.Board import Board
 from src.model.Agent import Agent
 from src.model.RouteCard import RouteCard
 
@@ -44,13 +44,17 @@ class TicketToRide(object):
         with open(ROUTE_CARDS_PATH, mode='r', encoding='utf-8') as f:
             for line in f:
                 line_list = line.split()
-                start = line_list[0].split('-')[0]
-                end = line_list[0].split('-')[1]
+                start = self.board.get_city(line_list[0].split('-')[0])
+                end = self.board.get_city(line_list[0].split('-')[1])
+                if start is None or end is None:
+                    print(f'Cities {start} or {end} not implemented. Skipping....')
+                    continue
                 score = int(line_list[1].rpartition('(')[2].partition(')')[0])
                 self.route_cards.append(RouteCard(start, end, score))
         random.shuffle(self.route_cards)
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
         if left_over_cards > 0:
+            print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]
 
     def _distribute_route_cards(self):
@@ -86,14 +90,7 @@ class TicketToRide(object):
 
         while in_game:
             for agent in self.agents:
-                # Recompute own shortest path given hand
-
-                # If player can claim segment, it will
-                #   recompute shortest path for every agent
-                # Else it will either draw card from open/closed deck
-                #   either two closed cards, one open and one closed or two open, OR a single joker card from open
-
-                continue
+                agent.choose_action()
             in_game = False
 
         print("!!GAME OVER!!")

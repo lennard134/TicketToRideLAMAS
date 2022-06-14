@@ -10,3 +10,15 @@ EdinBurgh   55.9533     -3.1883
 Essen       51.4556     7.0116
 Frankfurt   50.1109     8.6821
 Lisboa      38.7223     9.1393
+London 1 1
+Madrid 1 1
+Marseille 1 1
+Munchen 1 1
+Palermo 1 1
+Pamplona 1 1
+Paris 1 1
+Roma 1 1
+Venezia 1 1
+Wien 1 1
+Zagrab 1 1
+Zurich 1 1

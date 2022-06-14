@@ -1,4 +1,4 @@
-from model.map.board import Board
+from model.map.Board import Board
 
 
 def main_test():
