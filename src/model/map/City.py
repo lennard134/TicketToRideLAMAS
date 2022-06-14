@@ -15,7 +15,7 @@ class City(object):
         self.coordinates = coordinates
         self.station = False
         self.station_owner = None
-        # ?extra score points for specific cities?
+        #self.score_points = xx ?extra score points for specific cities?
 
     def __str__(self):
         return f'{self.name}: {self.coordinates}'

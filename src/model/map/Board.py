@@ -13,6 +13,7 @@ CITY_FILE_PATH = os.path.join(ROOT_DIR, "data/cities.txt")
 
 
 class Board(object):
+
     def __init__(self):
         self.cities = []
         self.connections = []

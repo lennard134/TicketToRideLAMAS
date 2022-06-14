@@ -7,7 +7,8 @@ from src.model.Game import Game
 from src.model.RouteCard import RouteCard
 
 START_SCORE = 0
-
+JOKER_COLOUR = "joker"
+NR_CARDS_TO_DRAW = 2
 
 class Agent(object):
     def __init__(self, agent_id: int, nr_of_trains: int):
@@ -40,7 +41,8 @@ class Agent(object):
 
     def choose_action(self):
         """
-        Either put train on connection or get new cards from open/closed deck
+        Either put train on connection to either claim own connection or block someone else
+        or get new cards from open/closed deck
         """
         self._recalculate_own_shortest_routes()
 

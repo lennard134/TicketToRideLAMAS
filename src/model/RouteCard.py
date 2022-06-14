@@ -1,9 +1,14 @@
 """
 This class represents the route-cards of the game
 """
+
+from .map.City import City
+from Agent import Agent
+
+
 class RouteCard(object):
 
-    def __init__(self, start: str, end: str, score: int):
+    def __init__(self, start: City, end: City, score: int):
         """
         Initializer for the route cards which takes three parameters
         :param start: start city of route

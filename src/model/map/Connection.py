@@ -22,3 +22,6 @@ class Connection(object):
         self.num_trains = num_trains
         self.color = color
         self.owner = None
+
+    def set_owner(self, agent: Agent):
+        self.owner = agent

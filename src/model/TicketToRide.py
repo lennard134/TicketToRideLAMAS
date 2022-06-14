@@ -9,6 +9,7 @@ from src.model.Deck import Deck
 from src.model.map.Board import Board
 from src.model.Agent import Agent
 from src.model.RouteCard import RouteCard
+from src.model.Game import Game
 
 # settings
 NR_OF_AGENTS = 3
@@ -52,6 +53,9 @@ class TicketToRide(object):
                 score = int(line_list[1].rpartition('(')[2].partition(')')[0])
                 self.route_cards.append(RouteCard(start, end, score))
         random.shuffle(self.route_cards)
+        print(len(self.route_cards))
+        for route_card in self.route_cards:
+            print(route_card)
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
         if left_over_cards > 0:
             print(f"Deleting {left_over_cards} route cards.")
@@ -84,6 +88,12 @@ class TicketToRide(object):
         """
         self._distribute_route_cards()
         self._distribute_train_cards()
+
+        # Init game model
+        game = Game(board=self.board, route_cards=self.route_cards, agent_list=self.agents)
+        for agent in self.agents:
+            agent.set_game(game)
+        game.init_shortest_routes()
 
         # announce cards in game and compute all optimal routes
         in_game = True
