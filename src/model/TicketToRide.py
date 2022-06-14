@@ -11,10 +11,14 @@ from src.model.Agent import Agent
 from src.model.RouteCard import RouteCard
 from src.model.Game import Game
 
+import os
+
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # settings
 NR_OF_AGENTS = 3
 NR_OF_TRAINS = 10
-ROUTE_CARDS_PATH = './data/destinations_all.txt'
+ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, "data/destinations_all.txt")
 
 
 class TicketToRide(object):
@@ -57,6 +61,7 @@ class TicketToRide(object):
         for route_card in self.route_cards:
             print(route_card)
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
+
         if left_over_cards > 0:
             print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]

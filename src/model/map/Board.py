@@ -15,7 +15,10 @@ CITY_FILE_PATH = os.path.join(ROOT_DIR, "data/cities.txt")
 class Board(object):
 
     def __init__(self):
-        self.cities = []
+        """
+        Initializer for board, no parameters are given
+        """
+        self.cities = {}
         self.connections = []
 
         self._init_cities()

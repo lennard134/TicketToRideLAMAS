@@ -80,6 +80,7 @@ class Agent(object):
     def draw_card(self):
         """
         Agent can draw a card either open or closed, choice is made in this function if player draws open/closed card.
+        TODO: strategy for drawing cards should be refined down the line
         """
         # From desired colours
         # either two closed cards, one open and one closed or two open, OR a single joker card from open
