@@ -4,11 +4,12 @@ Game object containing all relevant game-items for the player
 
 from .map.Board import Board
 from .Deck import Deck
+from RouteCard import RouteCard
 
 
 class Game(object):
 
-    def __init__(self, board: Board, route_cards: list, agent_list: list, deck: Deck):
+    def __init__(self, board: Board, route_cards: list[RouteCard], agent_list: list, deck: Deck):
         """
         Initializer of game object
         :param board: Board object of the game
