@@ -5,6 +5,7 @@ Object player that holds all information necessary for an agent to play the game
 # settings
 from src.model.Game import Game
 from src.model.RouteCard import RouteCard
+from src.model.map.Connection import Connection
 
 START_SCORE = 0
 JOKER_COLOUR = "joker"
@@ -71,10 +72,11 @@ class Agent(object):
         """
         return False
 
-    def claim_connection(self):
+    def claim_connection(self, connection: Connection):
         """
         Agent claims a connection by putting trains on a connection
         """
+        connection.set_owner(self)
         pass
 
     def draw_card(self):
