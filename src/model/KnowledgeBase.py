@@ -21,5 +21,5 @@ class KnowledgeBase(object):
 
     def _init_known_route_cards(self):
         for card in self.game.route_cards:
-            self.known_route_cards[card.route_name] = self.agent if self.agent == card.owner else None
+            self.known_route_cards[card.route_name] = self.agent if card.route_name in self.agent.own_route_cards else None
             

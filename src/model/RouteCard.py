@@ -3,7 +3,7 @@ This class represents the route-cards of the game
 """
 
 from .map.City import City
-from Agent import Agent
+# from src.model.Agent import Agent
 
 
 class RouteCard(object):
@@ -20,14 +20,14 @@ class RouteCard(object):
         self.end = end
         self.score = score
         self.shortest_routes = {}
-        self.owner = None
+        # self.owner = None
         self.finished_card = False
 
-    def set_owner(self, agent: Agent):
-        self.owner = agent
+    # def set_owner(self, agent: Agent):
+    #     self.owner = agent
 
-    def get_owner(self):
-        return self.owner if self.finished_card else None
+    # def get_owner(self):
+    #     return self.owner if self.finished_card else None
 
     def set_finished(self):
         self.finished_card = True

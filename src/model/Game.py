@@ -4,7 +4,7 @@ Game object containing all relevant game-items for the player
 
 from .map.Board import Board
 from .Deck import Deck
-from RouteCard import RouteCard
+from .RouteCard import RouteCard
 
 
 class Game(object):
