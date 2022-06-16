@@ -4,7 +4,6 @@ Contains a start point and an end point of a connection, the color and number of
 
 # packages
 from src.model.map.City import City
-from src.model import Agent
 
 
 class Connection(object):
@@ -23,5 +22,5 @@ class Connection(object):
         self.color = color
         self.owner = None
 
-    def set_owner(self, agent: Agent):
+    def set_owner(self, agent: int):
         self.owner = agent

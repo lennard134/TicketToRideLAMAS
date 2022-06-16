@@ -51,15 +51,20 @@ class TicketToRide(object):
                 line_list = line.split()
                 start = self.board.get_city(line_list[0].split('-')[0])
                 end = self.board.get_city(line_list[0].split('-')[1])
+
                 if start is None or end is None:
                     print(f'Cities {start} or {end} not implemented. Skipping....')
                     continue
+
                 score = int(line_list[1].rpartition('(')[2].partition(')')[0])
                 self.route_cards.append(RouteCard(start, end, score))
+
         random.shuffle(self.route_cards)
         print(len(self.route_cards))
+
         for route_card in self.route_cards:
             print(route_card)
+
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
 
         if left_over_cards > 0:

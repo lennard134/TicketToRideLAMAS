@@ -2,7 +2,6 @@
 Main file for the PyGame window responsible for both displaying the game board and the state space
 """
 
-
 # Modules
 import pygame
 
@@ -26,8 +25,9 @@ class GameBoard(object):
         """
         Determines maximum x and y coordinates of cities to allow for accurate scaling to window size
         """
-        max_x = cities[0].coordinates[1]
-        max_y = cities[0].coordinates[0]
+        max_y, max_x = cities[0].coordinates
+        max_x -= min_x
+        max_y -= min_y
 
         for city in cities:
             height, width = city.coordinates
@@ -42,8 +42,7 @@ class GameBoard(object):
         """
         Determines minimum x and y coordinates of cities to allow for accurate translation to fit window size
         """
-        min_x = cities[0].coordinates[1]
-        min_y = cities[0].coordinates[0]
+        min_y, min_x = cities[0].coordinates
 
         for city in cities:
             height, width = city.coordinates
@@ -59,44 +58,47 @@ class GameBoard(object):
         pygame.init()
 
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        contents = screen.copy()
         clock = pygame.time.Clock()
 
         screen.fill((255, 255, 255))
+        contents.fill((255, 255, 255))
 
         # screen.fill((0, 0, 0,))
 
         font1 = pygame.font.SysFont('chalkduster.ttf', 24)
 
-        min_x, min_y = self.lowest_xy(self.ttr.board.cities.values())
-        print(min_x, min_y)
-        max_x, max_y = self.highest_xy(self.ttr.board.cities.values(), min_x, min_y)
+        min_x, min_y = self.lowest_xy(list(self.ttr.board.cities.values()))
+        max_x, max_y = self.highest_xy(list(self.ttr.board.cities.values()), min_x, min_y)
 
         x_scaling = SCREEN_WIDTH / max_x
         y_scaling = SCREEN_HEIGHT / max_y
 
-        for city in self.ttr.board.cities:
-            print(city)
-
-        for connection in self.ttr.route_cards:
-            n1h, n1w = connection.start.coordinates
-            n2h, n2w = connection.end.coordinates
+        for connection in self.ttr.board.connections:
+            n1h, n1w = connection.start_point.coordinates
+            n2h, n2w = connection.end_point.coordinates
             n1x = (n1w - min_x) * x_scaling
             n2x = (n2w - min_x) * x_scaling
             n1y = (n1h - min_y) * y_scaling
             n2y = (n2h - min_y) * y_scaling
             # draw edges
-            pygame.draw.line(screen, (100, 100, 100), (n1x, SCREEN_HEIGHT - n1y), (n2x, SCREEN_HEIGHT - n2y), 2)
+            pygame.draw.line(contents, (100, 100, 100), (n1x, SCREEN_HEIGHT - n1y), (n2x, SCREEN_HEIGHT - n2y), 2)
 
         for city in self.ttr.board.cities.values():
             height, width = city.coordinates
             height -= min_y
             width -= min_x
             # draw cities as circles
-            pygame.draw.circle(screen, (255, 0, 0), (width * x_scaling, SCREEN_HEIGHT - height * y_scaling), radius=12)
+
+            pygame.draw.circle(contents, (255, 0, 0), (width * x_scaling, SCREEN_HEIGHT - height * y_scaling),
+                               radius=12)
             # draw text on center of cities
             text = font1.render(city.name, True, (0, 0, 0))
-            screen.blit(text, (width * x_scaling - 0.5 * text.get_width(),
-                               SCREEN_HEIGHT - (height * y_scaling + 0.5 * text.get_height())))
+            txt_left = width * x_scaling - 0.5 * text.get_width()
+            txt_top = SCREEN_HEIGHT - (height * y_scaling + 0.5 * text.get_height())
+            contents.blit(text, (txt_left, txt_top))
+
+        screen.blit(contents, (0, 0))
 
         pygame.display.update()
 

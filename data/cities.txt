@@ -6,7 +6,7 @@ Brindisi    40.6327     17.9418
 Bruxelles   50.8476     4.3572
 Cadiz       36.5210     -6.2805
 Dieppe      49.9230     1.0775
-EdinBurgh   55.9533     -3.1883
+Edinburgh   55.9533     -3.1883
 Essen       51.4556     7.0116
 Frankfurt   50.1109     8.6821
 Lisboa      38.7223     -9.1393

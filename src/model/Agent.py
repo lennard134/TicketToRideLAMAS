@@ -76,7 +76,7 @@ class Agent(object):
         """
         Agent claims a connection by putting trains on a connection
         """
-        connection.set_owner(self)
+        connection.set_owner(self.agent_id)
         pass
 
     def draw_card(self):
