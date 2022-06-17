@@ -12,6 +12,7 @@ from src.model.map.City import City
 # Settings
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 1000
+RADIUS = 12
 
 
 class GameBoard(object):
@@ -51,10 +52,23 @@ class GameBoard(object):
 
         return min_x, min_y
 
+    def update_limits(self, x, y, left, right, top, bottom):
+        left = x if not left or x < left else left
+        right = x if not right or x > right else right
+        top = y if not top or y < top else top
+        bottom = y if not bottom or y > bottom else bottom
+
+        return left, right, top, bottom
+
     def run(self):
         """
         Main PyGame function responsible for keeping the screen up to date
         """
+        lt_lim = None
+        rt_lim = None
+        tp_lim = None
+        bt_lim = None
+
         pygame.init()
 
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -79,24 +93,47 @@ class GameBoard(object):
             n2h, n2w = connection.end_point.coordinates
             n1x = (n1w - min_x) * x_scaling
             n2x = (n2w - min_x) * x_scaling
-            n1y = (n1h - min_y) * y_scaling
-            n2y = (n2h - min_y) * y_scaling
+            n1y = SCREEN_HEIGHT - (n1h - min_y) * y_scaling
+            n2y = SCREEN_HEIGHT - (n2h - min_y) * y_scaling
+
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(n1x, n1y, lt_lim, rt_lim, tp_lim, bt_lim)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(n2x, n2y, lt_lim, rt_lim, tp_lim, bt_lim)
+
             # draw edges
-            pygame.draw.line(contents, (100, 100, 100), (n1x, SCREEN_HEIGHT - n1y), (n2x, SCREEN_HEIGHT - n2y), 2)
+            pygame.draw.line(contents, (100, 100, 100), (n1x, n1y), (n2x, n2y), 2)
 
         for city in self.ttr.board.cities.values():
             height, width = city.coordinates
             height -= min_y
             width -= min_x
+
+            x = width * x_scaling
+            y = SCREEN_HEIGHT - height * y_scaling
             # draw cities as circles
 
-            pygame.draw.circle(contents, (255, 0, 0), (width * x_scaling, SCREEN_HEIGHT - height * y_scaling),
-                               radius=12)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x - radius, y - radius, lt_lim, rt_lim, tp_lim, bt_lim)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x + radius, y + radius, lt_lim, rt_lim, tp_lim, bt_lim)
+
+            pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=radius)
+
             # draw text on center of cities
             text = font1.render(city.name, True, (0, 0, 0))
+
             txt_left = width * x_scaling - 0.5 * text.get_width()
             txt_top = SCREEN_HEIGHT - (height * y_scaling + 0.5 * text.get_height())
+            txt_right = width * x_scaling + 0.5 * text.get_width()
+            txt_bottom = SCREEN_HEIGHT - (height * y_scaling - 0.5 * text.get_height())
+
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(txt_left, txt_top, lt_lim, rt_lim, tp_lim, bt_lim)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(txt_right, txt_bottom, lt_lim, rt_lim, tp_lim, bt_lim)
+
             contents.blit(text, (txt_left, txt_top))
+
+
+        content_scale_x = SCREEN_WIDTH / (rt_lim - lt_lim)
+        content_scale_y = SCREEN_HEIGHT / (bt_lim - tp_lim)
+
+
 
         screen.blit(contents, (0, 0))
 
