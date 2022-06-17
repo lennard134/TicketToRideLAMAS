@@ -111,10 +111,10 @@ class GameBoard(object):
             y = SCREEN_HEIGHT - height * y_scaling
             # draw cities as circles
 
-            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x - radius, y - radius, lt_lim, rt_lim, tp_lim, bt_lim)
-            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x + radius, y + radius, lt_lim, rt_lim, tp_lim, bt_lim)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x - RADIUS, y - RADIUS, lt_lim, rt_lim, tp_lim, bt_lim)
+            lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(x + RADIUS, y + RADIUS, lt_lim, rt_lim, tp_lim, bt_lim)
 
-            pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=radius)
+            pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=RADIUS)
 
             # draw text on center of cities
             text = font1.render(city.name, True, (0, 0, 0))
@@ -128,7 +128,6 @@ class GameBoard(object):
             lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(txt_right, txt_bottom, lt_lim, rt_lim, tp_lim, bt_lim)
 
             contents.blit(text, (txt_left, txt_top))
-
 
         content_scale_x = SCREEN_WIDTH / (rt_lim - lt_lim)
         content_scale_y = SCREEN_HEIGHT / (bt_lim - tp_lim)
