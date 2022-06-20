@@ -2,8 +2,11 @@
 Main file for the PyGame window responsible for both displaying the game board and the state space
 """
 
+# TODO: take care of ferries
+
 # Modules
 import pygame
+import numpy as np
 
 # Model imports
 from src.model.TicketToRide import TicketToRide
@@ -11,10 +14,23 @@ from src.model.map.City import City
 
 # Settings
 SCREEN_WIDTH = 1200
-SCREEN_HEIGHT = 1000
+SCREEN_HEIGHT = 900
 WIDTH_BUFFER = 2
 HEIGHT_BUFFER = 2
+LINE_THICKNESS = 4
 RADIUS = 12
+COLOURS = {
+    'red': (255, 0, 0),
+    'orange': (255, 165, 0),
+    'yellow': (255, 234, 0),
+    'green': (0, 255, 0),
+    'blue': (0, 0, 255),
+    'pink': (255, 182, 193),
+    'black': (0, 0, 0),
+    'white': (255, 255, 255),
+    'gray': (180, 180, 180),
+    'background': (254, 235, 201)
+}
 
 
 class GameBoard(object):
@@ -51,12 +67,32 @@ class GameBoard(object):
         return min_x, min_y
 
     def update_limits(self, x, y, left, right, top, bottom):
+        """
+        Updates the furthest coordinates on all sides to allow for accurate scaling
+        """
         left = x if not left or x < left else left
         right = x if not right or x > right else right
         top = y if not top or y < top else top
         bottom = y if not bottom or y > bottom else bottom
 
         return left, right, top, bottom
+
+    def draw_dashed_line(self, surface, color, start_pos, end_pos, width=LINE_THICKNESS, dash_length=10, exclude_corners=True):
+        # convert tuples to numpy arrays
+        start_pos = np.array(start_pos)
+        end_pos = np.array(end_pos)
+
+        # get euclidian distance between start_pos and end_pos
+        length = np.linalg.norm(end_pos - start_pos)
+
+        # get amount of pieces that line will be split up in (half of it are amount of dashes)
+        dash_amount = int(length / dash_length)
+
+        # x-y-value-pairs of where dashes start (and on next, will end)
+        dash_knots = np.array([np.linspace(start_pos[i], end_pos[i], dash_amount) for i in range(2)]).transpose()
+
+        return [pygame.draw.line(surface, color, tuple(dash_knots[n]), tuple(dash_knots[n + 1]), width)
+                for n in range(int(exclude_corners), dash_amount - int(exclude_corners), 2)]
 
     def run(self):
         """
@@ -73,8 +109,8 @@ class GameBoard(object):
         contents = screen.copy()
         clock = pygame.time.Clock()
 
-        screen.fill((255, 255, 255))
-        contents.fill((255, 255, 255))
+        screen.fill(COLOURS['background'])
+        contents.fill(COLOURS['background'])
 
         font1 = pygame.font.SysFont('chalkduster.ttf', 24)
 
@@ -104,7 +140,10 @@ class GameBoard(object):
             lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(n2x, n2y, lt_lim, rt_lim, tp_lim, bt_lim)
 
             # draw edges
-            pygame.draw.line(contents, (100, 100, 100), (n1x, n1y), (n2x, n2y), 2)
+            if connection.color in COLOURS:
+                pygame.draw.line(contents, color=COLOURS[connection.color], start_pos=(n1x, n1y), end_pos=(n2x, n2y), width=LINE_THICKNESS)
+            else:
+                self.draw_dashed_line(contents, COLOURS['gray'], (n1x, n1y), (n2x, n2y))
 
         for city in self.ttr.board.cities.values():
             height, width = city.coordinates
