@@ -3,6 +3,10 @@ Main file for the PyGame window responsible for both displaying the game board a
 """
 
 # TODO: take care of ferries
+#       consider ownership
+#       button for switching view
+#       view for state space
+#       split view drawing based on current button state
 
 # Modules
 import pygame
@@ -13,8 +17,10 @@ from src.model.TicketToRide import TicketToRide
 from src.model.map.City import City
 
 # Settings
-SCREEN_WIDTH = 1200
+SCREEN_WIDTH = 1400
 SCREEN_HEIGHT = 900
+CONTENT_WIDTH = 1200
+PANEL_WIDTH = 200
 WIDTH_BUFFER = 2
 HEIGHT_BUFFER = 2
 LINE_THICKNESS = 4
@@ -29,8 +35,15 @@ COLOURS = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
     'gray': (180, 180, 180),
-    'background': (254, 235, 201)
+    'background': (254, 235, 201),
+    'background2': (191, 213, 232)
 }
+
+# Button settings
+BUTTON_WIDTH = 100
+BUTTON_HEIGHT = 30
+BUTTON_COLOUR_LIGHT = (180, 180, 180)
+BUTTON_COLOUR_DARK = (110, 110, 110)
 
 
 class GameBoard(object):
@@ -94,25 +107,16 @@ class GameBoard(object):
         return [pygame.draw.line(surface, color, tuple(dash_knots[n]), tuple(dash_knots[n + 1]), width)
                 for n in range(int(exclude_corners), dash_amount - int(exclude_corners), 2)]
 
-    def run(self):
+    def draw_ttr_board(self, contents):
         """
-        Main PyGame function responsible for keeping the screen up to date
+        returns the contents of the Ticket to Ride board
         """
         lt_lim = None
         rt_lim = None
         tp_lim = None
         bt_lim = None
 
-        pygame.init()
-
-        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        contents = screen.copy()
-        clock = pygame.time.Clock()
-
-        screen.fill(COLOURS['background'])
         contents.fill(COLOURS['background'])
-
-        font1 = pygame.font.SysFont('chalkduster.ttf', 24)
 
         min_x, min_y = self.lowest_xy(list(self.ttr.board.cities.values()))
         max_x, max_y = self.highest_xy(list(self.ttr.board.cities.values()))
@@ -125,7 +129,7 @@ class GameBoard(object):
         max_x -= min_x
         max_y -= min_y
 
-        x_scaling = SCREEN_WIDTH / max_x
+        x_scaling = CONTENT_WIDTH / max_x
         y_scaling = SCREEN_HEIGHT / max_y
 
         for connection in self.ttr.board.connections:
@@ -141,7 +145,8 @@ class GameBoard(object):
 
             # draw edges
             if connection.color in COLOURS:
-                pygame.draw.line(contents, color=COLOURS[connection.color], start_pos=(n1x, n1y), end_pos=(n2x, n2y), width=LINE_THICKNESS)
+                pygame.draw.line(contents, color=COLOURS[connection.color], start_pos=(n1x, n1y), end_pos=(n2x, n2y),
+                                 width=LINE_THICKNESS)
             else:
                 self.draw_dashed_line(contents, COLOURS['gray'], (n1x, n1y), (n2x, n2y))
 
@@ -160,6 +165,7 @@ class GameBoard(object):
             pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=RADIUS)
 
             # draw text on center of cities
+            font1 = pygame.font.SysFont('chalkduster.ttf', 24)
             text = font1.render(city.name, True, (0, 0, 0))
 
             txt_left = width * x_scaling - 0.5 * text.get_width()
@@ -172,16 +178,73 @@ class GameBoard(object):
 
             contents.blit(text, (txt_left, txt_top))
 
+        return contents
+
+    def draw_state_space(self, contents):
+        """
+        returns the contents of the visual representation of the state space
+        """
+        contents.fill(COLOURS['background'])
+        return contents
+
+    def draw_side_panel(self, side_panel, mouse):
+        pass
+
+    def run(self):
+        """
+        Main PyGame function responsible for keeping the screen up to date
+        """
+        pygame.init()
+
+        screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        contents = screen.copy()
+        contents = pygame.transform.scale(contents, (CONTENT_WIDTH, SCREEN_HEIGHT))
+
+        side_panel = pygame.Surface((SCREEN_WIDTH - CONTENT_WIDTH, SCREEN_HEIGHT))
+        side_panel.fill(COLOURS['background2'])
+
+        contents = self.draw_ttr_board(contents)
+
         screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2))
 
         pygame.display.update()
 
         running = True
+        show_board = True
 
         while running:
+            button_x_left = PANEL_WIDTH / 2 - BUTTON_WIDTH / 2
+            button_x_right = PANEL_WIDTH / 2 + BUTTON_WIDTH / 2
+
+            mouse = pygame.mouse.get_pos()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
+                        show_board = False if show_board else True
+
+            if show_board:
+                contents = self.draw_ttr_board(contents)
+            else:
+                contents = self.draw_state_space(contents)
+
+            if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
+                pygame.draw.rect(side_panel, BUTTON_COLOUR_LIGHT, [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+            else:
+                pygame.draw.rect(side_panel, BUTTON_COLOUR_DARK, [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+
+            font1 = pygame.font.SysFont('chalkduster.ttf', 20)
+            text = font1.render("Switch view", True, (0, 0, 0))
+            txt_left = button_x_left + BUTTON_WIDTH / 2 - 0.5 * text.get_width()
+            txt_top = BUTTON_HEIGHT - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
+            screen.blit(side_panel, (CONTENT_WIDTH, 0))
+            pygame.display.update()
 
 
 if __name__ == "__main__":
