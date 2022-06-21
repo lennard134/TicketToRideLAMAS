@@ -26,9 +26,9 @@ class Agent(object):
         self.game = None
         self.hand = []
         self.own_route_cards = []
-        self.owned_connections = []
+        # self.owned_connections = [] ## Owner is already included in Connection
         self.possible_route_cards = []
-        self._shortest_paths = {} ## Key is route card name, value is list of tuples
+        self._shortest_paths = {}  ## Key is route card name, value is list of tuples
 
     def place_trains(self, nr_trains: int):
         """

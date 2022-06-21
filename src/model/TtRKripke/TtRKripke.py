@@ -95,7 +95,7 @@ class TtRKripke(object):
     def public_announcement_route_card(self, agent_id: int, route_card: str):
         """
         Method to do a public announcement of a route card and remove worlds that are no longer possible
-        :param agent_id: Agent that does public announcement
+        :param agent_id: Agent that has route card
         :param route_card: Route card that is being announced
         """
         # remove relations
