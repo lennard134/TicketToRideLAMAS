@@ -44,7 +44,15 @@ class Deck(object):
         """
         Remove a card from the closed deck
         """
+        if not self.closed_cards:
+            self.shuffle_used_cards()
         return self.closed_cards.pop()
+
+    def play_train_cards(self, train_cards: list[str]):
+        """
+        Add the played train cards to the used cards stack
+        """
+        self.used_cards.extend(train_cards)
 
     def shuffle_used_cards(self):
         """

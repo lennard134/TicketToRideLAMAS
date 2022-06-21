@@ -4,6 +4,7 @@ import itertools
 from src.model.TtRKripke.World import World
 from src.model.Agent import Agent
 
+
 def split(a, n):
     k, m = divmod(len(a), n)
     return (a[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n))

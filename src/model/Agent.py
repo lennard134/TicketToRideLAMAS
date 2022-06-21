@@ -11,6 +11,7 @@ START_SCORE = 0
 JOKER_COLOUR = "joker"
 NR_CARDS_TO_DRAW = 2
 
+
 class Agent(object):
     def __init__(self, agent_id: int, nr_of_trains: int):
         """
@@ -77,7 +78,8 @@ class Agent(object):
         Agent claims a connection by putting trains on a connection
         """
         connection.set_owner(self.agent_id)
-        pass
+
+        # TODO: check if agent finished route
 
     def draw_card(self):
         """

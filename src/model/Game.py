@@ -2,9 +2,9 @@
 Game object containing all relevant game-items for the player
 """
 
-from .map.Board import Board
-from .Deck import Deck
-from .RouteCard import RouteCard
+from src.model.map.Board import Board
+from src.model.Deck import Deck
+from src.model.RouteCard import RouteCard
 
 
 class Game(object):

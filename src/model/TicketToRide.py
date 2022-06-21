@@ -10,6 +10,7 @@ from src.model.map.Board import Board
 from src.model.Agent import Agent
 from src.model.RouteCard import RouteCard
 from src.model.Game import Game
+from src.model.TtRKripke.TtRKripke import TtRKripke
 
 import os
 
@@ -31,9 +32,12 @@ class TicketToRide(object):
         self.board = Board()
         self.agents = []
         self.route_cards = []
+        self.kripke = None
 
         self._init_agents()
         self._init_route_cards()
+
+        self._init_kripke()
 
     def _init_agents(self):
         """
@@ -71,6 +75,16 @@ class TicketToRide(object):
             print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]
 
+    def _init_kripke(self):
+        agent_ids = []
+        route_card_ids = []
+        for agent in self.agents:
+            agent_ids.append(agent.agent_id)
+        for route_card in route_card_ids:
+            route_card_ids.append(route_card.route_name)
+
+        self.kripke = TtRKripke(agent_ids=agent_ids, route_cards_ids=route_card_ids)
+
     def _distribute_route_cards(self):
         """
         Distribute route cards among the agents
@@ -83,6 +97,7 @@ class TicketToRide(object):
             end = begin + step_size
             for card in self.route_cards[begin:end]:
                 agent.add_route_card(card)
+                self.kripke.update_relations(agent.agent_id, agent.agent_id, card.route_name)
 
     def _distribute_train_cards(self):
         """
@@ -100,7 +115,7 @@ class TicketToRide(object):
         self._distribute_train_cards()
 
         # Init game model
-        game = Game(board=self.board, route_cards=self.route_cards, agent_list=self.agents)
+        game = Game(board=self.board, route_cards=self.route_cards, agent_list=self.agents, deck=self.deck)
         for agent in self.agents:
             agent.set_game(game)
         game.init_shortest_routes()
