@@ -20,7 +20,7 @@ class Deck(object):
 
     def _init_cards(self):
         """
-        function to initialize a new deck of playing cards
+        Function to initialize a new deck of playing cards
         """
         deck = []
         for colour in TRAIN_COLOURS:
@@ -61,6 +61,7 @@ class Deck(object):
         """
         self.closed_cards.extend(self.used_cards)
         random.shuffle(self.closed_cards)
+        self.used_cards = []
 
 
 if __name__ == "__main__":

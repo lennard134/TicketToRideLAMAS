@@ -79,7 +79,7 @@ class GameBoard(object):
 
         return min_x, min_y
 
-    def update_limits(self, x, y, left, right, top, bottom):
+    def update_limits(self, x: int, y: int, left: int, right: int, top: int, bottom: int):
         """
         Updates the furthest coordinates on all sides to allow for accurate scaling
         """
@@ -90,7 +90,11 @@ class GameBoard(object):
 
         return left, right, top, bottom
 
-    def draw_dashed_line(self, surface, color, start_pos, end_pos, width=LINE_THICKNESS, dash_length=10, exclude_corners=True):
+    def draw_dashed_line(self, surface: pygame.Surface, color: tuple, start_pos: tuple, end_pos: tuple,
+                         width=LINE_THICKNESS, dash_length=10, exclude_corners=True):
+        """
+        Draws a dashed line between the given starting and ending position
+        """
         # convert tuples to numpy arrays
         start_pos = np.array(start_pos)
         end_pos = np.array(end_pos)
@@ -107,9 +111,9 @@ class GameBoard(object):
         return [pygame.draw.line(surface, color, tuple(dash_knots[n]), tuple(dash_knots[n + 1]), width)
                 for n in range(int(exclude_corners), dash_amount - int(exclude_corners), 2)]
 
-    def draw_ttr_board(self, contents):
+    def draw_ttr_board(self, contents: pygame.Surface):
         """
-        returns the contents of the Ticket to Ride board
+        Returns the contents of the Ticket to Ride board
         """
         lt_lim = None
         rt_lim = None
@@ -180,14 +184,14 @@ class GameBoard(object):
 
         return contents
 
-    def draw_state_space(self, contents):
+    def draw_state_space(self, contents: pygame.Surface):
         """
-        returns the contents of the visual representation of the state space
+        Returns the contents of the visual representation of the state space
         """
         contents.fill(COLOURS['background'])
         return contents
 
-    def draw_side_panel(self, side_panel, mouse):
+    def draw_side_panel(self, side_panel: pygame.Surface, mouse):
         pass
 
     def run(self):
@@ -223,7 +227,9 @@ class GameBoard(object):
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
+                    if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] \
+                            <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] \
+                            <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
                         show_board = False if show_board else True
 
             if show_board:
@@ -231,10 +237,13 @@ class GameBoard(object):
             else:
                 contents = self.draw_state_space(contents)
 
-            if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
-                pygame.draw.rect(side_panel, BUTTON_COLOUR_LIGHT, [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+            if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right \
+                    and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
+                pygame.draw.rect(side_panel, BUTTON_COLOUR_LIGHT,
+                                 [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
             else:
-                pygame.draw.rect(side_panel, BUTTON_COLOUR_DARK, [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+                pygame.draw.rect(side_panel, BUTTON_COLOUR_DARK,
+                                 [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
 
             font1 = pygame.font.SysFont('chalkduster.ttf', 20)
             text = font1.render("Switch view", True, (0, 0, 0))
