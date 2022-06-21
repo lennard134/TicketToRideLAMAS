@@ -13,6 +13,7 @@ NR_CARDS_TO_DRAW = 2
 
 
 class Agent(object):
+
     def __init__(self, agent_id: int, nr_of_trains: int):
         """
         Initializer for object player.
@@ -27,7 +28,7 @@ class Agent(object):
         self.own_route_cards = []
         self.owned_connections = []
         self.possible_route_cards = []
-        self._shortest_paths = {}
+        self._shortest_paths = {} ## Key is route card name, value is list of tuples
 
     def place_trains(self, nr_trains: int):
         """

@@ -77,7 +77,7 @@ class TtRKripke(object):
               f"Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}\n"
               f"----------------------------------------------------------------------------------\n")
         update_dict = []
-        print(f"Agent first has {len(self.relations[agent_id])}")
+        print(f"Agent first has {len(self.relations[agent_id])} relations")
         for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
             # check if intersection is equal to route cards
             from_state = relation[0].get_state(target_agent_id)
@@ -89,12 +89,6 @@ class TtRKripke(object):
             else:
                 update_dict.append(relation)
 
-            # if not route_cards.intersection(relation[0].get_state(target_agent_id)).symmetric_difference(route_cards):
-            #     if not route_cards.intersection(relation[1].get_state(target_agent_id)).symmetric_difference(route_cards):
-            #         update_dict.append(relation)
-            #     else:
-            #         print(f"Removing relation: {relation[0]}, {relation[1]}")
-
         self.relations.update({agent_id: update_dict})
         print(f"Agent remains with {len(self.relations[agent_id])} relations")
 
@@ -103,7 +97,6 @@ class TtRKripke(object):
         Method to do a public announcement of a route card and remove worlds that are no longer possible
         :param agent_id: Agent that does public announcement
         :param route_card: Route card that is being announced
-        :return:
         """
         # remove relations
         card_set = {route_card}

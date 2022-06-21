@@ -43,6 +43,7 @@ class Deck(object):
     def remove_closed_card(self):
         """
         Remove a card from the closed deck
+        :return: Returns closed card from deck
         """
         if not self.closed_cards:
             self.shuffle_used_cards()
