@@ -4,9 +4,6 @@ Main file for the PyGame window responsible for both displaying the game board a
 
 # TODO: take care of ferries
 #       consider ownership
-#       button for switching view
-#       view for state space
-#       split view drawing based on current button state
 
 # Modules
 import pygame
