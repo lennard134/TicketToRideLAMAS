@@ -62,6 +62,7 @@ class Agent(object):
         If it can claim, directly claim the connection here
         :return: True if connection is claimed else False
         """
+
         # Claim one of the connections of the shortest routes
 
         # If not possible, check if a connection that can be claimed can be part of new shortest route
