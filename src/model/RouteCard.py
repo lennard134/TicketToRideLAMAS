@@ -21,7 +21,7 @@ class RouteCard(object):
         self.score = score
         self.shortest_routes = {}
         # self.owner = None
-        self.finished_card = False
+        self.is_finished = False
 
     # def set_owner(self, agent: Agent):
     #     self.owner = agent
@@ -30,7 +30,7 @@ class RouteCard(object):
     #     return self.owner if self.finished_card else None
 
     def set_finished(self):
-        self.finished_card = True
+        self.is_finished = True
 
     def add_shortest_route(self, agent_id, shortest_route):
         self.shortest_routes[agent_id] = shortest_route

@@ -5,6 +5,7 @@ Game object containing all relevant game-items for the player
 from src.model.map.Board import Board
 from src.model.Deck import Deck
 from src.model.RouteCard import RouteCard
+from src.model.map.Connection import Connection
 
 
 class Game(object):
@@ -20,6 +21,7 @@ class Game(object):
         self.board = board
         self.agent_list = agent_list
         self.deck = deck
+        self.previous_turns = {}
 
     def init_shortest_routes(self):
         """
@@ -41,3 +43,8 @@ class Game(object):
                 shortest_route = None
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
+    def update_previous_turn(self, agent_id: int, connection: Connection):
+        self.previous_turns[agent_id] = connection
+
+    def get_previous_turn(self):
+        return self.previous_turns

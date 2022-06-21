@@ -2,7 +2,6 @@
 import itertools
 
 from src.model.TtRKripke.World import World
-from src.model.Agent import Agent
 
 
 def split(a, n):

@@ -6,6 +6,9 @@ Object player that holds all information necessary for an agent to play the game
 from src.model.Game import Game
 from src.model.RouteCard import RouteCard
 from src.model.map.Connection import Connection
+from src.model.TtRKripke.TtRKripke import TtRKripke
+
+import numpy as np
 
 START_SCORE = 0
 JOKER_COLOUR = "joker"
@@ -14,7 +17,7 @@ NR_CARDS_TO_DRAW = 2
 
 class Agent(object):
 
-    def __init__(self, agent_id: int, nr_of_trains: int):
+    def __init__(self, agent_id: int, nr_of_trains: int, model: TtRKripke):
         """
         Initializer for object player.
         :param agent_id: Id of the agent
@@ -23,12 +26,13 @@ class Agent(object):
         self.score = START_SCORE
         self.agent_id = agent_id
         self.nr_of_trains = nr_of_trains
+        self.model = model
         self.game = None
+        self.current_working_route = None  # index of route agent is working on TODO: THIS STILL NEEDS TO BE IMPLEMENTED, UPDATED AND FIXED
         self.hand = []
         self.own_route_cards = []
-        # self.owned_connections = [] ## Owner is already included in Connection
         self.possible_route_cards = []
-        self._shortest_paths = {}  ## Key is route card name, value is list of tuples
+        self._shortest_paths = {}  # Key is route card name, value is list of tuples TODO: HWY IS THIS HERE??
 
     def place_trains(self, nr_trains: int):
         """
@@ -44,10 +48,13 @@ class Agent(object):
 
     def choose_action(self):
         """
-        Either put train on connection to either claim own connection or block someone else
-        or get new cards from open/closed deck
+        By default, every agent chooses to claim a connection advancing its own route cards. However, when it knows a
+        route card of another agent (and this has been publicly announced) they will choose to block said route.
         """
         self._recalculate_own_shortest_routes()
+
+        # TODO: determine if other routes known
+        #       check for possible routes that can be made with previous move and determine if one could be singled out
 
         # Greedy implementation
         if self.check_claim_connection():
@@ -62,17 +69,79 @@ class Agent(object):
         If it can claim, directly claim the connection here
         :return: True if connection is claimed else False
         """
+        # {"routeX": [a,b,c,f]}
+        claimable = []
+        for route_card in self.own_route_cards:
+            for shortest_route in route_card.shortest_routes[self.agent_id]:
+                for connection in shortest_route:
+                    if connection.color in self.hand and connection.num_trains <= self.hand.count(connection.color):
+                        claimable.append(connection)
 
         # Claim one of the connections of the shortest routes
+        if len(claimable) == 0:
+            return False
+        else:
+            claimed_connection = np.random.choice(claimable)
+            self.claim_connection(claimed_connection)
+            self.game.update_previous_turn(agent_id=self.agent_id, connection=claimed_connection)
 
-        # If not possible, check if a connection that can be claimed can be part of new shortest route
-        return False
+            for route_card in self.own_route_cards:
+                if not route_card.is_finished and self.check_route_finished(route_card):
+                    self.model.public_announcement_route_card(agent_id=self.agent_id, route_card=route_card)
+                    self.check_if_done()
+                    break
+
+            return True
+
+    def check_route_finished(self, route_card: RouteCard):
+        """
+        Checks if an unfinished route card has been finished and sets the card to finished if so.
+        """
+        for connection in route_card.shortest_routes[self.agent_id]:
+            if not connection.owner == self.agent_id:
+                return False
+
+        # TODO: get new working route
+        route_card.set_finished()
+        return True
+
+    def check_if_done(self):
+        """
+        Check if player has finished all route cards
+        :return: True if player finished all cards, else False
+        """
+        for route_card in self.own_route_cards:
+            if not route_card.is_finished:
+                return False
+        return True
 
     def check_block_connection(self):
         """
-        If it can block another agent by claiming a connection it will do so directly
+        If it can block another agent by claiming a connection it will do so directly and do a public announcement
         :return: True if connection is claimed else False
         """
+        # for every opponent
+        # check possible routes based on last move
+        possible_opponent_routes = {}
+        for agent, turn in self.game.get_previous_turn().items():
+            if agent != self.agent_id:
+                for route_card in self.possible_route_cards:
+                    if not route_card.is_finished and route_card not in self.own_route_cards and \
+                            turn in route_card.shortest_routes[agent]:
+                        if agent in possible_opponent_routes.keys():
+                            possible_opponent_routes[agent].extend(route_card)
+                        else:
+                            possible_opponent_routes[agent] = [route_card]
+
+        for agent, route_cards in possible_opponent_routes:
+            for route_card in route_cards:
+                for connection in route_card:
+                    
+
+        # for possible routes, check if more connections of fastest route are filled
+        # if one route singled out --> public announcement and block if block is possible
+        # if more routes but all other from own routes --> public announcement and block if possible (else zip it)
+
         return False
 
     def claim_connection(self, connection: Connection):
@@ -80,8 +149,8 @@ class Agent(object):
         Agent claims a connection by putting trains on a connection
         """
         connection.set_owner(self.agent_id)
-
-        # TODO: check if agent finished route
+        self.game.deck.play_train_cards([connection.color] * connection.num_trains)
+        return True
 
     def draw_card(self):
         """
@@ -108,6 +177,7 @@ class Agent(object):
                     if idx != NR_CARDS_TO_DRAW - 1:  # One less calculation of the desired colours
                         desired_colours = self.get_desired_colours()
                     break
+
             if not card_drawn:
                 self.hand.append(self.game.deck.remove_closed_card())
 
@@ -116,7 +186,19 @@ class Agent(object):
         Determine the desired colours based on the potential connections to claim
         :return: list of desired coloured
         """
-        return []
+        desired_cards_count = {}
+        for connection in self.own_route_cards[self.current_working_route].shortest_routes:
+            if connection.color in self.hand:
+                desired_cards_count[connection.color] = connection.num_trains - self.hand.count(connection.color)
+
+        ordered_desired_cards_count = dict(sorted(desired_cards_count.items(), key=lambda item: item[1]))
+
+        desired_cards = []
+
+        for color, count in ordered_desired_cards_count:
+            desired_cards.extend([color] * count)
+
+        return desired_cards
 
     def add_train_card(self, colour: str):
         """
