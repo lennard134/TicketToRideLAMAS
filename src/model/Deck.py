@@ -40,7 +40,7 @@ class Deck(object):
         self.open_cards.remove(colour)
         self.open_cards.append(self.remove_closed_card())
 
-    def remove_closed_card(self):
+    def remove_closed_card(self) -> str:
         """
         Remove a card from the closed deck
         :return: Returns closed card from deck

@@ -1,3 +1,6 @@
+"""
+World object that stores the states
+"""
 class World(object):
 
     def __init__(self, state: dict[int], agent_list: list[int]):

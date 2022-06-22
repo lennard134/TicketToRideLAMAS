@@ -16,7 +16,7 @@ NR_CARDS_TO_DRAW = 2
 
 class Agent(object):
 
-    def __init__(self, agent_id: int, nr_of_trains: int, model: TtRKripke):
+    def __init__(self, agent_id: int, nr_of_trains: int, game: Game = None):
         """
         Initializer for object player.
         :param agent_id: Id of the agent
@@ -25,13 +25,11 @@ class Agent(object):
         self.score = START_SCORE
         self.agent_id = agent_id
         self.nr_of_trains = nr_of_trains
-        self.model = model
-        self.game = None
-        self.current_working_route = None  # index of route agent is working on TODO: THIS STILL NEEDS TO BE IMPLEMENTED, UPDATED AND FIXED
+        self.game = game
         self.hand = []
         self.own_route_cards = []
 
-    def place_trains(self, nr_trains: int):
+    def place_trains(self, nr_trains: int) -> bool:
         """
         Return true and removes trains if enough, else return false.
         """
@@ -42,6 +40,21 @@ class Agent(object):
 
     def set_game(self, game: Game):
         self.game = game
+
+    def select_connection_to_claim(self, claimable_connections: list[Connection]) -> Connection:
+        """
+        Function that determines which connection should be claimed based on the score of the routes
+        :param claimable_connections: Possible connections an agent can claim
+        :return: The connection an agent should claim
+        """
+        connection_value = []
+
+        for route_card in self.own_route_cards:
+            for connection in route_card.shortest_routes:
+                if connection in claimable_connections:
+                    connection_value[claimable_connections.index(connection)] = route_card.score
+
+        return claimable_connections[np.argmax(connection_value)]
 
     def choose_action(self):
         """
@@ -65,22 +78,21 @@ class Agent(object):
             else:
                 self.draw_card()
 
-    def check_claim_connection(self):
+    def check_claim_connection(self) -> list:
         """
         If it can claim, directly claim the connection here
         :return: True if connection is claimed else False
         """
-        # {"routeX": [a,b,c,f]}
-        claimable = []
+        claimable_connections = []
         for route_card in self.own_route_cards:
             for shortest_route in route_card.shortest_routes[self.agent_id]:
                 for connection in shortest_route:
                     if connection.color in self.hand and connection.num_trains <= self.hand.count(connection.color):
-                        claimable.append(connection)
+                        claimable_connections.append(connection)
 
         return claimable_connections
 
-    def check_route_finished(self, route_card: RouteCard):
+    def check_route_finished(self, route_card: RouteCard) -> bool:
         """
         Checks if an unfinished route card has been finished and sets the card to finished if so.
         """
@@ -90,7 +102,7 @@ class Agent(object):
 
         return True
 
-    def check_if_done(self):
+    def check_if_done(self) -> bool:
         """
         Check if player has finished all route cards
         :return: True if player finished all cards, else False
@@ -174,20 +186,22 @@ class Agent(object):
                     card_drawn = True
                     if idx != NR_CARDS_TO_DRAW - 1:  # One less calculation of the desired colours
                         desired_colours = self.get_desired_colours()
-                    break
+                    else:
+                        break
 
             if not card_drawn:
                 self.hand.append(self.game.deck.remove_closed_card())
 
-    def get_desired_colours(self):
+    def get_desired_colours(self) -> list:
         """
         Determine the desired colours based on the potential connections to claim
         :return: list of desired coloured
         """
         desired_cards_count = {}
-        for connection in self.own_route_cards[self.current_working_route].shortest_routes:
-            if connection.color in self.hand:
-                desired_cards_count[connection.color] = connection.num_trains - self.hand.count(connection.color)
+        for route_card in self.own_route_cards:
+            for connection in route_card.shortest_routes:
+                if connection.color in self.hand:
+                    desired_cards_count[connection.color] = connection.num_trains - self.hand.count(connection.color)
 
         ordered_desired_cards_count = dict(sorted(desired_cards_count.items(), key=lambda item: item[1]))
 
@@ -209,14 +223,6 @@ class Agent(object):
         Give an agent a route card
         """
         self.own_route_cards.append(route_card)
-
-    def _recalculate_own_shortest_routes(self):
-        """
-        Shortest paths based on train cards you have
-        """
-        # add desired colours
-        for route_card in self.own_route_cards:
-            self._shortest_paths[route_card.route_name] = None
 
     def __str__(self):
         return f"Agent {self.agent_id}. "

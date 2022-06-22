@@ -12,7 +12,7 @@ from src.model.search_alg.graph import Node, Graph
 
 class Game(object):
 
-    def __init__(self, board: Board, route_cards: list[RouteCard], agent_list: list, deck: Deck):
+    def __init__(self, board: Board, route_cards: dict[str: RouteCard], agent_list: list, deck: Deck, model: TtRKripke):
         """
         Initializer of game object
         :param board: Board object of the game
@@ -23,7 +23,11 @@ class Game(object):
         self.board = board
         self.agent_list = agent_list
         self.deck = deck
-        self.previous_turns = {}
+        self.model = model
+        self.graph = None
+
+        self._init_graph()
+        self._init_shortest_routes()  # must be after initialization graph
 
     def _init_shortest_routes(self):
         """

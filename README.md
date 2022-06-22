@@ -5,7 +5,9 @@ mention loading route cards
 *** 
 ## Design choices:
 - Only using Western Europe
-- If 2 segments of routes are equally optimal: choose segment of route with most score-points.
+- If 2 segments of routes are equally optimal: choose segment of route with most score-points. If score points are equal
+  do a random choice
+- Only single connections are allowed, in the real game with 3 players this is also the case JUSTIFIED
 
 ## Staying with blocking strategy
 - only allow train placement based on own card
