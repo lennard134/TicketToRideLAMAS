@@ -22,9 +22,21 @@ class Board(object):
         """
         self.cities = {}
         self.connections = []
+        self.adjacency_list = {}  # city_name -> [list of connections]
 
         self._init_cities()
         self._init_connections()
+        self._make_adjacency_list()  # MUST BE AFTER CONNECTIONS TODO: Needed???
+
+    def _make_adjacency_list(self):
+        for city_name in self.cities.keys():
+            self.adjacency_list[city_name] = []
+
+        for connection in self.connections:  # {"routeX": [a:Connection,b:Connection,c,f]}
+            from_city = connection.start_point.name
+            to_city = connection.end_point.name
+            self.adjacency_list[from_city].append(connection)
+            self.adjacency_list[to_city].append(connection)
 
     def _init_cities(self):
         """

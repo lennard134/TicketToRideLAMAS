@@ -107,6 +107,15 @@ class TicketToRide(object):
             for _ in range(4):
                 agent.add_train_card(self.deck.remove_closed_card())
 
+    def _make_route_card_dict(self) -> dict:
+        """
+        Make route cards dictionary
+        """
+        route_card_dict = {}
+        for route_card in self.route_cards:
+            route_card_dict[route_card.route_name] = route_card
+        return route_card_dict
+
     def play(self):
         """
         Game loop for the Ticket to Ride game
@@ -115,7 +124,9 @@ class TicketToRide(object):
         self._distribute_train_cards()
 
         # Init game model
-        game = Game(board=self.board, route_cards=self.route_cards, agent_list=self.agents, deck=self.deck)
+        route_card_dict = self._make_route_card_dict()
+        game = Game(board=self.board, route_cards=route_card_dict, agent_list=self.agents, deck=self.deck,
+                    model=self.kripke)
         for agent in self.agents:
             agent.set_game(game)
         game.init_shortest_routes()
