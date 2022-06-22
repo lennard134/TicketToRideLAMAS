@@ -5,6 +5,7 @@ Main file for the PyGame window responsible for both displaying the game board a
 # TODO: take care of ferries
 #       consider ownership
 #       check double connections
+#       Relations in state space
 
 # Modules
 import math
@@ -22,6 +23,7 @@ CONTENT_WIDTH = 1200
 PANEL_WIDTH = 200
 WIDTH_BUFFER = 2
 HEIGHT_BUFFER = 2
+BUFFER_FACTOR = 20
 LINE_THICKNESS = 4
 RADIUS = 12
 COLOURS = {
@@ -111,10 +113,23 @@ class GameBoard(object):
                 for n in range(int(exclude_corners), dash_amount - int(exclude_corners), 2)]
 
     def compute_circular_coordinates(self, num: int) -> list[tuple[float, float]]:
-        r = (min(CONTENT_WIDTH, SCREEN_HEIGHT) - WIDTH_BUFFER) / 2
+        """
+        Returns a list of num points on a circle
+        """
+        if num == 0:
+            num = 1000
+        r = (min(CONTENT_WIDTH, SCREEN_HEIGHT) - WIDTH_BUFFER * BUFFER_FACTOR) / 2
         points = [(int(math.cos(2 * math.pi / num * x) * r + CONTENT_WIDTH / 2),
                    int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num + 1)]
         return points
+
+    def check_button_collision(self, button_x_left, button_y_top, button_x_right, button_y_bottom, mouse):
+        """
+        Returns True if the mouse is above the button, else False
+        """
+        return SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] \
+                <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and button_y_top <= mouse[1] \
+                <= button_y_bottom
 
     def draw_ttr_board(self, contents: pygame.Surface) -> pygame.Surface:
         """
@@ -200,12 +215,25 @@ class GameBoard(object):
         coordinates = self.compute_circular_coordinates(len(model.worlds))
 
         for coordinate_tuple in coordinates:
-            pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=RADIUS)
+            pygame.draw.circle(contents, (255, 0, 0), coordinate_tuple, radius=RADIUS)
 
         return contents
 
     def draw_side_panel(self, side_panel: pygame.Surface, mouse):
         pass
+
+    def draw_button(self, surface, button_x_left, button_y_top, button_x_right, button_y_bottom, mouse):
+        """
+        Function responsible for drawing a single button in the provided surface (side panel)
+        """
+        if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right \
+                and button_y_top <= mouse[1] <= button_y_bottom:
+            pygame.draw.rect(surface, BUTTON_COLOUR_DARK,
+                             [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+        else:
+            pygame.draw.rect(surface, BUTTON_COLOUR_LIGHT,
+                             [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+        return surface
 
     def run(self):
         """
@@ -240,9 +268,8 @@ class GameBoard(object):
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] \
-                            <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right and BUTTON_HEIGHT / 2 <= mouse[1] \
-                            <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
+                    if self.check_button_collision(button_x_left, BUTTON_HEIGHT / 2,
+                                                   button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
 
             if show_board:
@@ -250,13 +277,8 @@ class GameBoard(object):
             else:
                 contents = self.draw_state_space(contents)
 
-            if SCREEN_WIDTH - PANEL_WIDTH + button_x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + button_x_right \
-                    and BUTTON_HEIGHT / 2 <= mouse[1] <= BUTTON_HEIGHT / 2 + BUTTON_HEIGHT:
-                pygame.draw.rect(side_panel, BUTTON_COLOUR_LIGHT,
-                                 [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
-            else:
-                pygame.draw.rect(side_panel, BUTTON_COLOUR_DARK,
-                                 [button_x_left, BUTTON_HEIGHT / 2, BUTTON_WIDTH, BUTTON_HEIGHT])
+            side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2,
+                                          button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse)
 
             font1 = pygame.font.SysFont('chalkduster.ttf', 20)
             text = font1.render("Switch view", True, (0, 0, 0))
