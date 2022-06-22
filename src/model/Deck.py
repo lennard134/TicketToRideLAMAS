@@ -47,6 +47,7 @@ class Deck(object):
         """
         if not self.closed_cards:
             self.shuffle_used_cards()
+            print(f"shuffling used cards, deck length after shuffle: {len(self.closed_cards)}")
         return self.closed_cards.pop()
 
     def play_train_cards(self, train_cards: list[str]):
@@ -54,6 +55,8 @@ class Deck(object):
         Add the played train cards to the used cards stack
         """
         self.used_cards.extend(train_cards)
+        print(f"train cards were played this round, used card stack has length: {len(self.used_cards)}")
+
 
     def shuffle_used_cards(self):
         """

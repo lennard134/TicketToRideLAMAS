@@ -113,6 +113,6 @@ class Game(object):
                             break
                 if len(possible_singled_out) == 1:
                     route_to_update = set(possible_singled_out[0])
-                    self.model.update_relations(agent_id = agent.agent_id, target_agent_id=agent_id,
+                    self.model.update_relations(agent_id=agent.agent_id, target_agent_id=agent_id,
                                                 route_cards=route_to_update)
         self.recalculate_shortest_routes()

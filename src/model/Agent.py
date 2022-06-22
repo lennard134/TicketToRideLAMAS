@@ -211,7 +211,7 @@ class Agent(object):
         """
         desired_cards_count = {}
         for route_card in self.own_route_cards:
-            for connection in route_card.shortest_routes:
+            for connection in route_card.shortest_routes[self.agent_id]:
                 if connection.color in self.hand:
                     desired_cards_count[connection.color] = connection.num_trains - self.hand.count(connection.color)
 
