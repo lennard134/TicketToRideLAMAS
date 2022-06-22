@@ -301,7 +301,7 @@ class Graph:
           Parameters
           ----------
           list_category : str
-              Determines the list in which the node will be appened. If the value is 'open'
+              Determines the list in which the node will be d. If the value is 'open'
               the node is appended in the opened list. Otherwise, the node is appended in the closed list
           node : Node
               The node of the problem that will be added to the frontier
@@ -422,7 +422,7 @@ class Graph:
                             new_node.parent = selected_node
                             self.insert_to_list("open", new_node)
 
-    def get_shortest_route(self):
+    def get_shortest_route(self) -> list[str]:
         # call self.search and return route in correct form
         path, path_length = self.search()
         # print(" -> ".join(path))

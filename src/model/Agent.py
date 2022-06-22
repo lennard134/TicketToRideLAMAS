@@ -51,7 +51,7 @@ class Agent(object):
         connection_value = [0] * len(claimable_connections)
 
         for route_card in self.own_route_cards:
-            for connection in route_card.shortest_routes:
+            for connection in route_card.shortest_routes[self.agent_id]:
                 if connection in claimable_connections:
                     index_connection = claimable_connections.index(connection)
                     connection_value[index_connection] = max(route_card.score, connection_value[index_connection])
@@ -89,10 +89,13 @@ class Agent(object):
         """
         claimable_connections = []
         for route_card in self.own_route_cards:
-            for shortest_route in route_card.shortest_routes[self.agent_id]:
-                for connection in shortest_route:
-                    if connection.color in self.hand and connection.num_trains <= self.hand.count(connection.color):
-                        claimable_connections.append(connection)
+            for connection in route_card.shortest_routes[self.agent_id]:
+                # for connection in shortest_route:
+                if connection.num_trains <= self.hand.count(connection.color) + self.hand.count(JOKER_COLOUR):
+                    claimable_connections.append(connection)
+                # else:
+                #     print(f"hand not sufficient for connection, needed {connection.num_trains} times {connection.color}")
+                    # print(self.hand)
 
         return claimable_connections
 
@@ -219,7 +222,7 @@ class Agent(object):
 
         desired_cards = []
 
-        for color, count in ordered_desired_cards_count:
+        for color, count in ordered_desired_cards_count.items():
             desired_cards.extend([color] * count)
 
         return desired_cards
