@@ -12,7 +12,7 @@ class World(object):
         self.state = state
         self._agent_list = agent_list
 
-    def check_truth(self, agent_id: int, route_card_name: str):
+    def check_truth(self, agent_id: int, route_card_name: str) :
         """
         Function checks if some route card is owned by some agent
         :param agent_id: Id of agent for which we need to check if it owns certain card
@@ -21,10 +21,10 @@ class World(object):
         """
         return route_card_name in self.state[agent_id]
 
-    def get_state(self, agent_id):
+    def get_state(self, agent_id) -> dict[int]:
         return self.state[agent_id]
 
-    def get_name(self):
+    def get_name(self) -> str:
         """
         Initializes name of world as string representation
         :return: Returns name of the world

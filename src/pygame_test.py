@@ -52,7 +52,7 @@ class GameBoard(object):
     def __init__(self, ttr: TicketToRide):
         self.ttr = ttr
 
-    def highest_xy(self, cities: list[City]):
+    def highest_xy(self, cities: list[City]) -> (int, int):
         """
         Determines maximum x and y coordinates of cities to allow for accurate scaling to window size
         """
@@ -65,7 +65,7 @@ class GameBoard(object):
 
         return max_x, max_y
 
-    def lowest_xy(self, cities: list[City]):
+    def lowest_xy(self, cities: list[City]) -> (int, int):
         """
         Determines minimum x and y coordinates of cities to allow for accurate translation to fit window size
         """
@@ -78,7 +78,7 @@ class GameBoard(object):
 
         return min_x, min_y
 
-    def update_limits(self, x: int, y: int, left: int, right: int, top: int, bottom: int):
+    def update_limits(self, x: int, y: int, left: int, right: int, top: int, bottom: int) -> (int, int, int, int):
         """
         Updates the furthest coordinates on all sides to allow for accurate scaling
         """
@@ -90,7 +90,7 @@ class GameBoard(object):
         return left, right, top, bottom
 
     def draw_dashed_line(self, surface: pygame.Surface, color: tuple, start_pos: tuple, end_pos: tuple,
-                         width=LINE_THICKNESS, dash_length=10, exclude_corners=True):
+                         width=LINE_THICKNESS, dash_length=10, exclude_corners=True) -> list[pygame.Rect]:
         """
         Draws a dashed line between the given starting and ending position
         """
@@ -116,7 +116,7 @@ class GameBoard(object):
                    int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num + 1)]
         return points
 
-    def draw_ttr_board(self, contents: pygame.Surface):
+    def draw_ttr_board(self, contents: pygame.Surface) -> pygame.Surface:
         """
         Returns the contents of the Ticket to Ride board
         """
@@ -189,7 +189,7 @@ class GameBoard(object):
 
         return contents
 
-    def draw_state_space(self, contents: pygame.Surface):
+    def draw_state_space(self, contents: pygame.Surface) -> pygame.Surface:
         """
         Returns the contents of the visual representation of the state space
         """

@@ -14,7 +14,7 @@ def main():
     game.play()
 
 
-def parse_args(parser):
+def parse_args(parser) -> dict:
     args = parser.parse_args()
     return_dict = {INPUT_FILE: args.input,
                    OUTPUT_FILE: args.output,
