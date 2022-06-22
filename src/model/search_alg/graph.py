@@ -84,6 +84,11 @@ class Node(object):
             children.append(child[0])
         return children
 
+    def replace_neighbor_value(self, neighbor: tuple[Node, int]):
+        new_neighbor_list = [item for item in self.neighbors if item[0].name != neighbor[0].name]
+        new_neighbor_list.append(neighbor)
+        self.neighbors = new_neighbor_list
+
     def __gt__(self, other: Node):
         """
             Define which node, between current node and other node, has the greater value.
@@ -172,7 +177,6 @@ class Graph:
         self.number_of_steps = 0
         self.opened = []
         self.closed = []
-        # TODO: more?
 
     def add_node(self, node: Node):
         """
@@ -263,7 +267,8 @@ class Graph:
         start.reset()
         target = self.find_node(city2)
         target.reset()
-
+        start.replace_neighbor_value((target, value))
+        target.replace_neighbor_value((target, value))
 
     def calculate_distance(self, parent: Node, child: Node) -> int:
         """
@@ -420,9 +425,12 @@ class Graph:
     def get_shortest_route(self):
         # call self.search and return route in correct form
         path, path_length = self.search()
-        print(" -> ".join(path))
-        print(f"Length of the path: {path_length}")
-        return None
+        # print(" -> ".join(path))
+        if path_length > 50:
+            print(f"Length of the path: {path_length}")
+        list_of_cities = self.calculate_path(self.target)
+        # print(list_of_cities)
+        return list_of_cities
 
     def __str__(self):
         """

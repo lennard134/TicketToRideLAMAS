@@ -1,6 +1,7 @@
 """
 Game object containing all relevant game-items for the player
 """
+from cmath import inf
 
 from src.model.map.Board import Board
 from src.model.Deck import Deck
@@ -42,7 +43,15 @@ class Game(object):
     def calculate_shortest_route(self, from_city: str, target_city: str, agent_id: int):
         self.graph.setup(from_city, target_city)
         self.remake_graph_for_agent(agent_id)
-        return self.graph.get_shortest_route()
+        list_of_city_names = self.graph.get_shortest_route()
+
+        shortest_route_list = []
+        start = list_of_city_names[0]
+        for end in list_of_city_names[1:]:
+            shortest_route_list.append(self.board.get_connection(start, end))
+            start = end
+
+        return shortest_route_list
 
     def _init_graph(self):
         self.graph = Graph()
@@ -65,6 +74,9 @@ class Game(object):
             city2 = connection.end_point.name
             if connection.owner == agent_id:
                 nr_trains = 0
+            elif connection.owner is not None:
+                print(f"connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}")
+                nr_trains = inf
             else:
                 nr_trains = connection.num_trains
             self.graph.reset_value_connection(city1, city2, nr_trains)
@@ -74,8 +86,8 @@ class Game(object):
         Update the shortest routes based on changes on board
         """
         for route_card in self.route_cards.values():
-            from_city = route_card.start
-            target_city = route_card.end
+            from_city = route_card.start.name
+            target_city = route_card.end.name
             for agent in self.agent_list:  # List with agents
                 shortest_route = self.calculate_shortest_route(from_city, target_city, agent.agent_id)
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)

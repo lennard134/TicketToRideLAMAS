@@ -47,13 +47,14 @@ class Agent(object):
         :param claimable_connections: Possible connections an agent can claim
         :return: The connection an agent should claim
         """
-        connection_value = []
+        # TODO: gooi dit in een andere functie waarin we de claimable connecties maken???
+        connection_value = [0] * len(claimable_connections)
 
         for route_card in self.own_route_cards:
             for connection in route_card.shortest_routes:
                 if connection in claimable_connections:
-                    connection_value[claimable_connections.index(connection)] = route_card.score
-
+                    index_connection = claimable_connections.index(connection)
+                    connection_value[index_connection] = max(route_card.score, connection_value[index_connection])
         return claimable_connections[np.argmax(connection_value)]
 
     def choose_action(self):
@@ -68,14 +69,17 @@ class Agent(object):
         # Greedy implementation
         claimable_connections = self.check_claim_connection()
         if claimable_connections:
+            print(f"- Agent {self.agent_id} claims connection.")
             self.claim_connection(self.select_connection_to_claim(claimable_connections))
         else:
             claimable_connections = self.check_block_connection()
             if claimable_connections:
+                print(f"- Agent {self.agent_id} blocks connection.")
                 agent_to_block = np.random.choice(list(claimable_connections.keys()))
                 block_tuple = np.random.choice(claimable_connections[agent_to_block])
                 self.block_connection(agent_to_block, block_tuple)  # block tuple : (route_card: str, connection)
             else:
+                print(f"- Agent {self.agent_id} draws card.")
                 self.draw_card()
 
     def check_claim_connection(self) -> list:
@@ -146,8 +150,16 @@ class Agent(object):
         """
         Agent claims a connection by putting trains on a connection
         """
+        print(f"- Agent {self.agent_id} claims connection {connection.end_point.name}-{connection.start_point.name}.")
+
+        if connection.owner is not None:
+            print(f"- this connection has already an owner {connection.owner}. EXITING....")
+            
         connection.set_owner(self.agent_id)
-        color_list = [connection.color] * connection.num_trains
+        # TODO: gray color not included
+        color_count = min(self.hand.count(connection.color), connection.num_trains)
+        joker_count = connection.num_trains - color_count
+        color_list = [connection.color] * color_count + [JOKER_COLOUR] * joker_count
         self.game.deck.play_train_cards(color_list)
 
         for color in color_list:

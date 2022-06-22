@@ -49,6 +49,7 @@ class TtRKripke(object):
                 for idx, agent_id in enumerate(self.agent_ids):
                     state[agent_id] = set(world_i[idx])
                 self.worlds.append(World(state, self.agent_ids))
+        print(f"Number of worlds = {len(self.worlds)}")
 
     def _init_relations(self):
         """
@@ -59,6 +60,38 @@ class TtRKripke(object):
             relation_list.append(relation)
         for i in self.agent_ids:
             self.relations[i] = relation_list
+
+    def update_once_cards_known(self, agent_id: int, route_cards: set[str]):
+        """
+        Update relations for agent_id that knows that target_agent has route_cards
+        :param agent_id: Id of agent for which relations will be updated
+        :param target_agent_id: id of target agent of which the agent knows
+        :param route_cards: Route cards of which agent knows
+        """
+        print(f"----------------------------------------------------------------------------------\n"
+              f"Agent {agent_id} knows that itself has cards {route_cards}\n"
+              f"----------------------------------------------------------------------------------\n")
+        update_dict = []
+        print(f"Agent first has {len(self.relations[agent_id])} relations")
+        for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
+            # check if intersection is equal to route cards
+            from_state = relation[0].get_state(agent_id)
+            to_state = relation[1].get_state(agent_id)
+            if from_state.symmetric_difference(to_state):
+                # true if internal states of agent_id is not equal
+                print(f"Removing relation: {relation[0]}, {relation[1]}")
+            else:
+                update_dict.append(relation)
+
+        self.relations.update({agent_id: update_dict})
+        print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
+
+        # agents no longer consider the worlds that violate their own relations
+        for world in self.worlds:
+            if world.has_agent_in_agent_list(agent_id):
+                target_set = world.get_state(agent_id)
+                if route_cards.difference(target_set):
+                    world.remove_agent_from_list(agent_id)
 
     def update_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
         """
@@ -100,6 +133,9 @@ class TtRKripke(object):
         :param agent_id: Agent that has route card
         :param route_card: Route card that is being announced
         """
+        print(f"----------------------------------------------------------------------------------\n"
+              f"Publicly known that {agent_id} has cards {route_card}\n"
+              f"----------------------------------------------------------------------------------\n")
         # remove relations
         card_set = {route_card}
         for agent in self.agent_ids:
@@ -107,8 +143,8 @@ class TtRKripke(object):
             for relation in self.relations[agent]:
                 from_state = relation[0].get_state(agent_id)
                 to_state = relation[1].get_state(agent_id)
-                if not card_set.difference(from_state) and not card_set.difference(
-                        to_state):  # true if card not in state...
+                if not card_set.difference(from_state) and not card_set.difference(to_state):
+                    # true if card not in state...
                     update_dict.append(relation)
                 else:
                     print(f"Removing relation: {relation[0]}, {relation[1]}")

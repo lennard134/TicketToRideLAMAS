@@ -101,7 +101,7 @@ class TicketToRide(object):
             end = begin + step_size
             for card in self.route_cards[begin:end]:
                 agent.add_route_card(card)
-                self.kripke.update_relations(agent.agent_id, agent.agent_id, {card.route_name})
+                self.kripke.update_once_cards_known(agent.agent_id, {card.route_name})
 
     def _distribute_train_cards(self):
         """
@@ -138,14 +138,20 @@ class TicketToRide(object):
 
         # announce cards in game and compute all optimal routes
         in_game = True
+        turn = 0
 
-
-        # while in_game:
-        #     for agent in self.agents:
-        #         agent.choose_action()
-        #     in_game = False
-
-        print("!!GAME OVER!!")
+        while in_game:
+            print("\n\n----------------------------------------\n"
+                  f"--- TURN {turn}\n"
+                  "----------------------------------------\n")
+            for agent in self.agents:
+                agent.choose_action()
+            for agent in self.agents:
+                print(f"{agent.agent_id} has {len(agent.hand)} cards")
+            turn += 1
+            if turn > 100:
+                print("STOPPING")
+                break
 
 
 if __name__ == "__main__":

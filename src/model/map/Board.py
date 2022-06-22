@@ -38,6 +38,15 @@ class Board(object):
             self.adjacency_list[from_city].append(connection)
             self.adjacency_list[to_city].append(connection)
 
+    def get_connection(self, city1: str, city2: str):
+        # print(f"-- search connection {city1} and {city2}")
+        list_of_connections = self.adjacency_list[city1]
+        # print(f"-- list_of_connections = {list_of_connections}")
+        for connection in list_of_connections:
+            if connection.end_point.name == city2 or connection.start_point.name == city2:
+                return connection
+        return None
+
     def _init_cities(self):
         """
         Function that initializes all cities
