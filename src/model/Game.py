@@ -27,9 +27,8 @@ class Game(object):
         self.graph = None
 
         self._init_graph()
-        self._init_shortest_routes()  # must be after initialization graph
 
-    def _init_shortest_routes(self):
+    def init_shortest_routes(self):
         """
         Initial calculation of the shortest route for each route card for each agent
         """

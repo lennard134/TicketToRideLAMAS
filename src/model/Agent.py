@@ -74,7 +74,7 @@ class Agent(object):
             if claimable_connections:
                 agent_to_block = np.random.choice(list(claimable_connections.keys()))
                 block_tuple = np.random.choice(claimable_connections[agent_to_block])
-                self.block_connection(agent_to_block, block_tuple) #block tuple : (route_card: str, connection)
+                self.block_connection(agent_to_block, block_tuple)  # block tuple : (route_card: str, connection)
             else:
                 self.draw_card()
 

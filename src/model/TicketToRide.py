@@ -19,6 +19,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # settings
 NR_OF_AGENTS = 3
 NR_OF_TRAINS = 10
+NR_TRAIN_CARDS = 4
 ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, "data/destinations_all.txt")
 
 
@@ -36,7 +37,6 @@ class TicketToRide(object):
 
         self._init_agents()
         self._init_route_cards()
-
         self._init_kripke()
 
     def _init_agents(self):
@@ -46,7 +46,7 @@ class TicketToRide(object):
         for idx in range(NR_OF_AGENTS):
             self.agents.append(Agent(idx, NR_OF_TRAINS))
 
-    def _init_route_cards(self):
+    def _init_route_cards(self, max_num_route_cards=3):
         """
         Read route cards from text file and create new RouteCard objects for every card which are stored in an array
         """
@@ -64,25 +64,29 @@ class TicketToRide(object):
                 self.route_cards.append(RouteCard(start, end, score))
 
         random.shuffle(self.route_cards)
-        print(len(self.route_cards))
+        print(f"Number of route cards = {len(self.route_cards)}")
 
-        for route_card in self.route_cards:
-            print(route_card)
+        if len(self.route_cards) > max_num_route_cards:
+            print(f"Removing {len(self.route_cards) - max_num_route_cards} route cards")
+            del self.route_cards[-(len(self.route_cards) - max_num_route_cards):]
 
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
-
         if left_over_cards > 0:
             print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]
+
+        for route_card in self.route_cards:
+            print(f"- {route_card}")
 
     def _init_kripke(self):
         agent_ids = []
         route_card_ids = []
         for agent in self.agents:
             agent_ids.append(agent.agent_id)
-        for route_card in route_card_ids:
+        for route_card in self.route_cards:
             route_card_ids.append(route_card.route_name)
 
+        print(f"agent_ids = {agent_ids}, route_cards = {route_card_ids}")
         self.kripke = TtRKripke(agent_ids=agent_ids, route_cards_ids=route_card_ids)
 
     def _distribute_route_cards(self):
@@ -97,7 +101,7 @@ class TicketToRide(object):
             end = begin + step_size
             for card in self.route_cards[begin:end]:
                 agent.add_route_card(card)
-                self.kripke.update_relations(agent.agent_id, agent.agent_id, card.route_name)
+                self.kripke.update_relations(agent.agent_id, agent.agent_id, {card.route_name})
 
     def _distribute_train_cards(self):
         """
@@ -122,6 +126,7 @@ class TicketToRide(object):
         """
         self._distribute_route_cards()
         self._distribute_train_cards()
+        # self._init_kripke()
 
         # Init game model
         route_card_dict = self._make_route_card_dict()
@@ -134,10 +139,11 @@ class TicketToRide(object):
         # announce cards in game and compute all optimal routes
         in_game = True
 
-        while in_game:
-            for agent in self.agents:
-                agent.choose_action()
-            in_game = False
+
+        # while in_game:
+        #     for agent in self.agents:
+        #         agent.choose_action()
+        #     in_game = False
 
         print("!!GAME OVER!!")
 

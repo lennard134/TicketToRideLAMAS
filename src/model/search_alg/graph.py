@@ -44,6 +44,10 @@ class Node(object):
             self.neighbors = neighbors
         self.parent = None
 
+    def reset(self):
+        self.heuristic_value = inf
+        self.parent = None
+
     def has_neighbors(self):
         """
             Return True if the current node is connected with at least another node.
@@ -163,8 +167,9 @@ class Graph:
             self.nodes = nodes
 
     def setup(self, start: str, target: str):
-        self.start = start
-        self.target = target
+        self.start = self.find_node(start)
+        self.target = self.find_node(target)
+        self.number_of_steps = 0
         self.opened = []
         self.closed = []
         # TODO: more?
@@ -231,7 +236,7 @@ class Graph:
         """
         return f"The graph has {len(self.nodes)} nodes"
 
-    def are_connected(self, node_one, node_two):
+    def are_connected(self, node_one: str, node_two: str) -> bool:
         """
             Return True if the given nodes are connected. Otherwise return False
             ...
@@ -254,10 +259,13 @@ class Graph:
         return False
 
     def reset_value_connection(self, city1: str, city2: str, value: int):
-        pass
+        start = self.find_node(city1)
+        start.reset()
+        target = self.find_node(city2)
+        target.reset()
 
 
-    def calculate_distance(self, parent, child):
+    def calculate_distance(self, parent: Node, child: Node) -> int:
         """
           Calculate and return the distance from the start to child node. If the heuristic value has already calculated
           and is smaller than the new value, the method return theold value. Otherwise the method return the new value
@@ -282,7 +290,7 @@ class Graph:
 
                 return child.heuristic_value
 
-    def insert_to_list(self, list_category, node):
+    def insert_to_list(self, list_category: str, node: Node):
         """
           Insert a node in the proper list (opened or closed) according to list_category
           Parameters
@@ -298,7 +306,7 @@ class Graph:
         else:
             self.closed.append(node)
 
-    def remove_from_opened(self):
+    def remove_from_opened(self) -> Node:
         """
           Remove the node with the smallest heuristic value from the opened list
           Then add the removed node to the closed list
@@ -314,7 +322,7 @@ class Graph:
         self.closed.append(node)
         return node
 
-    def opened_is_empty(self):
+    def opened_is_empty(self) -> bool:
         """
           Check if the the list opened is empty, so no solution found
           Returns
@@ -325,7 +333,7 @@ class Graph:
         """
         return len(self.opened) == 0
 
-    def get_old_node(self, node_value):
+    def get_old_node(self, node_value: Node) -> Node:
         """
           Return the node with the given value from the opened list,
           to compare its heuristic_value with a node with the same value
@@ -343,7 +351,7 @@ class Graph:
                 return node
         return None
 
-    def calculate_path(self, target_node):
+    def calculate_path(self, target_node: Node):
         """
           Calculate and return the path (solution) of the problem
           ...
@@ -411,7 +419,10 @@ class Graph:
 
     def get_shortest_route(self):
         # call self.search and return route in correct form
-        pass
+        path, path_length = self.search()
+        print(" -> ".join(path))
+        print(f"Length of the path: {path_length}")
+        return None
 
     def __str__(self):
         """

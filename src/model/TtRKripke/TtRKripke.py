@@ -41,7 +41,7 @@ class TtRKripke(object):
                 new_set = set(world_i[idx])
                 if set_cards.intersection(new_set):
                     to_add = False
-                    break
+                    break  # Do not add
                 set_cards.update(new_set)
 
             if to_add:
@@ -67,11 +67,11 @@ class TtRKripke(object):
         :param target_agent_id: id of target agent of which the agent knows
         :param route_cards: Route cards of which agent knows
         """
-        # print(f"----------------------------------------------------------------------------------\n"
-        #       f"Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}\n"
-        #       f"----------------------------------------------------------------------------------\n")
+        print(f"----------------------------------------------------------------------------------\n"
+              f"Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}\n"
+              f"----------------------------------------------------------------------------------\n")
         update_dict = []
-        # print(f"Agent first has {len(self.relations[agent_id])} relations")
+        print(f"Agent first has {len(self.relations[agent_id])} relations")
         for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
             # check if intersection is equal to route cards
             from_state = relation[0].get_state(target_agent_id)
@@ -85,7 +85,7 @@ class TtRKripke(object):
                 update_dict.append(relation)
 
         self.relations.update({agent_id: update_dict})
-        print(f"Agent remains with {len(self.relations[agent_id])} relations")
+        print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
 
         # agents no longer consider the worlds that violate their own relations
         for world in self.worlds:
@@ -93,7 +93,6 @@ class TtRKripke(object):
                 target_set = world.get_state(target_agent_id)
                 if route_cards.difference(target_set):
                     world.remove_agent_from_list(agent_id)
-
 
     def public_announcement_route_card(self, agent_id: int, route_card: str):
         """
