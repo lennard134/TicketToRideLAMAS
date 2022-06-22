@@ -108,7 +108,7 @@ class TicketToRide(object):
         Give each agent four coloured cards from the deck
         """
         for agent in self.agents:
-            for _ in range(4):
+            for _ in range(NR_TRAIN_CARDS):
                 agent.add_train_card(self.deck.remove_closed_card())
 
     def _make_route_card_dict(self) -> dict:

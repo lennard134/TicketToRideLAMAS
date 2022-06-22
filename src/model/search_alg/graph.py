@@ -13,7 +13,7 @@ class Node(object):
         name : str
             Represent the value of the node
         heuristic_value : int
-            Coresponds to the distance from the start node to current node. Default value is inf (infinity)
+            Corresponds to the distance from the start node to current node. Default value is inf (infinity)
         neighbors : list
             A list with the nodes the current node is connected
         parent : Node
@@ -67,7 +67,7 @@ class Node(object):
             current node and the neighbor
             Paramenters
             ----------
-            neighboor : node
+            neighbor : node
                 Represent the node with which a new connection is created
         """
         self.neighbors.append(neighbor)

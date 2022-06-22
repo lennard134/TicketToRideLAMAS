@@ -21,7 +21,7 @@ class Game(object):
         """
         self.route_cards = route_cards
         self.board = board
-        self.agent_list = agent_list
+        self.agent_list = agent_list  # List with agent objects, not defined because of circular import
         self.deck = deck
         self.model = model
         self.graph = None
@@ -81,10 +81,26 @@ class Game(object):
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
     def announce_connection(self, agent_id: int, connection: Connection):
-
+        """
+        Function updates Kripke model based on claimed connection by agent id
+        :param agent_id: Agent that claims connection
+        :param connection: Connection that is being claimed
+        :return:
+        """
         # check if some agent now knows a card from agent_id
         # Recalculate shortest route
-        self.recalculate_shortest_routes()
 
-        #
-        pass
+        for agent in self.agent_list:
+            possible_singled_out = []
+            if not agent.agent_id == agent_id:
+                for route_card in self.route_cards.values():
+                    if route_card not in agent.own_route_cards and not route_card.is_finished:
+                        if connection in route_card.shortest_routes:
+                            possible_singled_out.append(route_card.route_name)
+                        if len(possible_singled_out) > 1:
+                            break
+                if len(possible_singled_out) == 1:
+                    route_to_update = set(possible_singled_out[0])
+                    self.model.update_relations(agent_id = agent.agent_id, target_agent_id=agent_id,
+                                                route_cards=route_to_update)
+        self.recalculate_shortest_routes()
