@@ -7,6 +7,7 @@ Main file for the PyGame window responsible for both displaying the game board a
 #       check double connections
 
 # Modules
+import math
 import pygame
 import numpy as np
 
@@ -109,6 +110,12 @@ class GameBoard(object):
         return [pygame.draw.line(surface, color, tuple(dash_knots[n]), tuple(dash_knots[n + 1]), width)
                 for n in range(int(exclude_corners), dash_amount - int(exclude_corners), 2)]
 
+    def compute_circular_coordinates(self, num: int) -> list[tuple[float, float]]:
+        r = (min(CONTENT_WIDTH, SCREEN_HEIGHT) - WIDTH_BUFFER) / 2
+        points = [(int(math.cos(2 * math.pi / num * x) * r + CONTENT_WIDTH / 2),
+                   int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num + 1)]
+        return points
+
     def draw_ttr_board(self, contents: pygame.Surface):
         """
         Returns the contents of the Ticket to Ride board
@@ -187,6 +194,14 @@ class GameBoard(object):
         Returns the contents of the visual representation of the state space
         """
         contents.fill(COLOURS['background'])
+
+        model = self.ttr.kripke
+
+        coordinates = self.compute_circular_coordinates(len(model.worlds))
+
+        for coordinate_tuple in coordinates:
+            pygame.draw.circle(contents, (255, 0, 0), (x, y), radius=RADIUS)
+
         return contents
 
     def draw_side_panel(self, side_panel: pygame.Surface, mouse):
