@@ -112,10 +112,10 @@ class Agent(object):
                 return False
         return True
 
-    def check_block_connection(self):
+    def check_block_connection(self) -> dict:
         """
-        If it can block another agent by claiming a connection it will do so directly and do a public announcement
-        :return: True if connection is claimed else False
+        Function to check if it is possible for an agent to block another agent
+        :return: Dictionary with possible connections to block
         """
         possible_blocks = {}  # dictionary with agent -> list of tuples (route, connection to block)
         for agent in self.game.agent_list:

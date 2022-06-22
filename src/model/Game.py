@@ -45,6 +45,31 @@ class Game(object):
         self.remake_graph_for_agent(agent_id)
         return self.graph.get_shortest_route()
 
+    def _init_graph(self):
+        self.graph = Graph()
+
+        # Add vertices
+        for city_name in self.board.cities.keys():
+            self.graph.add_node(Node(city_name))
+
+        # Add edges
+        for connection in self.board.connections:
+            city1 = connection.start_point.name
+            city2 = connection.end_point.name
+            nr_trains = connection.num_trains
+
+            self.graph.add_edge(city1, city2, nr_trains)
+
+    def remake_graph_for_agent(self, agent_id: int):
+        for connection in self.board.connections:
+            city1 = connection.start_point.name
+            city2 = connection.end_point.name
+            if connection.owner == agent_id:
+                nr_trains = 0
+            else:
+                nr_trains = connection.num_trains
+            self.graph.reset_value_connection(city1, city2, nr_trains)
+
     def recalculate_shortest_routes(self):
         """
         Update the shortest routes based on changes on board
