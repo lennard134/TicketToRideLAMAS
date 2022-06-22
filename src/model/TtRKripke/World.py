@@ -1,11 +1,13 @@
 class World(object):
 
-    def __init__(self, state: dict[int]):
+    def __init__(self, state: dict[int], agent_list: list[int]):
         """
         Initializer for a world that holds a dictionary of states
         :param state: State is dictionary with set of route names for each agent
+        :param agent_list: List of agent_ids of agents that are allowed to consider said state given their knowledge
         """
         self.state = state
+        self._agent_list = agent_list
 
     def check_truth(self, agent_id: int, route_card_name: str):
         """
@@ -30,6 +32,18 @@ class World(object):
         for agent_id in agent_ids:
             name += f",({','.join(self.state[agent_id])})"
         return name + "]"
+
+    def has_agent_in_agent_list(self, agent_id: int) -> bool:
+        """
+        Returns true if the provided agent_id is in the agent list
+        """
+        return agent_id in self._agent_list
+
+    def remove_agent_from_list(self, agent_id: int):
+        """
+        Removes provided agent_id from the agent list
+        """
+        self._agent_list.remove(agent_id)
 
     def __str__(self):
         return f"{self.get_name()}"

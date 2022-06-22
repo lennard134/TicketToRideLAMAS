@@ -9,6 +9,7 @@ from src.model.TtRKripke.TtRKripke import TtRKripke
 from src.model.map.Connection import Connection
 from src.model.search_alg.graph import Node, Graph
 
+
 class Game(object):
 
     def __init__(self, board: Board, route_cards: list[RouteCard], agent_list: list, deck: Deck):

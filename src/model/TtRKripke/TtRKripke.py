@@ -47,14 +47,14 @@ class TtRKripke(object):
                 state = {}
                 for idx, agent_id in enumerate(self.agent_ids):
                     state[agent_id] = set(world_i[idx])
-                self.worlds.append(World(state))
+                self.worlds.append(World(state, self.agent_ids))
 
     def _init_relations(self):
         """
         Initialize relations for all worlds before agents knows their own card
         """
         relation_list = []
-        for relation in itertools.product(self.worlds, repeat=2):  ## List of string tuples (world1,world2)
+        for relation in itertools.product(self.worlds, repeat=2):  # List of string tuples (world1,world2)
             relation_list.append(relation)
         for i in self.agent_ids:
             self.relations[i] = relation_list
