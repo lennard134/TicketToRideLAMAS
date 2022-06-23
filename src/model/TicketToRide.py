@@ -29,16 +29,14 @@ class TicketToRide(object):
         """
         Initialize the full game by initializing agent, board, deck and route cards individually
         """
-        self.deck = Deck()
-        self.board = Board()
+        self.deck = None
+        self.board = None
         self.agents = []
         self.route_cards = []
+        self.turn_num = 0
         self.kripke = None
         self.last_turn = None
-
-        self._init_agents()
-        self._init_route_cards()
-        self._init_kripke()
+        self.in_game = True
 
     def _init_agents(self):
         """
@@ -145,7 +143,7 @@ class TicketToRide(object):
                           f"--------------------------------------------------------")
         elif agent_turn == self.last_turn:
             print(f"--------------------------------------------------------\n"
-                  f"----------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS ---------------\n"
+                  f"----------- AGENT {agent_turn} has played its last turn ---------------\n"
                   f"--------------------------------------------------------")
             return True
 
@@ -154,15 +152,27 @@ class TicketToRide(object):
         for agent in self.agents:
             if agent.can_draw_card:
                 finished = False
+        if finished:
+            print(f"--------------------------------------------------------\n"
+                  f"----------- All agents could not have drawn cards ---------------\n"
+                  f"--------------------------------------------------------")
         return finished
 
-    def play(self):
-        """
-        Game loop for the Ticket to Ride game
-        """
+    def init_game(self):
+        self.deck = Deck()
+        self.board = Board()
+        self.agents = []
+        self.route_cards = []
+        self.turn_num = 0
+        self.kripke = None
+        self.last_turn = None
+        self.in_game = True
+
+        self._init_agents()
+        self._init_route_cards()
+        self._init_kripke()
         self._distribute_route_cards()
         self._distribute_train_cards()
-        # self._init_kripke()
 
         # Init game model
         route_card_dict = self._make_route_card_dict()
@@ -172,28 +182,30 @@ class TicketToRide(object):
             agent.set_game(game)
         game.init_shortest_routes()
 
-        # announce cards in game and compute all optimal routes
-        in_game = True
-        turn = 0
+    def turn(self):
+        print("\n\n----------------------------------------\n"
+              f"--- TURN {self.turn_num}\n"
+              "----------------------------------------\n")
+        for connection in self.board.connections:
+            if connection.owner is not None:
+                print(f"--> connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}.")
 
-        while in_game:
-            print("\n\n----------------------------------------\n"
-                  f"--- TURN {turn}\n"
-                  "----------------------------------------\n")
-            for connection in self.board.connections:
-                if connection.owner is not None:
-                    print(f"--> connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}.")
+        for agent in self.agents:
+            agent.choose_action()
+            if self.is_finished(agent.agent_id):
+                self.in_game = False
+                return
 
-            for agent in self.agents:
-                agent.choose_action()
-                if self.is_finished(agent.agent_id):
-                    in_game = False
-                    break
+        self.turn_num += 1
 
-            turn += 1
-            if turn > 50:
-                print("STOPPING")
-                break
+    def play(self):
+        """
+        Game loop for the Ticket to Ride game
+        """
+        self.init_game()
+        while self.in_game:
+            self.turn()
+        print(f"Thanks for playing with Jeroen!! He loved it!")
 
 
 if __name__ == "__main__":

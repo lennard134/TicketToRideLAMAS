@@ -236,7 +236,10 @@ class Agent(object):
 
             if not card_drawn:
                 drawn_closed_card = self.game.deck.remove_closed_card()
-                self.can_draw_card = False if drawn_closed_card is None else self.hand.append(drawn_closed_card)
+                if drawn_closed_card is None:
+                    self.can_draw_card = False
+                else:
+                    self.hand.append(drawn_closed_card)
 
     def get_desired_colours(self) -> list:
         """
