@@ -247,6 +247,8 @@ class Agent(object):
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
                 route_card.set_finished()
+                #ToDO add points to agents score.
+                self.score += route_card.score
                 print(f"- Agent {self.agent_id} finished a route card!")
                 self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card=route_card.route_name)
 

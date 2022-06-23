@@ -94,11 +94,11 @@ class Game(object):
                 shortest_route = self.calculate_shortest_route(from_city, target_city, agent.agent_id)
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
-    def announce_connection(self, agent_id: int, connection: Connection):
+    def announce_connection(self, announcing_agent_id: int, claimed_connection: Connection):
         """
         Function updates Kripke model based on claimed connection by agent id
         :param agent_id: Agent that claims connection
-        :param connection: Connection that is being claimed
+        :param claimed_connection: Connection that is being claimed
         :return:
         """
         # check if some agent now knows a card from agent_id
