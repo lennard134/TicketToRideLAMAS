@@ -20,7 +20,7 @@ DECK_CONFIG = {
 TICKET_TO_RIDE_CONFIG = {
     'NR_OF_AGENTS': 3,
     'NR_OF_TRAINS': 10,
-    'NR_TRAIN_CARDS':  4,
+    'NR_TRAIN_CARDS': 4,
     'ROUTE_CARDS_PATH': "data/destinations_all.txt",
     'MIN_TRAINS': 2
 }
