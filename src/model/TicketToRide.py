@@ -4,14 +4,13 @@ Object Ticket to ride board game that has all the functionalities of the game
 
 # packages
 import random
-
 from src.model.Deck import Deck
 from src.model.map.Board import Board
 from src.model.Agent import Agent
 from src.model.RouteCard import RouteCard
 from src.model.Game import Game
 from src.model.TtRKripke.TtRKripke import TtRKripke
-
+from src.model import config
 import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -121,6 +120,41 @@ class TicketToRide(object):
         for route_card in self.route_cards:
             route_card_dict[route_card.route_name] = route_card
         return route_card_dict
+
+    def is_finished(self, agent_turn: int) -> bool:
+        """
+        Function that checks if the game is finished based on
+        :return: True if game is finished, else False
+        """
+
+        for agent in self.agents:
+            # check if an agent has finished all route_cards
+            if agent.check_if_route_cards_done():
+                print(f"--------------------------------------------------------\n"
+                      f"----------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS ---------------\n"
+                      f"--------------------------------------------------------")
+                return True
+
+        # check if an agent has less than 3 trains left, then everyone has only one turn left
+        if self.last_turn is None:
+            for agent in self.agents:
+                if agent.nr_of_trains < MIN_TRAINS:
+                    self.last_turn = agent.agent_id
+                    print(f"--------------------------------------------------------\n"
+                          f"----------- AGENT {agent.agent_id} has less than {MIN_TRAINS} ---------------\n"
+                          f"--------------------------------------------------------")
+        elif agent_turn == self.last_turn:
+            print(f"--------------------------------------------------------\n"
+                  f"----------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS ---------------\n"
+                  f"--------------------------------------------------------")
+            return True
+
+        # check if all agents could have drawn a card (deck nonempty)
+        finished = True
+        for agent in self.agents:
+            if agent.can_draw_card:
+                finished = False
+        return finished
 
     def play(self):
         """

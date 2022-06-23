@@ -2,6 +2,7 @@
 This class represents the deck of playing cards with coloured wagons and locomotives
 """
 import random
+from src.model import config
 
 #Config in Deck Config
 NR_COLOUR_CARDS = config.DECK_CONFIG['NR_COLOUR_CARDS']
@@ -15,7 +16,6 @@ class Deck(object):
         self.closed_cards = []
         self.open_cards = []
         self.used_cards = []
-
         self._init_cards()
 
     def _init_cards(self):

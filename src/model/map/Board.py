@@ -10,8 +10,8 @@ import os
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # settings
-CITY_FILE_PATH = os.path.join(ROOT_DIR, "data/cities.txt")
-CONNECTION_FILE_PATH = os.path.join(ROOT_DIR, "data/train_routes_all.txt")
+CITY_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CITY_FILE_PATH'])
+CONNECTION_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CONNECTION_FILE_PATH'])
 
 
 class Board(object):

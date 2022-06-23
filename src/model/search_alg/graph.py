@@ -265,7 +265,7 @@ class Graph:
                 return True
         return False
 
-    def calculate_distance(self, parent: Node, child: Node) -> int:
+    def calculate_distance(self, parent: Node, child: Node):
         """
           Calculate and return the distance from the start to child node. If the heuristic value has already calculated
           and is smaller than the new value, the method return theold value. Otherwise the method return the new value
@@ -333,7 +333,7 @@ class Graph:
         """
         return len(self.opened) == 0
 
-    def get_old_node(self, node_value: Node) -> Node:
+    def get_old_node(self, node_value: Node):
         """
           Return the node with the given value from the opened list,
           to compare its heuristic_value with a node with the same value

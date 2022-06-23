@@ -15,34 +15,24 @@ import numpy as np
 # Model imports
 from src.model.TicketToRide import TicketToRide
 from src.model.map.City import City
+from src.model import config
 
-# Settings
-SCREEN_WIDTH = 1400
-SCREEN_HEIGHT = 900
-CONTENT_WIDTH = 1200
-PANEL_WIDTH = 200
-WIDTH_BUFFER = 2
-HEIGHT_BUFFER = 2
-BUFFER_FACTOR = 20
-LINE_THICKNESS = 4
-RADIUS = 12
-COLOURS = {
-    'red': (255, 0, 0),
-    'orange': (255, 165, 0),
-    'yellow': (255, 234, 0),
-    'green': (0, 255, 0),
-    'blue': (0, 0, 255),
-    'pink': (255, 182, 193),
-    'black': (0, 0, 0),
-    'white': (255, 255, 255),
-    'gray': (180, 180, 180),
-    'background': (254, 235, 201),
-    'background2': (191, 213, 232)
-}
+# Config in PY_GAME_CONFIG file
+
+SCREEN_WIDTH = config.PY_GAME_CONFIG['SCREEN_WIDTH']
+SCREEN_HEIGHT = config.PY_GAME_CONFIG['SCREEN_HEIGHT']
+CONTENT_WIDTH = config.PY_GAME_CONFIG['CONTENT_WIDTH']
+PANEL_WIDTH = config.PY_GAME_CONFIG['PANEL_WIDTH']
+WIDTH_BUFFER = config.PY_GAME_CONFIG['WIDTH_BUFFER']
+HEIGHT_BUFFER = config.PY_GAME_CONFIG['HEIGHT_BUFFER']
+BUFFER_FACTOR = config.PY_GAME_CONFIG['BUFFER_FACTOR']
+LINE_THICKNESS = config.PY_GAME_CONFIG['LINE_THICKNESS']
+RADIUS = config.PY_GAME_CONFIG['RADIUS']
+COLOURS = config.PY_GAME_COLOUR_CONFIG
 
 # Button settings
-BUTTON_WIDTH = 100
-BUTTON_HEIGHT = 30
+BUTTON_WIDTH = config.PY_GAME_CONFIG['BUTTON_WIDTH']
+BUTTON_HEIGHT = config.PY_GAME_CONFIG['BUTTON_HEIGHT']
 BUTTON_COLOUR_LIGHT = (180, 180, 180)
 BUTTON_COLOUR_DARK = (110, 110, 110)
 

@@ -9,9 +9,10 @@ from src.model.map.Connection import Connection
 
 import numpy as np
 
-START_SCORE = 0
-JOKER_COLOUR = "joker"
-NR_CARDS_TO_DRAW = 2
+# Params in Agent Config
+START_SCORE = config.AGENT_CONFIG['START_SCORE']
+JOKER_COLOUR = config.DECK_CONFIG['JOKER_COLOUR']
+NR_CARDS_TO_DRAW = config.AGENT_CONFIG['NR_CARDS_TO_DRAW']
 
 
 class Agent(object):
@@ -28,6 +29,7 @@ class Agent(object):
         self.game = game
         self.hand = []
         self.own_route_cards = []
+        self.can_draw_card = True
 
     def place_trains(self, nr_trains: int) -> bool:
         """
