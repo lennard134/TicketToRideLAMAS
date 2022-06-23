@@ -429,7 +429,7 @@ class Graph:
             return []
         else:
             path, path_length = return_val
-        print(" -> ".join(path))
+        # print(" -> ".join(path))
         if path_length > 50:
             print(f"Length of the path: {path_length}")
         list_of_cities = self.calculate_path(self.target)

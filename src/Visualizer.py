@@ -38,7 +38,7 @@ BUTTON_COLOUR_LIGHT = (180, 180, 180)
 BUTTON_COLOUR_DARK = (110, 110, 110)
 
 
-class GameBoard(object):
+class Visualizer(object):
     # def __init__(self, game: Game):
     #     self.game = game
 
@@ -209,13 +209,13 @@ class GameBoard(object):
         contents.fill(COLOURS['background'])
 
         model = self.ttr.kripke
-        coordinates = self.compute_circular_coordinates(len(model.worlds))
+        coordinates = self.compute_circular_coordinates(len(model.worlds) - 1)
+        random.Random(69).shuffle(coordinates)
 
         world_coordinate_tuples = {}
 
         for world, coordinate_tuple in zip(model.worlds, coordinates):
             world_coordinate_tuples[world] = coordinate_tuple
-
         # draw relations with color per agent {'agent_id': [(world, world), ...], ...}
         for agent_id in model.relations.keys():
             agent_colour = self.agent_colors[agent_id]
@@ -290,6 +290,7 @@ class GameBoard(object):
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # switch button
                     if self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2,
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
@@ -310,6 +311,11 @@ class GameBoard(object):
             side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
                                           button_x_right, BUTTON_HEIGHT / 2 + 3 * BUTTON_HEIGHT,
                                           mouse, button_font, "Turn")
+
+            # reset game
+            side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 4 * BUTTON_HEIGHT,
+                                          button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
+                                          mouse, button_font, "Reset")
 
             screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
             screen.blit(side_panel, (CONTENT_WIDTH, 0))

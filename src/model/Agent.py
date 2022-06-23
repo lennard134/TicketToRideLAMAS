@@ -90,6 +90,7 @@ class Agent(object):
         possible_blocks = {}  # dictionary with agent -> list of tuples (route, connection to block)
         for agent in self.game.agent_list:
             if not agent.agent_id == self.agent_id:
+                # TODO: do we use knowledge???
                 known_routes_str = self.game.model.get_known_route_cards(self.agent_id, agent.agent_id)
                 for known_route_str in known_routes_str:
                     blockable_connections = self.game.route_cards[known_route_str].shortest_routes[agent.agent_id]

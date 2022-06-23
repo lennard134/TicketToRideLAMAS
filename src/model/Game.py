@@ -106,13 +106,14 @@ class Game(object):
 
         for agent in self.agent_list:
             possible_singled_out = []
-            if not agent.agent_id == agent_id:
+            if agent.agent_id != announcing_agent_id:
                 for route_card in self.route_cards.values():
-                    if route_card not in agent.own_route_cards and not route_card.is_finished:
-                        if connection in route_card.shortest_routes:
+                    known_route_cards = self.model.get_known_route_cards(agent_id=agent.agent_id, target_agent_id=announcing_agent_id)
+                    if route_card not in agent.own_route_cards and not route_card.is_finished and route_card.route_name not in known_route_cards:
+                        if claimed_connection in route_card.shortest_routes[announcing_agent_id]:
                             possible_singled_out.append(route_card.route_name)
-                        if len(possible_singled_out) > 1:
-                            break
+                            if len(possible_singled_out) > 1:
+                                break
                 if len(possible_singled_out) == 1:
                     route_to_update = set(possible_singled_out[0])
                     self.model.update_relations(agent_id=agent.agent_id, target_agent_id=agent_id,

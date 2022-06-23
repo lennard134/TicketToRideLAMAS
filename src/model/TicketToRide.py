@@ -19,6 +19,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 NR_OF_AGENTS = config.TICKET_TO_RIDE_CONFIG['NR_OF_AGENTS']
 NR_OF_TRAINS = config.TICKET_TO_RIDE_CONFIG['NR_OF_TRAINS']
 NR_TRAIN_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
+NR_OF_DESTINATION_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_OF_DESTINATION_CARDS']
 ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, config.TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
 MIN_TRAINS = config.TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
 
@@ -38,6 +39,8 @@ class TicketToRide(object):
         self.last_turn = None
         self.in_game = True
 
+        self.init_game()
+
     def _init_agents(self):
         """
         Initialize all agents
@@ -45,7 +48,7 @@ class TicketToRide(object):
         for idx in range(NR_OF_AGENTS):
             self.agents.append(Agent(idx, NR_OF_TRAINS))
 
-    def _init_route_cards(self, max_nr_route_cards_per_agent=2):
+    def _init_route_cards(self):
         """
         Read route cards from text file and create new RouteCard objects for every card which are stored in an array
         """
@@ -65,9 +68,9 @@ class TicketToRide(object):
         random.shuffle(self.route_cards)
         print(f"Number of route cards = {len(self.route_cards)}")
 
-        if len(self.route_cards) // NR_OF_AGENTS > max_nr_route_cards_per_agent:
-            print(f"Removing {len(self.route_cards) - max_nr_route_cards_per_agent * NR_OF_AGENTS} route cards")
-            del self.route_cards[-(len(self.route_cards) - max_nr_route_cards_per_agent * NR_OF_AGENTS):]
+        if len(self.route_cards) // NR_OF_AGENTS > NR_OF_DESTINATION_CARDS:
+            print(f"Removing {len(self.route_cards) - NR_OF_DESTINATION_CARDS * NR_OF_AGENTS} route cards")
+            del self.route_cards[-(len(self.route_cards) - NR_OF_DESTINATION_CARDS * NR_OF_AGENTS):]
 
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
         if left_over_cards > 0:
@@ -118,6 +121,16 @@ class TicketToRide(object):
         for route_card in self.route_cards:
             route_card_dict[route_card.route_name] = route_card
         return route_card_dict
+
+    def determine_winner(self):
+        points = {}
+        for agent in self.agents:
+            points[agent.agent_id] = agent.score
+        max_score =max(points.keys(), key=(lambda idx: points[idx]))
+        print(f"Max score = {max_score}")
+
+
+
 
     def is_finished(self, agent_turn: int) -> bool:
         """
@@ -183,6 +196,10 @@ class TicketToRide(object):
         game.init_shortest_routes()
 
     def turn(self):
+        if not self.in_game:
+            print("Game already over, skipping turn.")
+            return
+
         print("\n\n----------------------------------------\n"
               f"--- TURN {self.turn_num}\n"
               "----------------------------------------\n")
@@ -197,6 +214,8 @@ class TicketToRide(object):
                 return
 
         self.turn_num += 1
+        if self.turn_num > 20:
+            exit(0)
 
     def play(self):
         """

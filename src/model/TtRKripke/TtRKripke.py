@@ -100,7 +100,7 @@ class TtRKripke(object):
         :param target_agent_id: id of target agent of which the agent knows
         :param route_cards: Route cards of which agent knows
         """
-        print(f"----------------------------------------------------------------------------------\n"
+        print(f"\n----------------------------------------------------------------------------------\n"
               f"Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}\n"
               f"----------------------------------------------------------------------------------\n")
         update_dict = []
@@ -160,8 +160,10 @@ class TtRKripke(object):
                 world_list.append(world)
             else:
                 print(f"Removing world {str(world)}")
-        print(f"Number of worlds left = {len(self.worlds)}")
+
         self.worlds = world_list
+        print(f"Number of worlds left = {len(self.worlds)}")
+        print(f"Number of relations left = {len(self.relations)}")
 
     def get_known_route_cards(self, agent_id: int, target_agent_id: int) -> list[str]:
         """
