@@ -66,6 +66,8 @@ class Agent(object):
         # TODO: determine if other routes known
         #       check for possible routes that can be made with previous move and determine if one could be singled out
 
+        self.can_draw_card = True
+
         # Greedy implementation
         claimable_connections = self.check_claim_connection()
         if claimable_connections:
@@ -81,6 +83,17 @@ class Agent(object):
             else:
                 print(f"- Agent {self.agent_id} draws card.")
                 self.draw_card()
+
+    def enough_cards_to_claim_cards(self, connection):
+        """
+        Returns True if agent has sufficient hand to claim connection, else returns False
+        """
+        if connection.color == "gray":
+            # TODO: connection instance of ferry connection?
+            for color in TRAIN_COLOURS:
+                if connection.num_trains <= self.hand.count(color) + self.hand.count(JOKER_COLOUR):
+                    return True
+        return connection.num_trains <= self.hand.count(connection.color) + self.hand.count(JOKER_COLOUR)
 
     def check_claim_connection(self) -> list:
         """
@@ -109,7 +122,7 @@ class Agent(object):
 
         return True
 
-    def check_if_done(self) -> bool:
+    def check_if_route_cards_done(self) -> bool:
         """
         Check if player has finished all route cards
         :return: True if player finished all cards, else False
@@ -127,7 +140,7 @@ class Agent(object):
         possible_blocks = {}  # dictionary with agent -> list of tuples (route, connection to block)
         for agent in self.game.agent_list:
             if not agent.agent_id == self.agent_id:
-                known_routes_str = self.game.model.get_known_route_cards(self.agent_id, agent.agent_id)  # (list of strings)
+                known_routes_str = self.game.model.get_known_route_cards(self.agent_id, agent.agent_id)
                 for known_route_str in known_routes_str:
                     blockable_connections = self.game.route_cards[known_route_str].shortest_routes[agent.agent_id]
                     for connection in blockable_connections:
@@ -156,8 +169,8 @@ class Agent(object):
         print(f"- Agent {self.agent_id} claims connection {connection.end_point.name}-{connection.start_point.name}.")
 
         if connection.owner is not None:
-            print(f"- this connection has already an owner {connection.owner}. EXITING....")
-            
+            print(f"- this connection has already an owner {connection.owner}. POTVERDORIE!!!")
+
         connection.set_owner(self.agent_id)
         # TODO: gray color not included
         color_count = min(self.hand.count(connection.color), connection.num_trains)
@@ -174,13 +187,12 @@ class Agent(object):
             if not route_card.is_finished and self.check_route_finished(route_card):
                 # TODO: possibly make more efficient by using claimed connection
                 route_card.set_finished()
+                print(f"- Agent {self.agent_id} finished a route card!")
                 self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card=route_card.route_name)
-                self.check_if_done()
 
     def draw_card(self):
         """
         Agent can draw a card either open or closed, choice is made in this function if player draws open/closed card.
-        TODO: strategy for drawing cards should be refined down the line
         """
         # From desired colours
         # either two closed cards, one open and one closed or two open, OR a single joker card from open
@@ -201,11 +213,11 @@ class Agent(object):
                     card_drawn = True
                     if idx != NR_CARDS_TO_DRAW - 1:  # One less calculation of the desired colours
                         desired_colours = self.get_desired_colours()
-                    else:
-                        break
+                    break
 
             if not card_drawn:
-                self.hand.append(self.game.deck.remove_closed_card())
+                drawn_closed_card = self.game.deck.remove_closed_card()
+                self.can_draw_card = False if drawn_closed_card is None else self.hand.append(drawn_closed_card)
 
     def get_desired_colours(self) -> list:
         """
@@ -215,13 +227,15 @@ class Agent(object):
         desired_cards_count = {}
         for route_card in self.own_route_cards:
             for connection in route_card.shortest_routes[self.agent_id]:
-                if connection.color in self.hand:
-                    desired_cards_count[connection.color] = connection.num_trains - self.hand.count(connection.color)
+                needed_cards = connection.num_trains - self.hand.count(connection.color)
+                if connection.color in desired_cards_count.keys():
+                    desired_cards_count[connection.color] = min(desired_cards_count[connection.color], needed_cards)
+                else:
+                    desired_cards_count[connection.color] = needed_cards
 
         ordered_desired_cards_count = dict(sorted(desired_cards_count.items(), key=lambda item: item[1]))
 
         desired_cards = []
-
         for color, count in ordered_desired_cards_count.items():
             desired_cards.extend([color] * count)
 

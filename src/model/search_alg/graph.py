@@ -47,6 +47,7 @@ class Node(object):
     def reset(self):
         self.heuristic_value = inf
         self.parent = None
+        self.neighbors = []
 
     def has_neighbors(self):
         """
@@ -84,10 +85,10 @@ class Node(object):
             children.append(child[0])
         return children
 
-    def replace_neighbor_value(self, neighbor: tuple[Node, int]):
-        new_neighbor_list = [item for item in self.neighbors if item[0].name != neighbor[0].name]
-        new_neighbor_list.append(neighbor)
-        self.neighbors = new_neighbor_list
+    # def replace_neighbor_value(self, neighbor: tuple[Node, int]):
+    #     new_neighbor_list = [item for item in self.neighbors if item[0].name != neighbor[0].name]
+    #     new_neighbor_list.append(neighbor)
+    #     self.neighbors = new_neighbor_list
 
     def __gt__(self, other: Node):
         """
@@ -177,6 +178,8 @@ class Graph:
         self.number_of_steps = 0
         self.opened = []
         self.closed = []
+        for node in self.nodes:
+            node.reset()
 
     def add_node(self, node: Node):
         """
@@ -261,14 +264,6 @@ class Graph:
             if neighbor[0].name == node_two.name:
                 return True
         return False
-
-    def reset_value_connection(self, city1: str, city2: str, value: int):
-        start = self.find_node(city1)
-        start.reset()
-        target = self.find_node(city2)
-        target.reset()
-        start.replace_neighbor_value((target, value))
-        target.replace_neighbor_value((target, value))
 
     def calculate_distance(self, parent: Node, child: Node) -> int:
         """
@@ -368,9 +363,14 @@ class Graph:
           -------
             list
         """
+
         path = [target_node.name]
         node = target_node.parent
         while True:
+            if node is None:
+                print(f"path = {path}")
+                print(f"node = {node}")
+                print(f"start = {self.start}, target = {self.target}")
             path.append(node.name)
             if node.parent is None:
                 break
@@ -396,8 +396,8 @@ class Graph:
             self.number_of_steps += 1
 
             if self.opened_is_empty():
-                print(f"No Solution Found after {self.number_of_steps} steps!!!")
-                break
+                print(f"No Solution Found after {self.number_of_steps} steps for {self.start} to {self.target}!!!")
+                return None
 
             selected_node = self.remove_from_opened()
             # print(f"Selected Node {selected_node}")
@@ -424,12 +424,15 @@ class Graph:
 
     def get_shortest_route(self) -> list[str]:
         # call self.search and return route in correct form
-        path, path_length = self.search()
-        # print(" -> ".join(path))
+        return_val = self.search()
+        if return_val is None:
+            return []
+        else:
+            path, path_length = return_val
+        print(" -> ".join(path))
         if path_length > 50:
             print(f"Length of the path: {path_length}")
         list_of_cities = self.calculate_path(self.target)
-        # print(list_of_cities)
         return list_of_cities
 
     def __str__(self):

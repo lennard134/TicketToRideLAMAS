@@ -44,6 +44,8 @@ class Game(object):
         self.graph.setup(from_city, target_city)
         self.remake_graph_for_agent(agent_id)
         list_of_city_names = self.graph.get_shortest_route()
+        if not list_of_city_names:
+            return []
 
         shortest_route_list = []
         start = list_of_city_names[0]
@@ -74,12 +76,12 @@ class Game(object):
             city2 = connection.end_point.name
             if connection.owner == agent_id:
                 nr_trains = 0
-            elif connection.owner is not None:
-                print(f"connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}")
-                nr_trains = inf
-            else:
+            elif connection.owner is None:
                 nr_trains = connection.num_trains
-            self.graph.reset_value_connection(city1, city2, nr_trains)
+            else:  # connection has owner unequal to current agent
+                continue
+
+            self.graph.add_edge(city1, city2, nr_trains)
 
     def recalculate_shortest_routes(self):
         """

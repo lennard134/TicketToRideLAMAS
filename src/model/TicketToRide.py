@@ -16,11 +16,12 @@ import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# settings
-NR_OF_AGENTS = 3
-NR_OF_TRAINS = 10
-NR_TRAIN_CARDS = 4
-ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, "data/destinations_all.txt")
+# Data in TICKET_TO_RIDE_CONFIG
+NR_OF_AGENTS = config.TICKET_TO_RIDE_CONFIG['NR_OF_AGENTS']
+NR_OF_TRAINS = config.TICKET_TO_RIDE_CONFIG['NR_OF_TRAINS']
+NR_TRAIN_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
+ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, config.TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
+MIN_TRAINS = config.TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
 
 
 class TicketToRide(object):
@@ -34,6 +35,7 @@ class TicketToRide(object):
         self.agents = []
         self.route_cards = []
         self.kripke = None
+        self.last_turn = None
 
         self._init_agents()
         self._init_route_cards()
@@ -46,7 +48,7 @@ class TicketToRide(object):
         for idx in range(NR_OF_AGENTS):
             self.agents.append(Agent(idx, NR_OF_TRAINS))
 
-    def _init_route_cards(self, max_num_route_cards=3):
+    def _init_route_cards(self, max_nr_route_cards_per_agent=2):
         """
         Read route cards from text file and create new RouteCard objects for every card which are stored in an array
         """
@@ -66,9 +68,9 @@ class TicketToRide(object):
         random.shuffle(self.route_cards)
         print(f"Number of route cards = {len(self.route_cards)}")
 
-        if len(self.route_cards) > max_num_route_cards:
-            print(f"Removing {len(self.route_cards) - max_num_route_cards} route cards")
-            del self.route_cards[-(len(self.route_cards) - max_num_route_cards):]
+        if len(self.route_cards) // NR_OF_AGENTS > max_nr_route_cards_per_agent:
+            print(f"Removing {len(self.route_cards) - max_nr_route_cards_per_agent * NR_OF_AGENTS} route cards")
+            del self.route_cards[-(len(self.route_cards) - max_nr_route_cards_per_agent * NR_OF_AGENTS):]
 
         left_over_cards = len(self.route_cards) % NR_OF_AGENTS
         if left_over_cards > 0:
@@ -144,12 +146,18 @@ class TicketToRide(object):
             print("\n\n----------------------------------------\n"
                   f"--- TURN {turn}\n"
                   "----------------------------------------\n")
+            for connection in self.board.connections:
+                if connection.owner is not None:
+                    print(f"--> connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}.")
+
             for agent in self.agents:
                 agent.choose_action()
-            for agent in self.agents:
-                print(f"{agent.agent_id} has {len(agent.hand)} cards")
+                if self.is_finished(agent.agent_id):
+                    in_game = False
+                    break
+
             turn += 1
-            if turn > 100:
+            if turn > 50:
                 print("STOPPING")
                 break
 

@@ -77,11 +77,11 @@ class TtRKripke(object):
             # check if intersection is equal to route cards
             from_state = relation[0].get_state(agent_id)
             to_state = relation[1].get_state(agent_id)
-            if from_state.symmetric_difference(to_state):
+            if not from_state.symmetric_difference(to_state):
                 # true if internal states of agent_id is not equal
-                print(f"Removing relation: {relation[0]}, {relation[1]}")
-            else:
                 update_dict.append(relation)
+            # else:
+            #     print(f"Removing relation: {relation[0]}, {relation[1]}")
 
         self.relations.update({agent_id: update_dict})
         print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
@@ -109,13 +109,15 @@ class TtRKripke(object):
             # check if intersection is equal to route cards
             from_state = relation[0].get_state(target_agent_id)
             to_state = relation[1].get_state(target_agent_id)
-            if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
-                    route_cards.difference(from_state) and not route_cards.difference(to_state)):
+            # if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
+            #         route_cards.difference(from_state) and not route_cards.difference(to_state)):
+            if (route_cards.difference(from_state) or not route_cards.difference(to_state)) and (
+                    not route_cards.difference(from_state) or route_cards.difference(to_state)):
                 # true if all route cards are in first world, but not in second
                 # or if all route cards are in the second world, but not in the first (for symmetry)
-                print(f"Removing relation: {relation[0]}, {relation[1]}")
-            else:
                 update_dict.append(relation)
+            # else:
+            #     print(f"Removing relation: {relation[0]}, {relation[1]}")
 
         self.relations.update({agent_id: update_dict})
         print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
@@ -133,7 +135,7 @@ class TtRKripke(object):
         :param agent_id: Agent that has route card
         :param route_card: Route card that is being announced
         """
-        print(f"----------------------------------------------------------------------------------\n"
+        print(f"\n----------------------------------------------------------------------------------\n"
               f"Publicly known that {agent_id} has cards {route_card}\n"
               f"----------------------------------------------------------------------------------\n")
         # remove relations
@@ -146,8 +148,8 @@ class TtRKripke(object):
                 if not card_set.difference(from_state) and not card_set.difference(to_state):
                     # true if card not in state...
                     update_dict.append(relation)
-                else:
-                    print(f"Removing relation: {relation[0]}, {relation[1]}")
+                # else:
+                #     print(f"Removing relation: {relation[0]}, {relation[1]}")
 
             self.relations.update({agent: update_dict})
 
@@ -158,7 +160,7 @@ class TtRKripke(object):
                 world_list.append(world)
             else:
                 print(f"Removing world {str(world)}")
-
+        print(f"Number of worlds left = {len(self.worlds)}")
         self.worlds = world_list
 
     def get_known_route_cards(self, agent_id: int, target_agent_id: int) -> list[str]:
