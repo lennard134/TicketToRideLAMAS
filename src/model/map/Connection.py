@@ -38,7 +38,7 @@ class FerryConnection(Connection):
         :param color: Color to represent the connection
         :param num_jokers: Number of jokers necessary to claim this connection
         """
-        super().__init__(start, end, num_trains, color)
+        super().__init__(start, end, num_trains, "gray")
         self.num_jokers = num_jokers
 
 # TODO: add assumption that we do not use tunnel connections

@@ -4,7 +4,9 @@ This class represents the board of the game
 
 # packages
 from src.model.map.City import City
-from src.model.map.Connection import Connection
+from src.model.map.Connection import Connection, FerryConnection
+from src.model.Deck import TRAIN_COLOURS
+from src.model import config
 import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -78,7 +80,11 @@ class Board(object):
                 length = int(line_list[1].rpartition('(')[2].partition(')')[0])
                 color = line_list[3]
 
-                self.connections.append(Connection(start, end, length, color))
+                if not color in TRAIN_COLOURS and not color == "gray":
+                    num_jokers = int(color)
+                    self.connections.append(FerryConnection(start, end, length, color, num_jokers))
+                else:
+                    self.connections.append(Connection(start, end, length, color))
 
     def get_city(self, city_name: str):
         try:

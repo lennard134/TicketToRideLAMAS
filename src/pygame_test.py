@@ -43,6 +43,13 @@ class GameBoard(object):
 
     def __init__(self, ttr: TicketToRide):
         self.ttr = ttr
+        self.agent_colors = {}
+
+        self._init_agent_colours()
+
+    def _init_agent_colours(self):
+        for agent in self.ttr.agents:
+            self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
 
     def highest_xy(self, cities: list[City]) -> (int, int):
         """
@@ -201,10 +208,29 @@ class GameBoard(object):
         contents.fill(COLOURS['background'])
 
         model = self.ttr.kripke
-
         coordinates = self.compute_circular_coordinates(len(model.worlds))
 
-        for coordinate_tuple in coordinates:
+        world_coordinate_tuples = {}
+
+        for world, coordinate_tuple in zip(model.worlds, coordinates):
+            world_coordinate_tuples[world] = coordinate_tuple
+
+        # draw relations with color per agent {'agent_id': [(world, world), ...], ...}
+        for agent_id in model.relations.keys():
+            agent_colour = self.agent_colors[agent_id]
+            relations_list = model.relations[agent_id]
+
+            for relation_tuple in relations_list:
+                world1, world2 = relation_tuple
+
+                start_pos = world_coordinate_tuples[world1]
+                end_pos = world_coordinate_tuples[world2]
+
+                pygame.draw.line(contents, color=agent_colour, start_pos=start_pos, end_pos=end_pos,
+                                 width=LINE_THICKNESS)
+
+        # draw worlds
+        for _, coordinate_tuple in world_coordinate_tuples:
             pygame.draw.circle(contents, (255, 0, 0), coordinate_tuple, radius=RADIUS)
 
         return contents

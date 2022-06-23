@@ -410,9 +410,9 @@ class Graph:
             new_nodes = selected_node.extend_node()
 
             # add the extended nodes in the list opened
+            # print(f"length of new nodes list: {len(new_nodes)}")
             if len(new_nodes) > 0:
                 for new_node in new_nodes:
-
                     new_node.heuristic_value = self.calculate_distance(selected_node, new_node)
                     if new_node not in self.closed and new_node not in self.opened:
                         self.insert_to_list("open", new_node)
