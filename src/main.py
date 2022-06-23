@@ -11,7 +11,10 @@ DO_OPTIONS = []
 
 def main():
     game = TicketToRide()
-    game.play()
+    # game.play()
+
+    visualizer = Visualizer(game)
+    visualizer.run()
 
 
 def parse_args(parser) -> dict:

@@ -40,7 +40,7 @@ PY_GAME_CONFIG = {
     'HEIGHT_BUFFER': 2,
     'BUFFER_FACTOR': 20,
     'LINE_THICKNESS': 4,
-    'LINE_THICKNESS_RELATION' : 1,
+    'LINE_THICKNESS_RELATION': 2,
     'RADIUS': 12,
     'BUTTON_WIDTH': 100,
     'BUTTON_HEIGHT': 30
@@ -59,4 +59,12 @@ PY_GAME_COLOUR_CONFIG = {
     'gray': (180, 180, 180),
     'background': (254, 235, 201),
     'background2': (191, 213, 232)
+}
+
+AGENT_COLOURS = {
+    'dark blue': (3, 0, 94),
+    'dark red': (174, 0, 3),
+    'yellow': (253, 208, 23),
+    'grass green': (0, 128, 0),
+    'light green': (39, 219, 216)
 }

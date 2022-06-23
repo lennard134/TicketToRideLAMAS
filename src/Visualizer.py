@@ -11,6 +11,7 @@ Main file for the PyGame window responsible for both displaying the game board a
 import math
 import pygame
 import numpy as np
+import random
 
 # Model imports
 from src.model.TicketToRide import TicketToRide
@@ -30,6 +31,7 @@ LINE_THICKNESS = config.PY_GAME_CONFIG['LINE_THICKNESS']
 LINE_THICKNESS_RELATION = config.PY_GAME_CONFIG['LINE_THICKNESS_RELATION']
 RADIUS = config.PY_GAME_CONFIG['RADIUS']
 COLOURS = config.PY_GAME_COLOUR_CONFIG
+AGENT_COLOURS = config.AGENT_COLOURS
 
 # Button settings
 BUTTON_WIDTH = config.PY_GAME_CONFIG['BUTTON_WIDTH']
@@ -49,8 +51,11 @@ class Visualizer(object):
         self._init_agent_colours()
 
     def _init_agent_colours(self):
-        for agent in self.ttr.agents:
-            self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
+        colours = random.sample(list(AGENT_COLOURS.values()), len(self.ttr.agents))
+        for agent, colour in zip(self.ttr.agents, colours):
+            # self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
+            self.agent_colors[agent.agent_id] = colour
+            print(f"agent {agent.agent_id} gets colour {colour}")
 
     def highest_xy(self, cities: list[City]) -> (int, int):
         """
@@ -295,6 +300,17 @@ class Visualizer(object):
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
 
+                    # turn button
+                    elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
+                                                  button_x_right, BUTTON_HEIGHT / 2 + 3 * BUTTON_HEIGHT, mouse):
+                        self.ttr.turn()
+
+                    # reset button
+                    elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 4 * BUTTON_HEIGHT,
+                                                  button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
+                                                  mouse):
+                        self.ttr.init_game()
+
             if show_board:
                 contents = self.draw_ttr_board(contents)
             else:
@@ -319,10 +335,10 @@ class Visualizer(object):
 
             screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
-            pygame.display.update()
 
+            pygame.display.update()
 
 if __name__ == "__main__":
     ttr = TicketToRide()
-    game_board = GameBoard(ttr)
-    game_board.run()
+    visualizer = Visualizer(ttr)
+    visualizer.run()
