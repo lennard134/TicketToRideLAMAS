@@ -97,7 +97,7 @@ class Game(object):
     def announce_connection(self, announcing_agent_id: int, claimed_connection: Connection):
         """
         Function updates Kripke model based on claimed connection by agent id
-        :param agent_id: Agent that claims connection
+        :param announcing_agent_id: Agent that claims connection
         :param claimed_connection: Connection that is being claimed
         :return:
         """
@@ -116,4 +116,6 @@ class Game(object):
                     route_to_update = set(possible_singled_out)
                     self.model.update_relations(agent_id=agent.agent_id, target_agent_id=announcing_agent_id,
                                                 route_cards=route_to_update)
+
+        # Recalculate shortest route
         self.recalculate_shortest_routes()

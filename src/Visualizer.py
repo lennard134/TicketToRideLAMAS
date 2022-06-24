@@ -19,6 +19,7 @@ from src.model.map.City import City
 from src.model import config
 
 # Config in PY_GAME_CONFIG file
+from src.model.map.Connection import FerryConnection
 
 SCREEN_WIDTH = config.PY_GAME_CONFIG['SCREEN_WIDTH']
 SCREEN_HEIGHT = config.PY_GAME_CONFIG['SCREEN_HEIGHT']
@@ -51,6 +52,9 @@ class Visualizer(object):
         self._init_agent_colours()
 
     def _init_agent_colours(self):
+        """
+        Randomly assign agents a color from the AGENT_COLOURS dictionary
+        """
         colours = random.sample(list(AGENT_COLOURS.values()), len(self.ttr.agents))
         for agent, colour in zip(self.ttr.agents, colours):
             # self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
@@ -59,6 +63,7 @@ class Visualizer(object):
     def highest_xy(self, cities: list[City]) -> (int, int):
         """
         Determines maximum x and y coordinates of cities to allow for accurate scaling to window size
+        :param cities: list of cities for which the highest x and y coordinates need to be determined
         """
         max_y, max_x = cities[0].coordinates
 
@@ -72,6 +77,7 @@ class Visualizer(object):
     def lowest_xy(self, cities: list[City]) -> (int, int):
         """
         Determines minimum x and y coordinates of cities to allow for accurate translation to fit window size
+        :param cities: list of cities for which the lowest x and y coordinates need to be determined
         """
         min_y, min_x = cities[0].coordinates
 
@@ -85,6 +91,13 @@ class Visualizer(object):
     def update_limits(self, x: int, y: int, left: int, right: int, top: int, bottom: int) -> (int, int, int, int):
         """
         Updates the furthest coordinates on all sides to allow for accurate scaling
+        :param x: x coordinate
+        :param y: y coordinate
+        :param left: furthest left coordinate
+        :param right: furthest right coordinate
+        :param top: furthest top coordinate
+        :param bottom: furthest bottom coordinate
+        :return: updated left, right, top and bottom coordinates
         """
         left = x if not left or x < left else left
         right = x if not right or x > right else right
@@ -97,6 +110,14 @@ class Visualizer(object):
                          width=LINE_THICKNESS, dash_length=10, exclude_corners=True) -> list[pygame.Rect]:
         """
         Draws a dashed line between the given starting and ending position
+        :param surface: PyGame surface on which drawing of dashed line is done
+        :param color: color of the line
+        :param start_pos: start coordinate tuple
+        :param end_pos: end coordinate tuple
+        :param width: line width
+        :param dash_length: length of individual dashes
+        :param exclude_corners: boolean to exclude
+        :return: individually drawn line sections on the surface
         """
         # convert tuples to numpy arrays
         start_pos = np.array(start_pos)
@@ -117,6 +138,8 @@ class Visualizer(object):
     def compute_circular_coordinates(self, num: int) -> list[tuple[float, float]]:
         """
         Returns a list of num points on a circle
+        :param num: number of points on the circle
+        :return: list of coordinate tuples of length num
         """
         if num == 0:
             num = 1000
@@ -125,17 +148,54 @@ class Visualizer(object):
                    int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num)]
         return points
 
-    def rectangle_collision(self, x_left, y_top, x_right, y_bottom, mouse):
+    def rectangle_collision(self, x_left: int, y_top: int, x_right: int, y_bottom: int, mouse: tuple[int, int]) -> bool:
         """
         Returns True if the mouse is above the button, else False
+        :param x_left: left x coordinate of rectangle
+        :param y_top: top y coordinate of rectangle
+        :param x_right: right x coordinate of rectangle
+        :param y_bottom: bottom y coordinate of rectangle
+        :param mouse: tuple containing current mouse location
+        :return: boolean indicating whether or not the mouse is situated within boundaries of rectangle
         """
         return SCREEN_WIDTH - PANEL_WIDTH + x_left <= mouse[0] \
                <= SCREEN_WIDTH - PANEL_WIDTH + x_right and y_top <= mouse[1] \
                <= y_bottom
 
+    def draw_button(self, surface: pygame.Surface, button_x_left: int, button_y_top: int, button_x_right: int,
+                    button_y_bottom: int, mouse: tuple[int, int],
+                    font: pygame.font.Font, content: str) -> pygame.Surface:
+        """
+        Function responsible for drawing a single button in the provided surface (side panel)
+        :param surface: PyGame surface on which the button must be drawn
+        :param button_x_left: left x coordinate of the button
+        :param button_y_top: top y coordinate of the button
+        :param button_x_right: right x coordinate of the button
+        :param button_y_bottom: bottom y coordinate of the button
+        :param mouse: tuple containing the mouse coordinates
+        :param font: font to be used for the text in the button
+        :param content: string containing the text to be drawn on the button
+        :return: PyGame surface containing the newly drawn button
+        """
+        if self.rectangle_collision(button_x_left, button_y_top, button_x_right, button_y_bottom, mouse):
+            pygame.draw.rect(surface, BUTTON_COLOUR_DARK,
+                             [button_x_left, button_y_top, BUTTON_WIDTH, BUTTON_HEIGHT])
+        else:
+            pygame.draw.rect(surface, BUTTON_COLOUR_LIGHT,
+                             [button_x_left, button_y_top, BUTTON_WIDTH, BUTTON_HEIGHT])
+
+        text = font.render(content, True, (0, 0, 0))
+        txt_left = button_x_left + BUTTON_WIDTH / 2 - 0.5 * text.get_width()
+        txt_top = button_y_top + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+        surface.blit(text, (txt_left, txt_top))
+
+        return surface
+
     def draw_ttr_board(self, contents: pygame.Surface) -> pygame.Surface:
         """
         Returns the contents of the Ticket to Ride board
+        :param contents: PyGame surface on which the ttr board must be drawn
+        :return: PyGame surface containing full board contents
         """
         lt_lim = None
         rt_lim = None
@@ -170,11 +230,17 @@ class Visualizer(object):
             lt_lim, rt_lim, tp_lim, bt_lim = self.update_limits(n2x, n2y, lt_lim, rt_lim, tp_lim, bt_lim)
 
             # draw edges
-            if connection.color in COLOURS:
-                pygame.draw.line(contents, color=COLOURS[connection.color], start_pos=(n1x, n1y), end_pos=(n2x, n2y),
-                                 width=LINE_THICKNESS)
+            if connection.owner is not None:
+                color = self.agent_colors[connection.owner]
+                line_width = 2*LINE_THICKNESS
             else:
-                self.draw_dashed_line(contents, COLOURS['gray'], (n1x, n1y), (n2x, n2y))
+                color = COLOURS[connection.color]
+                line_width = LINE_THICKNESS
+
+            if isinstance(connection, FerryConnection):
+                self.draw_dashed_line(contents, color, (n1x, n1y), (n2x, n2y), width=line_width)
+            else:
+                pygame.draw.line(contents, color=color, start_pos=(n1x, n1y), end_pos=(n2x, n2y), width=line_width)
 
         for city in self.ttr.board.cities.values():
             height, width = city.coordinates
@@ -209,11 +275,13 @@ class Visualizer(object):
     def draw_state_space(self, contents: pygame.Surface) -> pygame.Surface:
         """
         Returns the contents of the visual representation of the state space
+        :param contents: PyGame surface on which the state space ought to be drawn
+        :return: PyGame surface containing full state spacce
         """
         contents.fill(COLOURS['background'])
 
         model = self.ttr.kripke
-        coordinates = self.compute_circular_coordinates(len(model.worlds) - 1)
+        coordinates = self.compute_circular_coordinates(len(model.worlds))
         random.Random(69).shuffle(coordinates)
 
         world_coordinate_tuples = {}
@@ -241,38 +309,83 @@ class Visualizer(object):
 
         return contents
 
-    def draw_side_panel(self, side_panel: pygame.Surface, mouse):
-        pass
-
-    def draw_button(self, surface, button_x_left, button_y_top, button_x_right, button_y_bottom, mouse, font, content):
+    def draw_side_panel(self, side_panel: pygame.Surface, button_x_left: int, button_x_right: int,
+                        mouse: tuple[int, int]) -> pygame.Surface:
         """
-        Function responsible for drawing a single button in the provided surface (side panel)
+        Returns the contents of the side panel
+        :param side_panel: PyGame surface on which the side panel ought to be drawn
+        :param button_x_left: left coordinate of all buttons in the side panel
+        :param button_x_right: right coordinate of all buttons in the side panel
+        :param mouse: tuple containing mouse coordinates
+        :return: PyGame surface with fully drawn side panel
         """
-        if self.rectangle_collision(button_x_left, button_y_top, button_x_right, button_y_bottom, mouse):
-            pygame.draw.rect(surface, BUTTON_COLOUR_DARK,
-                             [button_x_left, button_y_top, BUTTON_WIDTH, BUTTON_HEIGHT])
-        else:
-            pygame.draw.rect(surface, BUTTON_COLOUR_LIGHT,
-                             [button_x_left, button_y_top, BUTTON_WIDTH, BUTTON_HEIGHT])
 
-        text = font.render(content, True, (0, 0, 0))
-        txt_left = button_x_left + BUTTON_WIDTH / 2 - 0.5 * text.get_width()
-        txt_top = button_y_top + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
-        surface.blit(text, (txt_left, txt_top))
+        side_panel.fill(COLOURS['background2'])
+        button_font = pygame.font.SysFont('chalkduster.ttf', 20)
 
-        return surface
+        # draw switch button
+        side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2,
+                                      button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT,
+                                      mouse, button_font, "Switch View")
+
+        # draw turn button
+        side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
+                                      button_x_right, BUTTON_HEIGHT / 2 + 3 * BUTTON_HEIGHT,
+                                      mouse, button_font, "Turn")
+
+        # reset game
+        side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 4 * BUTTON_HEIGHT,
+                                      button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
+                                      mouse, button_font, "Reset")
+
+        text_height = 6 * BUTTON_HEIGHT
+        txt_left = button_x_left - BUTTON_WIDTH / 2  # TODO: magical number?
+        for idx, agent in enumerate(self.ttr.agents):
+            text = button_font.render(f"Agent {agent.agent_id}", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"* score: {agent.score}", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"* nr. trains: {agent.nr_of_trains}", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"* route cards:", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            for route_card in agent.own_route_cards:
+                text_color = (0, 0, 0)
+                if route_card.is_finished:
+                    text_color = self.agent_colors[agent.agent_id]
+                text_height += BUTTON_HEIGHT / 2
+                text = button_font.render(f"   - {route_card.route_name}", True, text_color)
+                txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+                side_panel.blit(text, (txt_left, txt_top))
+            text_height += BUTTON_HEIGHT
+
+        return side_panel
 
     def run(self):
         """
         Main PyGame function responsible for keeping the screen up to date
         """
         pygame.init()
+        clock = pygame.time.Clock()
 
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
         contents = screen.copy()
         contents = pygame.transform.scale(contents, (CONTENT_WIDTH, SCREEN_HEIGHT))
-
         side_panel = pygame.Surface((SCREEN_WIDTH - CONTENT_WIDTH, SCREEN_HEIGHT))
 
         contents = self.draw_ttr_board(contents)
@@ -323,6 +436,7 @@ class Visualizer(object):
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
 
             pygame.display.update()
+            # clock.tick(1)
 
 if __name__ == "__main__":
     ttr = TicketToRide()

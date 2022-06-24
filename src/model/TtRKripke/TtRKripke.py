@@ -136,6 +136,8 @@ class TtRKripke(object):
             if world.has_agent_in_agent_list(agent_id):
                 target_set = world.get_state(target_agent_id)
                 if route_cards.difference(target_set):
+                    print(f"removing {agent_id} from world {str(world)}")
+                    total_removal += 1
                     world.remove_agent_from_list(agent_id)
         print(f"TOTAL REMOVED = {total_removal}")
 

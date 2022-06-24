@@ -72,6 +72,8 @@ class Agent(object):
     def check_route_finished(self, route_card: RouteCard) -> bool:
         """
         Checks if an unfinished route card has been finished and sets the card to finished if so.
+        :param route_card: RouteCard that is evalueated
+        :return: boolean True if route finished else False
         """
         for connection in route_card.shortest_routes[self.agent_id]:
             if not connection.owner == self.agent_id:
