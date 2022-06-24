@@ -22,6 +22,7 @@ NR_TRAIN_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
 NR_OF_DESTINATION_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_OF_DESTINATION_CARDS']
 ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, config.TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
 MIN_TRAINS = config.TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
+MAX_TURNS = config.TICKET_TO_RIDE_CONFIG['MAX_TURNS']
 
 
 class TicketToRide(object):
@@ -59,7 +60,7 @@ class TicketToRide(object):
                 end = self.board.get_city(line_list[0].split('-')[1])
 
                 if start is None or end is None:
-                    print(f'Cities {start} or {end} not implemented. Skipping....')
+                    # print(f'Route_card: Cities {start} or {end} not implemented. Skipping....')
                     continue
 
                 score = int(line_list[1].rpartition('(')[2].partition(')')[0])
@@ -77,6 +78,7 @@ class TicketToRide(object):
             print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]
 
+        print(f"Possible route cards")
         for route_card in self.route_cards:
             print(f"- {route_card}")
 
@@ -103,7 +105,8 @@ class TicketToRide(object):
             end = begin + step_size
             for card in self.route_cards[begin:end]:
                 agent.add_route_card(card)
-                self.kripke.update_once_cards_known(agent.agent_id, {card.route_name})
+
+            self.kripke.update_once_cards_known(agent.agent_id, set(agent.get_route_cards_str()))
 
     def _distribute_train_cards(self):
         """
@@ -122,15 +125,26 @@ class TicketToRide(object):
             route_card_dict[route_card.route_name] = route_card
         return route_card_dict
 
-    def determine_winner(self):
+    def announce_winner(self):
+        print("\n\n-----------------------------------------------------------------\n"
+              "........................AND THE WINNER IS........................\n"
+              "-----------------------------------------------------------------\n")
         points = {}
         for agent in self.agents:
             points[agent.agent_id] = agent.score
-        max_score =max(points.keys(), key=(lambda idx: points[idx]))
-        print(f"Max score = {max_score}")
+            print(f"* Agent {agent.agent_id} has {agent.score} points...")
+        agent_winner = max(points.keys(), key=(lambda idx: points[idx]))
 
-
-
+        print(f"\nCONGRATULATIONS!!! Agent {agent_winner} has won with {points[agent_winner]} points!\n")
+        print(f"Thanks for playing with Crimineel, Snuifkuif en Geronimo!! They loved it!")
+        print(r"""
+         _____ _   _   ___   _   _  _   __ _____   ______ ___________   ______ _       _____   _______ _   _ _____    _____ _  ______ 
+        |_   _| | | | / _ \ | \ | || | / //  ___|  |  ___|  _  | ___ \  | ___ \ |     / _ \ \ / /_   _| \ | |  __ \  |_   _| | | ___ \
+          | | | |_| |/ /_\ \|  \| || |/ / \ `--.   | |_  | | | | |_/ /  | |_/ / |    / /_\ \ V /  | | |  \| | |  \/    | | | |_| |_/ /
+          | | |  _  ||  _  || . ` ||    \  `--. \  |  _| | | | |    /   |  __/| |    |  _  |\ /   | | | . ` | | __     | | | __|    / 
+          | | | | | || | | || |\  || |\  \/\__/ /  | |   \ \_/ / |\ \   | |   | |____| | | || |  _| |_| |\  | |_\ \    | | | |_| |\ \ 
+          \_/ \_| |_/\_| |_/\_| \_/\_| \_/\____/   \_|    \___/\_| \_|  \_|   \_____/\_| |_/\_/  \___/\_| \_/\____/    \_/  \__\_| \_|
+        """)
 
     def is_finished(self, agent_turn: int) -> bool:
         """
@@ -142,7 +156,7 @@ class TicketToRide(object):
             # check if an agent has finished all route_cards
             if agent.check_if_route_cards_done():
                 print(f"--------------------------------------------------------\n"
-                      f"----------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS ---------------\n"
+                      f"-------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS -------------\n"
                       f"--------------------------------------------------------")
                 return True
 
@@ -152,7 +166,7 @@ class TicketToRide(object):
                 if agent.nr_of_trains < MIN_TRAINS:
                     self.last_turn = agent.agent_id
                     print(f"--------------------------------------------------------\n"
-                          f"----------- AGENT {agent.agent_id} has less than {MIN_TRAINS} ---------------\n"
+                          f"-------- AGENT {agent.agent_id} has less than {MIN_TRAINS} -------------\n"
                           f"--------------------------------------------------------")
         elif agent_turn == self.last_turn:
             print(f"--------------------------------------------------------\n"
@@ -201,7 +215,9 @@ class TicketToRide(object):
             return
 
         print("\n\n----------------------------------------\n"
+              "----------------------------------------\n"
               f"--- TURN {self.turn_num}\n"
+              "----------------------------------------\n"
               "----------------------------------------\n")
         for connection in self.board.connections:
             if connection.owner is not None:
@@ -211,6 +227,7 @@ class TicketToRide(object):
             agent.choose_action()
             if self.is_finished(agent.agent_id):
                 self.in_game = False
+                self.announce_winner()
                 return
 
         self.turn_num += 1
@@ -224,15 +241,7 @@ class TicketToRide(object):
         self.init_game()
         while self.in_game:
             self.turn()
-        print(f"Thanks for playing with Crimineel, Snuifkuif en Geronimo!! They loved it!")
-        print(r"""
- _____ _   _   ___   _   _  _   __ _____   ______ ___________   ______ _       _____   _______ _   _ _____    _____ _  ______ 
-|_   _| | | | / _ \ | \ | || | / //  ___|  |  ___|  _  | ___ \  | ___ \ |     / _ \ \ / /_   _| \ | |  __ \  |_   _| | | ___ \
-  | | | |_| |/ /_\ \|  \| || |/ / \ `--.   | |_  | | | | |_/ /  | |_/ / |    / /_\ \ V /  | | |  \| | |  \/    | | | |_| |_/ /
-  | | |  _  ||  _  || . ` ||    \  `--. \  |  _| | | | |    /   |  __/| |    |  _  |\ /   | | | . ` | | __     | | | __|    / 
-  | | | | | || | | || |\  || |\  \/\__/ /  | |   \ \_/ / |\ \   | |   | |____| | | || |  _| |_| |\  | |_\ \    | | | |_| |\ \ 
-  \_/ \_| |_/\_| |_/\_| \_/\_| \_/\____/   \_|    \___/\_| \_|  \_|   \_____/\_| |_/\_/  \___/\_| \_/\____/    \_/  \__\_| \_|
-""")
+
 
 if __name__ == "__main__":
     ttr = TicketToRide()

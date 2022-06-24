@@ -1,6 +1,8 @@
 """
 World object that stores the states
 """
+
+
 class World(object):
 
     def __init__(self, state: dict[int], agent_list: list[int]):
@@ -12,7 +14,7 @@ class World(object):
         self.state = state
         self._agent_list = agent_list
 
-    def check_truth(self, agent_id: int, route_card_name: str) :
+    def check_truth(self, agent_id: int, route_card_name: str):
         """
         Function checks if some route card is owned by some agent
         :param agent_id: Id of agent for which we need to check if it owns certain card

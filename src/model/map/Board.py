@@ -70,21 +70,31 @@ class Board(object):
         with open(CONNECTION_FILE_PATH, mode='r', encoding='utf-8') as f:
             for line in f:
                 line_list = line.split()
-                start = self.get_city(line_list[0].split('-')[0])
-                end = self.get_city(line_list[0].split('-')[1])
+                city1 = self.get_city(line_list[0].split('-')[0])
+                city2 = self.get_city(line_list[0].split('-')[1])
 
-                if start is None or end is None:
-                    print(f'Cities {start} or {end} not implemented. Skipping connection....')
+                if city1 is None or city2 is None:
+                    # print(f'Cities {city1} or {city2} not implemented. Skipping connection....')
                     continue
 
                 length = int(line_list[1].rpartition('(')[2].partition(')')[0])
                 color = line_list[3]
 
-                if not color in TRAIN_COLOURS and not color == "gray":
-                    num_jokers = int(color)
-                    self.connections.append(FerryConnection(start, end, length, color, num_jokers))
-                else:
-                    self.connections.append(Connection(start, end, length, color))
+                is_new = True
+                for connection in self.connections:
+                    city1_old = connection.start_point.name
+                    city2_old = connection.end_point.name
+                    if (city1_old == city1.name and city2_old == city2.name) or (city1_old == city2.name and city2_old == city1.name):
+                        is_new = False
+                        print(f"Connection {city1_old}-{city2_old} is double")
+                        break
+
+                if is_new:
+                    if color not in TRAIN_COLOURS and not color == GRAY_CONNECTION:
+                        num_jokers = int(color)
+                        self.connections.append(FerryConnection(city1, city2, length, color, num_jokers))
+                    else:
+                        self.connections.append(Connection(city1, city2, length, color))
 
     def get_city(self, city_name: str):
         try:

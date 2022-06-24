@@ -9,7 +9,7 @@ AGENT_CONFIG = {
 
 DECK_CONFIG = {
     'NR_COLOUR_CARDS': 12,
-    'NR_TRAINS': 14,
+    'NR_JOKERS': 14,
     'NR_OPEN_CARDS': 5,
     'TRAIN_COLOURS': [
         'red', 'pink', 'white', 'yellow', 'green', 'blue', 'black', 'orange'
@@ -18,12 +18,13 @@ DECK_CONFIG = {
 }
 
 TICKET_TO_RIDE_CONFIG = {
-    'NR_OF_AGENTS': 3,
-    'NR_OF_TRAINS': 20,
-    'NR_OF_DESTINATION_CARDS': 2,
+    'NR_OF_AGENTS': 4,
+    'NR_OF_TRAINS': 45,
+    'NR_OF_DESTINATION_CARDS': 1,
     'NR_TRAIN_CARDS': 4,
     'ROUTE_CARDS_PATH': "data/destinations_all.txt",
-    'MIN_TRAINS': 2
+    'MIN_TRAINS': 2,
+    'MAX_TURNS': 50
 }
 
 BOARD_CONFIG = {

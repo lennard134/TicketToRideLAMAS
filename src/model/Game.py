@@ -102,8 +102,6 @@ class Game(object):
         :return:
         """
         # check if some agent now knows a card from agent_id
-        # Recalculate shortest route
-
         for agent in self.agent_list:
             possible_singled_out = []
             if agent.agent_id != announcing_agent_id:

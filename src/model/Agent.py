@@ -15,6 +15,8 @@ import numpy as np
 START_SCORE = config.AGENT_CONFIG['START_SCORE']
 JOKER_COLOUR = config.DECK_CONFIG['JOKER_COLOUR']
 NR_CARDS_TO_DRAW = config.AGENT_CONFIG['NR_CARDS_TO_DRAW']
+GRAY_CONNECTION = config.BOARD_CONFIG['GRAY_COLOUR']
+TRAIN_POINTS = config.BOARD_CONFIG['TRAIN_POINTS']
 
 
 class Agent(object):
@@ -33,6 +35,12 @@ class Agent(object):
         self.own_route_cards = []
         self.can_draw_card = True
 
+    def get_route_cards_str(self):
+        route_cards = []
+        for route_card in self.own_route_cards:
+            route_cards.append(route_card.route_name)
+        return route_cards
+
     def place_trains(self, nr_trains: int) -> bool:
         """
         Return true and removes trains if enough, else return false.
@@ -40,6 +48,7 @@ class Agent(object):
         if nr_trains > self.nr_of_trains:
             return False
         self.nr_of_trains -= nr_trains
+        self.score += TRAIN_POINTS[nr_trains]
         return True
 
     def set_game(self, game: Game):
@@ -51,7 +60,6 @@ class Agent(object):
         :param claimable_connections: Possible connections an agent can claim
         :return: The connection an agent should claim
         """
-        # TODO: gooi dit in een andere functie waarin we de claimable connecties maken???
         connection_value = [0] * len(claimable_connections)
 
         for route_card in self.own_route_cards:
@@ -81,13 +89,12 @@ class Agent(object):
                 return False
         return True
 
-    def check_block_connection(self) -> dict:
+    def check_block_connection(self) -> dict[int]:
         """
         Function to check if it is possible for an agent to block another agent
         :return: Dictionary with possible connections to block
         """
-        # TODO: ferry connection
-        possible_blocks = {}  # dictionary with agent -> list of tuples (route, connection to block)
+        possible_blocks = {}
         for agent in self.game.agent_list:
             if not agent.agent_id == self.agent_id:
                 # TODO: do we use knowledge???
@@ -95,7 +102,7 @@ class Agent(object):
                 for known_route_str in known_routes_str:
                     blockable_connections = self.game.route_cards[known_route_str].shortest_routes[agent.agent_id]
                     for connection in blockable_connections:
-                        if connection.owner is None and self.enough_cards_to_claim_cards(connection):
+                        if connection.owner is None and self.enough_cards_to_claim_train_card(connection):
                             if agent in possible_blocks.keys():
                                 possible_blocks[agent].extend((known_route_str, connection))
                             else:
@@ -179,14 +186,18 @@ class Agent(object):
         """
         self.own_route_cards.append(route_card)
 
-    def enough_cards_to_claim_cards(self, connection):
+    def enough_cards_to_claim_train_card(self, connection):
         """
         Returns True if agent has sufficient hand to claim connection, else returns False
         """
-        if connection.color == "gray":
-            # TODO: connection instance of ferry connection?
+        if connection.color == GRAY_CONNECTION:
             for color in TRAIN_COLOURS:
-                if connection.num_trains <= self.hand.count(color) + self.hand.count(JOKER_COLOUR):
+                enough_train_cards = connection.num_trains <= self.hand.count(color) + self.hand.count(JOKER_COLOUR)
+                if isinstance(connection, FerryConnection):
+                    enough_jokers = connection.num_jokers <= self.hand.count(JOKER_COLOUR)
+                    enough_train_cards = connection.num_trains <= self.hand.count(color) + self.hand.count(JOKER_COLOUR)
+                    enough_train_cards = enough_train_cards and enough_jokers
+                if enough_train_cards:
                     return True
         return connection.num_trains <= self.hand.count(connection.color) + self.hand.count(JOKER_COLOUR)
 
@@ -199,7 +210,7 @@ class Agent(object):
         claimable_connections = []
         for route_card in self.own_route_cards:
             for connection in route_card.shortest_routes[self.agent_id]:
-                if connection.owner is None and self.enough_cards_to_claim_cards(connection) \
+                if connection.owner is None and self.enough_cards_to_claim_train_card(connection) \
                         and self.nr_of_trains >= connection.num_trains:
                     claimable_connections.append(connection)
                 # else:
@@ -212,17 +223,11 @@ class Agent(object):
         """
         Agent claims a connection by putting trains on a connection
         """
-        print(f"- Agent {self.agent_id} claims connection {connection.end_point.name}-{connection.start_point.name}.")
-
-        if connection.owner is not None:
-            print(f"- this connection has already an owner {connection.owner}. POTVERDORIE!!!")
+        print(f"-- Agent {self.agent_id} claims connection {connection.end_point.name}-{connection.start_point.name}"
+              f" with color {connection.color} and costs {connection.num_trains}.")
 
         connection.set_owner(self.agent_id)
         connection_color = connection.color
-
-        # TODO: ferry connection
-        if isinstance(connection, FerryConnection):
-            print("ferry connection")
 
         if connection_color == "gray":
             max_color_count = (TRAIN_COLOURS[0], self.hand.count(TRAIN_COLOURS[0]))
@@ -231,10 +236,13 @@ class Agent(object):
                 if count < self.hand.count(color):
                     max_color_count = (color, self.hand.count(color))
             connection_color, _ = max_color_count
-            print(f"replaced a gray connection color: {connection.color} and {connection_color}")
 
-        color_count = min(self.hand.count(connection_color), connection.num_trains)
+        if isinstance(connection, FerryConnection):
+            color_count = min(self.hand.count(connection_color), connection.num_trains - connection.num_jokers)
+        else:
+            color_count = min(self.hand.count(connection_color), connection.num_trains)
         joker_count = connection.num_trains - color_count
+
         color_list = [connection_color] * color_count + [JOKER_COLOUR] * joker_count
         self.game.deck.play_train_cards(color_list)
         self.place_trains(connection.num_trains)
@@ -247,9 +255,8 @@ class Agent(object):
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
                 route_card.set_finished()
-                #ToDO add points to agents score.
-                self.score += route_card.score
-                print(f"- Agent {self.agent_id} finished a route card!")
+                self.score += route_card.score  # Add score from finished route card
+                print(f"- Agent {self.agent_id} finished a route card with {route_card.score} points!")
                 self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card=route_card.route_name)
 
     def choose_action(self):
@@ -273,7 +280,8 @@ class Agent(object):
             if claimable_connections:
                 print(f"- Agent {self.agent_id} blocks connection.")
                 agent_to_block = np.random.choice(list(claimable_connections.keys()))
-                block_tuple = np.random.choice(claimable_connections[agent_to_block])
+                block_tuple_idx = np.random.choice(range(len(claimable_connections[agent_to_block])))
+                block_tuple = claimable_connections[agent_to_block][block_tuple_idx]
                 self.block_connection(agent_to_block, block_tuple)  # block tuple : (route_card: str, connection)
             else:
                 print(f"- Agent {self.agent_id} draws card.")

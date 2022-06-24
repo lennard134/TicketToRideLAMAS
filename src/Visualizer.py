@@ -55,7 +55,6 @@ class Visualizer(object):
         for agent, colour in zip(self.ttr.agents, colours):
             # self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
             self.agent_colors[agent.agent_id] = colour
-            print(f"agent {agent.agent_id} gets colour {colour}")
 
     def highest_xy(self, cities: list[City]) -> (int, int):
         """
@@ -123,7 +122,7 @@ class Visualizer(object):
             num = 1000
         r = (min(CONTENT_WIDTH, SCREEN_HEIGHT) - WIDTH_BUFFER * BUFFER_FACTOR) / 2
         points = [(int(math.cos(2 * math.pi / num * x) * r + CONTENT_WIDTH / 2),
-                   int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num + 1)]
+                   int(math.sin(2 * math.pi / num * x) * r + SCREEN_HEIGHT / 2)) for x in range(0, num)]
         return points
 
     def rectangle_collision(self, x_left, y_top, x_right, y_bottom, mouse):
@@ -221,6 +220,7 @@ class Visualizer(object):
 
         for world, coordinate_tuple in zip(model.worlds, coordinates):
             world_coordinate_tuples[world] = coordinate_tuple
+
         # draw relations with color per agent {'agent_id': [(world, world), ...], ...}
         for agent_id in model.relations.keys():
             agent_colour = self.agent_colors[agent_id]
@@ -274,7 +274,6 @@ class Visualizer(object):
         contents = pygame.transform.scale(contents, (CONTENT_WIDTH, SCREEN_HEIGHT))
 
         side_panel = pygame.Surface((SCREEN_WIDTH - CONTENT_WIDTH, SCREEN_HEIGHT))
-        side_panel.fill(COLOURS['background2'])
 
         contents = self.draw_ttr_board(contents)
 
@@ -299,6 +298,8 @@ class Visualizer(object):
                     if self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2,
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
+                        if not show_board:
+                            self.ttr.kripke.print_world_agent_list()
 
                     # turn button
                     elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
@@ -316,22 +317,7 @@ class Visualizer(object):
             else:
                 contents = self.draw_state_space(contents)
 
-            button_font = pygame.font.SysFont('chalkduster.ttf', 20)
-
-            # draw switch button
-            side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2,
-                                          button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT,
-                                          mouse, button_font, "Switch View")
-
-            # draw turn button
-            side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
-                                          button_x_right, BUTTON_HEIGHT / 2 + 3 * BUTTON_HEIGHT,
-                                          mouse, button_font, "Turn")
-
-            # reset game
-            side_panel = self.draw_button(side_panel, button_x_left, BUTTON_HEIGHT / 2 + 4 * BUTTON_HEIGHT,
-                                          button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
-                                          mouse, button_font, "Reset")
+            side_panel = self.draw_side_panel(side_panel, button_x_left, button_x_right, mouse)
 
             screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
             screen.blit(side_panel, (CONTENT_WIDTH, 0))

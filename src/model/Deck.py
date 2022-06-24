@@ -4,9 +4,9 @@ This class represents the deck of playing cards with coloured wagons and locomot
 import random
 from src.model import config
 
-#Config in Deck Config
+# Config in Deck Config
 NR_COLOUR_CARDS = config.DECK_CONFIG['NR_COLOUR_CARDS']
-NR_TRAINS = config.DECK_CONFIG['NR_TRAINS']
+NR_JOKERS = config.DECK_CONFIG['NR_JOKERS']
 NR_OPEN_CARDS = config.DECK_CONFIG['NR_OPEN_CARDS']
 TRAIN_COLOURS = config.DECK_CONFIG['TRAIN_COLOURS']
 
@@ -49,7 +49,6 @@ class Deck(object):
         """
         if not self.closed_cards and self.used_cards:  # No closed cards
             self.shuffle_used_cards()
-            print(f"shuffling used cards, deck length after shuffle: {len(self.closed_cards)}")
         elif not self.closed_cards:
             if self.open_cards:
                 return self.open_cards.pop()
@@ -62,7 +61,6 @@ class Deck(object):
         Add the played train cards to the used cards stack
         """
         self.used_cards.extend(train_cards)
-        print(f"train cards were played this round; total cards in deck: {len(self.used_cards) + len(self.closed_cards)}")
 
     def shuffle_used_cards(self):
         """
