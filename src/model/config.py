@@ -29,7 +29,16 @@ TICKET_TO_RIDE_CONFIG = {
 
 BOARD_CONFIG = {
     'CITY_FILE_PATH': "data/cities.txt",
-    'CONNECTION_FILE_PATH': "data/train_routes_all.txt"
+    'CONNECTION_FILE_PATH': "data/train_routes_all.txt",
+    'GRAY_COLOUR': "gray",
+    'TRAIN_POINTS': {
+        1: 1,
+        2: 2,
+        3: 4,
+        4: 7,
+        6: 15,
+        8: 21
+    }
 }
 
 PY_GAME_CONFIG = {

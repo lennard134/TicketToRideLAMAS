@@ -219,19 +219,18 @@ class TicketToRide(object):
               f"--- TURN {self.turn_num}\n"
               "----------------------------------------\n"
               "----------------------------------------\n")
-        for connection in self.board.connections:
-            if connection.owner is not None:
-                print(f"--> connection {connection.start_point.name}-{connection.end_point.name} has owner {connection.owner}.")
 
         for agent in self.agents:
             agent.choose_action()
+            agent.print_agent_profile()
             if self.is_finished(agent.agent_id):
                 self.in_game = False
                 self.announce_winner()
                 return
 
         self.turn_num += 1
-        if self.turn_num > 20:
+        if self.turn_num > MAX_TURNS:
+            print(f"Every agent played more than {MAX_TURNS} turns")
             exit(0)
 
     def play(self):
@@ -243,7 +242,4 @@ class TicketToRide(object):
             self.turn()
 
 
-if __name__ == "__main__":
-    ttr = TicketToRide()
-    ttr.play()
 

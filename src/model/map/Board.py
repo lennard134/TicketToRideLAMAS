@@ -7,6 +7,7 @@ from src.model.map.City import City
 from src.model.map.Connection import Connection, FerryConnection
 from src.model.Deck import TRAIN_COLOURS
 from src.model import config
+
 import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -14,6 +15,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.pa
 # settings
 CITY_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CITY_FILE_PATH'])
 CONNECTION_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CONNECTION_FILE_PATH'])
+GRAY_CONNECTION = config.BOARD_CONFIG['GRAY_COLOUR']
 
 
 class Board(object):
@@ -101,8 +103,3 @@ class Board(object):
             return self.cities[city_name]
         except KeyError:
             return None
-
-
-if __name__ == "__main__":
-    print(CITY_FILE_PATH)
-

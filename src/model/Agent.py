@@ -69,6 +69,16 @@ class Agent(object):
                     connection_value[index_connection] = max(route_card.score, connection_value[index_connection])
         return claimable_connections[np.argmax(connection_value)]
 
+    def print_agent_profile(self):
+        print(f"\n---\nProfile agent {self.agent_id}:")
+        print(f"* Owned train cards: {self.hand}")
+        print(f"* Number of trains: {self.nr_of_trains}")
+        print(f"* Owned connections:")
+        for connection in self.game.board.connections:
+            if connection.owner == self.agent_id:
+                print(f"* -- {connection.connection_name}")
+        print(f"---\n")
+
     def check_route_finished(self, route_card: RouteCard) -> bool:
         """
         Checks if an unfinished route card has been finished and sets the card to finished if so.
@@ -106,9 +116,9 @@ class Agent(object):
                     for connection in blockable_connections:
                         if connection.owner is None and self.enough_cards_to_claim_train_card(connection):
                             if agent in possible_blocks.keys():
-                                possible_blocks[agent].extend((known_route_str, connection))
+                                possible_blocks[agent.agent_id].extend((known_route_str, connection))
                             else:
-                                possible_blocks[agent] = [(known_route_str, connection)]
+                                possible_blocks[agent.agent_id] = [(known_route_str, connection)]
 
         return possible_blocks
 
@@ -208,7 +218,6 @@ class Agent(object):
         If it can claim, mark connection as claimable
         :return: True if connection is claimed else False
         """
-        # TODO: ferry connection
         claimable_connections = []
         for route_card in self.own_route_cards:
             for connection in route_card.shortest_routes[self.agent_id]:
@@ -231,7 +240,7 @@ class Agent(object):
         connection.set_owner(self.agent_id)
         connection_color = connection.color
 
-        if connection_color == "gray":
+        if connection_color == GRAY_CONNECTION:
             max_color_count = (TRAIN_COLOURS[0], self.hand.count(TRAIN_COLOURS[0]))
             for color in TRAIN_COLOURS[1:]:
                 _, count = max_color_count
@@ -280,6 +289,7 @@ class Agent(object):
         else:
             claimable_connections = self.check_block_connection()
             if claimable_connections:
+
                 print(f"- Agent {self.agent_id} blocks connection.")
                 agent_to_block = np.random.choice(list(claimable_connections.keys()))
                 block_tuple_idx = np.random.choice(range(len(claimable_connections[agent_to_block])))

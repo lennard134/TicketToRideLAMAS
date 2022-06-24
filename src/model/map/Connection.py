@@ -18,6 +18,7 @@ class Connection(object):
         """
         self.start_point = start
         self.end_point = end
+        self.connection_name = f'{self.start_point.name}-{self.end_point.name}'
         self.num_trains = num_trains
         self.color = color
         self.owner = None

@@ -236,14 +236,4 @@ class TtRKripke(object):
         return name
 
 
-if __name__ == "__main__":
-    trt_kripke = TtRKripke([10, 11, 12], ['a', 'b', 'c', 'd', 'e', 'f'])
-    print(f"number of worlds: {len(trt_kripke.worlds)}")
 
-    trt_kripke.update_relations(10, 10, {'a', 'b'})
-    trt_kripke.update_relations(11, 11, {'c', 'd'})
-    trt_kripke.update_relations(12, 12, {'e', 'f'})
-
-    trt_kripke.public_announcement_route_card(10, 'a')
-
-    print(trt_kripke)

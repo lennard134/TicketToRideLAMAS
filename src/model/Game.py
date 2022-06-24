@@ -99,7 +99,6 @@ class Game(object):
         Function updates Kripke model based on claimed connection by agent id
         :param announcing_agent_id: Agent that claims connection
         :param claimed_connection: Connection that is being claimed
-        :return:
         """
         # check if some agent now knows a card from agent_id
         for agent in self.agent_list:

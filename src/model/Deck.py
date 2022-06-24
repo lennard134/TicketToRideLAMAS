@@ -9,6 +9,7 @@ NR_COLOUR_CARDS = config.DECK_CONFIG['NR_COLOUR_CARDS']
 NR_JOKERS = config.DECK_CONFIG['NR_JOKERS']
 NR_OPEN_CARDS = config.DECK_CONFIG['NR_OPEN_CARDS']
 TRAIN_COLOURS = config.DECK_CONFIG['TRAIN_COLOURS']
+JOKER_COLOUR = config.DECK_CONFIG['JOKER_COLOUR']
 
 
 class Deck(object):
@@ -24,10 +25,10 @@ class Deck(object):
         """
         deck = []
         for colour in TRAIN_COLOURS:
-            if not colour == "joker":
-                deck.extend(NR_COLOUR_CARDS * [colour])
-            else:
-                deck.extend(NR_TRAINS * [colour])
+            deck.extend(NR_COLOUR_CARDS * [colour])
+
+        deck.extend(NR_JOKERS * [JOKER_COLOUR])
+
         random.shuffle(deck)
         self.closed_cards = deck
         while len(self.open_cards) < NR_OPEN_CARDS:
@@ -72,5 +73,3 @@ class Deck(object):
         while len(self.open_cards) < NR_OPEN_CARDS:  # add to open cards if less than NR_OPEN_CARDS
             self.open_cards.append(self.remove_closed_card())
 
-if __name__ == "__main__":
-    Deck()

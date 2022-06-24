@@ -23,7 +23,7 @@ class World(object):
         """
         return route_card_name in self.state[agent_id]
 
-    def get_state(self, agent_id) -> dict[int]:
+    def get_state(self, agent_id) -> set:
         return self.state[agent_id]
 
     def get_name(self) -> str:
@@ -52,8 +52,3 @@ class World(object):
 
     def __str__(self):
         return f"{self.get_name()}"
-
-
-if __name__ == "__main__":
-    wrld = World({0: {"a-b", "b-c"}, 1: {"c-d", "d-e"}})
-    print(wrld)
