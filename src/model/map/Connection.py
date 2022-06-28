@@ -15,6 +15,7 @@ class Connection(object):
         :param end: End city of connection
         :param num_trains: Number of trains that fit in the connection
         :param color: Color of the connection
+        :param owner: Agent that owns the connection
         """
         self.start_point = start
         self.end_point = end
@@ -42,4 +43,3 @@ class FerryConnection(Connection):
         super().__init__(start, end, num_trains, "gray")
         self.num_jokers = num_jokers
 
-# TODO: add assumption that we do not use tunnel connections

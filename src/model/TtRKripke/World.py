@@ -27,10 +27,6 @@ class World(object):
         return self.state[agent_id]
 
     def get_name(self) -> str:
-        """
-        Initializes name of world as string representation
-        :return: Returns name of the world
-        """
         agent_ids = [agent_id for agent_id in self.state.keys()]
         agent_ids.sort()
         name = f"[({','.join(self.state[agent_ids.pop(0)])})"

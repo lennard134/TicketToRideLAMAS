@@ -1,7 +1,6 @@
 """
 Game object containing all relevant game-items for the player
 """
-from cmath import inf
 
 from src.model.map.Board import Board
 from src.model.Deck import Deck
@@ -41,6 +40,13 @@ class Game(object):
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
     def calculate_shortest_route(self, from_city: str, target_city: str, agent_id: int):
+        """
+        Function to calculate the shortest route between two cities for an agent
+        :param from_city: Start city of route card
+        :param target_city: End city of route card
+        :param agent_id: Agent for which the route is calculated
+        :return: List with shortest route
+        """
         self.graph.setup(from_city, target_city)
         self.update_graph_for_agent(agent_id)
         list_of_city_names = self.graph.get_shortest_route()
@@ -56,6 +62,9 @@ class Game(object):
         return shortest_route_list
 
     def _init_graph(self):
+        """
+        Initialize graph for path planning
+        """
         self.graph = Graph()
 
         # Add vertices
@@ -70,7 +79,11 @@ class Game(object):
 
             self.graph.add_edge(city1, city2, nr_trains)
 
-    def remake_graph_for_agent(self, agent_id: int):
+    def update_graph_for_agent(self, agent_id: int):
+        """
+        Function that updates the graph for an agent based on the claimed connections
+        :param agent_id: Agent for which the graph has to be updated
+        """
         for connection in self.board.connections:
             city1 = connection.start_point.name
             city2 = connection.end_point.name
@@ -120,4 +133,3 @@ class Game(object):
 
         # possibilities
         self.model.public_announcement_possibilities(announcing_agent_id, public_singled_out)
-

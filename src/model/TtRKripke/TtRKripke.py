@@ -18,16 +18,7 @@ class TtRKripke(object):
         self.relations = {}
 
         self._init_worlds()
-        # print("worlds initialized")
         self._init_relations()
-        # print("relations initialized")
-        # self._init_known_states()
-
-    # def _init_known_states(self):
-    #     for agent_id in self.agent_ids:
-    #         self.known_states[agent_id] = {}
-    #         for target_id in self.agent_ids:
-    #             self.known_states[agent_id][target_id] = []
 
     def _init_worlds(self):
         """
@@ -231,17 +222,6 @@ class TtRKripke(object):
             #     print(f"Removing world {str(world)}")
 
         self.worlds = world_list
-        print(f"Number of worlds left = {len(self.worlds)}")
-        # print(f"Number of relations left for agent {agent_id} = {len(self.relations[agent_id])}")
-
-    def print_world_agent_list(self):
-        empty_worlds = 0
-        for world in self.worlds:
-            if world._agent_list:
-                print(f"Agents considering world {str(world)} are {world._agent_list}")
-            else:
-                empty_worlds += 1
-        print(f"total number of empty worlds = {empty_worlds}")
 
     def get_known_route_cards(self, agent_id: int, target_agent_id: int) -> list[str]:
         """
@@ -250,8 +230,6 @@ class TtRKripke(object):
         :param target_agent_id: Agent Id of which the agent knows the cards
         :return: List containing knows cards in string representation
         """
-        # return list of cards known by agent to be of target agent
-        # this means if a card occurs in every world in the state of a single agent, then it is known
         world_counter = 0
         possible_target_cards = {}
 

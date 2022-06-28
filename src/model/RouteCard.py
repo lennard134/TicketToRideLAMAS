@@ -3,7 +3,6 @@ This class represents the route-cards of the game
 """
 
 from .map.City import City
-# from src.model.Agent import Agent
 
 
 class RouteCard(object):

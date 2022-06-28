@@ -71,6 +71,10 @@ class Agent(object):
         return claimable_connections[np.argmax(connection_value)]
 
     def print_agent_profile(self):
+        """
+        Function to print profile of the agent showing the owned train cards, number of trains, owned connections
+        and which states this agent considers.
+        """
         print(f"\n------\nProfile agent {self.agent_id}:")
         print(f"* Owned train cards: {self.hand}")
         print(f"* Number of trains: {self.nr_of_trains}")
@@ -287,10 +291,6 @@ class Agent(object):
         By default, every agent chooses to claim a connection advancing its own route cards. However, when it knows a
         route card of another agent (and this has been publicly announced) they will choose to block said route.
         """
-
-        # TODO: determine if other routes known
-        #       check for possible routes that can be made with previous move and determine if one could be singled out
-
         self.can_draw_card = True
 
         # Greedy implementation

@@ -83,6 +83,9 @@ class TicketToRide(object):
             print(f"- {route_card.route_name}")
 
     def _init_kripke(self):
+        """
+        Initializer of the Kripke model
+        """
         agent_ids = []
         route_card_ids = []
         for agent in self.agents:
@@ -187,6 +190,9 @@ class TicketToRide(object):
         return finished
 
     def init_game(self):
+        """
+        Initializer for the game
+        """
         self.deck = Deck()
         self.board = Board()
         self.agents = []
@@ -211,6 +217,9 @@ class TicketToRide(object):
         game.init_shortest_routes()
 
     def turn(self):
+        """
+        One turn in the game
+        """
         if not self.in_game:
             print("Game already over, skipping turn.")
             return

@@ -2,7 +2,10 @@
 ***
 mention loading route cards
 
-*** 
+***
+
+# TODO: add assumption that we do not use tunnel connections
+
 ## Design choices:
 - Only using Western Europe
 - If 2 segments of routes are equally optimal: choose segment of route with most score-points. If score points are equal

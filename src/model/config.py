@@ -1,5 +1,5 @@
 """
-Config file containing settings for different classes in the form of a dictionary
+Configuration file containing settings for different classes in the form of a dictionary
 """
 
 AGENT_CONFIG = {
