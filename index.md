@@ -38,22 +38,30 @@ Only one route can be claimed during a player's turn.
 Additionally, a player can build a train station to utilize a route that has already been claimed by another player. 
 Lastly, a player has the possibility to obtain new route cards.
 
+The route cards contain two cities between which the agent will have to create a route by placing trains on the connections 
+between cities. When the route is finished, the player obtains the number of points as indicated by the route card. 
+To place trains on a connection (i.e. claim a connection), a player can draw train cards. The connections have different 
+colours indicating which colour train card is needed to claim that specific connection. The length of the connection indicates
+how many train cards of a particular colour are needed. Furthermore, there are multiple joker cards in the game that can 
+be used as any of the colours. Jokers are also necessary for claiming ferry connection (i.e. connections that go over water),
+in the ferry connection regular cards can be combined with minimum of required jokers.
+
 ## Research goal
 The goal of our research is to simulate and model (a simplification of) Ticket to Ride.
 
 ## Simplifications of the game
-In the original version of Ticket to Ride Europe there are 47 nodes (cities), 90 edges (connections) and 46 destination
-cards (routes), and the game can be played by 2 to 5 players ([here](https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9)). 
-For our research, this is simply too complex. Therefore, we aim to simplify the game such that we have 3 agents playing 
+In the original version of Ticket to Ride Europe there are 47 cities (nodes), 90 connections (edges) and 46 route
+cards, and the game can be played by 2 to 5 players ([here](https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9)).
+For our research, this is too complex. Therefore, we simplify the game such that we have 3 agents playing 
 the game.
 
-We will begin our implementation with a subset of the original board layout. For example, we can start by only taking
-Western Europe. The number of destination cards will be influenced by the subset of the nodes that we take, and we assume
-all agents have perfect knowledge about the possible routes in the game, that is, they know which destination cards are
-in the game. We also apply the simplification that all destination cards are distributed among the agents. This
+We will begin our implementation with a subset of the original board layout. We choose the play the game using different 
+western European cities. The number of route cards will be influenced by the subset of the nodes that we take, 
+and we assume all agents have perfect knowledge about the possible routes in the game, that is, they know which route 
+cards are in the game. We also apply the simplification that all route cards are distributed among the agents. This
 automatically removes the possibility to use a turn to obtain new route cards.
 
-Additionally, to allow for knowledge to influence agent decisions in a reasonable way, we limit the agents to only two
+Additionally, to allow for knowledge to influence agent decisions, we limit the agents to only two
 ways to place trains: either claim a section of railway such that you progress on one of your own routes, or such that
 you hinder your opponent based on what you know about their possible routes. This means that knowledge will directly
 influence the strategies of the agents. If an agent cannot claim any routes that are allowed within the limitations of
@@ -75,12 +83,11 @@ three agents encounter this situation successively.
 
 ### Resources
 We still have to think about this, but we have to specify the following:
-* The number of trains each agents has to claim routes;
+* The number of trains each agent has to claim routes;
 * The exact number of routes.
 
 
 ## Model
-__Question: should we specify the model (K3, S4, S5, etc.)?__
 
 Let us define the following sets:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
@@ -97,13 +104,13 @@ possible states;
 * $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \, \vert \, s_j = t_j \text{ for all } j \in \{1,\dots,n\} \text{ where } 
 s_j = a_i\} \text{ for } 1 \leq i \leq m$$.
 
-The set of states, $$S$$ is simply all combinations of destination card distributions over the agents, where each agent has the
-same amount of destination cards. The valuation function $$\pi$$ assigns for each state a truth value to each predicate 
+The set of states, $$S$$ is simply all combinations of route card distributions over the agents, where each agent has the
+same amount of route cards. The valuation function $$\pi$$ assigns for each state a truth value to each predicate 
 $$p_{ij} \in \mathbf{P}$$. The set of relations for agent $$i$$ is all relations between two states in which agent $$i$$
-has the same destination cards.
+has the same route cards.
 
 At the start of the game, when the cards are evenly distributed among the agents, but the agents have not looked at their 
-destination cards, each agent knows that each agent has $$\frac{n}{m}$$ destination cards. Moreover, each agent
+route cards, each agent knows that each agent has $$\frac{n}{m}$$ route cards. Moreover, each agent
 knows that only one of agents has a specific train card, that is, for all 
 $$j \in \{1,\dots,n\}$$ and $$i \in \{1,\dots,m\}$$
 
@@ -113,7 +120,7 @@ and for all $$i \in \{1,\dots,m\}$$, for all $$l \in \{1,\dots,m\}\backslash\{i\
 
 $$M \models K_i p_{ij} \rightarrow K_i \lnot p_{lj}.$$
 
-After the agents have looked at their destination cards, the agents know which card they have, so for all 
+After the agents have looked at their route cards, the agents know which card they have, so for all 
 $$i \in \{1,\dots,m\}$$ and all $$j \in \{1,\dots,n\}$$
 
 $$M \models p_{ij} \rightarrow K_i p_{ij}.$$
@@ -121,23 +128,22 @@ $$M \models p_{ij} \rightarrow K_i p_{ij}.$$
 ### An agent's turn
 
 Consider now an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
-This agent has two options: 
+This agent considers three options, in this order:
+* Place trains on a connection between two cities to contribute to their own routes if they have the right number of train cards
+* Place trains on a connection between two cities to block another agent if they have the right number of train cards
 * draw train cards (either from the visible or not visible cards);
-* place trains on a connection between two cities (when having the correct amount of cards).
 
-In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
-closed deck.
-If the agent does not draw a locomotive train card from the visible cards, it can pick another card from either the 
-visible cards (but not a locomotive card) or the closed deck. 
 In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
 it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
-With purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a route on the
+With purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a connection on the
 shortest route of this opponent.
+In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
+closed deck.
+If the agent does not draw a joker card from the visible cards, it can pick another card from either the 
+visible cards (but not a joker card) or the closed deck. 
 
 Lastly, when an agent cannot claim any connection anymore, since, for example, there is no possible route for its 
-destination card anymore, and it cannot purposefully block another agent, the agent 'announces' that it cannot claim 
-any routes (every turn). __(For now, for simplicity reasons, we assume this does not change the model, although it contains useful
-information.)__ This will be explained later and is found to be necessary as otherwise the game might continue infinitely,
+route card anymore, and it cannot purposefully block another agent. This will be explained later and is found to be necessary as otherwise the game might continue infinitely,
 as the agents might always pick train cards. When, after another agent's turn the agent can claim a connection again,
 this will be 'announced' too.
 
@@ -151,7 +157,7 @@ With this, the model changes such that all states in which $$\neg p_{ij}$$ holds
 
 Another 'announcement' that modifies the model is that of claiming routes. When an agent claims a route, it gives
 information to the other agents. As earlier mentioned, an agent may only claim a route, when it is part of the shortest 
-route of one of its destination cards, or when it purposefully blocks an opponent (see explanation above). Hence, claiming
+route of one of its route cards, or when it purposefully blocks an opponent (see explanation above). Hence, claiming
 routes gives information to other agents as it must be one of the two.
 
 ### Map
@@ -169,7 +175,7 @@ needed to claim a connection are the edge costs.
 ### End-game
 The game can be ended in three ways:
 * When an agent has claimed a connection, and it has left only two trains, every agent has only one turn left;
-* When an agent accomplished all destination cards;
+* When an agent accomplished all route cards;
 * When all agents 'announced' in subsequent turns that they cannot claim any routes anymore.
 
 ## Findings
