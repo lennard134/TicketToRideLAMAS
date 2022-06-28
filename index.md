@@ -30,24 +30,41 @@ These nodes are connected with railway connections, which can be claimed by a pl
 The length of the route determines the score a player receives for that part of railway. 
 At the start of the game, each player is given a number of target routes, which yield additional points upon completion.
 
-At each turn, a player has four options. 
-First, the player can opt to gather colored cards which allow them to claim certain color-coded tracks in a next turn. 
+This project has as research goal to model and simulate (a simplification of) Ticket to Ride. The implementation should 
+use the acquired knowledge to determine what next action (within the given constraints) it should take. The knowledge is
+acquired by observing other agents, and the own cards.
+
+## The game
+The game consists of different cards and objects for which the meaning and function will be explained in this section.
+With this game, players should obtain as many points as possible. This is done by finishing route cards that are worth points.
+The **route cards** contain two cities between which the agent will have to create a route by placing trains on the connections 
+between cities. When the route is finished, the player obtains the number of points as indicated by the route card. 
+To place trains on a connection (i.e. claim a connection), a player can draw **train cards**. The connections have different 
+colours indicating which colour train card is needed to claim that specific connection. The length of the connection indicates
+how many train cards of a particular colour are needed. Furthermore, there are multiple **joker cards** in the game that can 
+be used as any of the colours.
+
+In the original game, there are three different kinds of connections. Regular connections between cities, ferry connections
+and tunnel connections. For claiming (i.e. placing trains on a connection) a regular connection requires a number of 
+train cards of a particular colour. The ferry connection requires regular cards combined with a minimum number of jokers
+The tunnel connection is a bit more complex, for a tunnel of length 2 and colour green, an agent would have to draw 3 
+new cards (this number does not depend on the length of the tunnel connection), and the number of cards that matches,
+n this case, the colour green will have to be added by the agent. 
+
+Another option for a player to use a connection is to build a train station at an already claimed connection. Using this
+station it is possible to use another player's connection to complete a route card.
+
+In the original game, a player has four options at each turn. 
+First, the player can opt to gather coloured cards which allow them to claim certain colour-coded tracks in a next turn. 
 Another possibility for a player is to claim a specific route. 
-This is done by playing the number of cards of the length of the specific route, all with that route's color. 
+This is done by playing the number of cards of the length of the specific route, all with that route's colour. 
 Only one route can be claimed during a player's turn. 
 Additionally, a player can build a train station to utilize a route that has already been claimed by another player. 
-Lastly, a player has the possibility to obtain new route cards.
+Lastly, a player has the possibility to obtain new route cards. 
 
-The route cards contain two cities between which the agent will have to create a route by placing trains on the connections 
-between cities. When the route is finished, the player obtains the number of points as indicated by the route card. 
-To place trains on a connection (i.e. claim a connection), a player can draw train cards. The connections have different 
-colours indicating which colour train card is needed to claim that specific connection. The length of the connection indicates
-how many train cards of a particular colour are needed. Furthermore, there are multiple joker cards in the game that can 
-be used as any of the colours. Jokers are also necessary for claiming ferry connection (i.e. connections that go over water),
-in the ferry connection regular cards can be combined with minimum of required jokers.
-
-## Research goal
-The goal of our research is to simulate and model (a simplification of) Ticket to Ride.
+The game ends when one player has 2 trains left. Then every player does one extra turn and after that the points 
+will be counted. Route cards that are not completed will give a penalty by subtracting the points the route is worth
+from the total.
 
 ## Simplifications of the game
 In the original version of Ticket to Ride Europe there are 47 cities (nodes), 90 connections (edges) and 46 route
@@ -55,7 +72,7 @@ cards, and the game can be played by 2 to 5 players ([here](https://towardsdatas
 For our research, this is too complex. Therefore, we simplify the game such that we have 3 agents playing 
 the game.
 
-We will begin our implementation with a subset of the original board layout. We choose the play the game using different 
+We will play our game with a subset of the original board layout. We choose to play the game using different 
 western European cities. The number of route cards will be influenced by the subset of the nodes that we take, 
 and we assume all agents have perfect knowledge about the possible routes in the game, that is, they know which route 
 cards are in the game. We also apply the simplification that all route cards are distributed among the agents. This
@@ -63,13 +80,13 @@ automatically removes the possibility to use a turn to obtain new route cards.
 
 Additionally, to allow for knowledge to influence agent decisions, we limit the agents to only two
 ways to place trains: either claim a section of railway such that you progress on one of your own routes, or such that
-you hinder your opponent based on what you know about their possible routes. This means that knowledge will directly
+you hinder your opponent based on what you know about their route cards. This means that knowledge will directly
 influence the strategies of the agents. If an agent cannot claim any routes that are allowed within the limitations of
 the two possibilities, they can draw new train cards following the original game rules: two cards (open or closed), or 
 one open joker card. Lastly, we initially omit the placement of train stations to simplify the procedure of the game.
 
 It should be noted that real world agents obtain a degree of knowledge from what colour cards an opponent draws. This
-is however a very complex -- and definitely not foolproof -- strategy to implement. It would require an agent to take into
+is however a very complex strategy to implement. It would require an agent to take into
 account all shortest routes with all colours that are relevant for those routes, and update its knowledge every round
 in which cards are drawn. Additionally, agents could draw certain cards to mislead agents that use knowledge about
 drawn cards. It is also possible that due to certain routes being claimed, the shortest route is no longer available, and
@@ -81,11 +98,43 @@ agent is allowed to claim a new route as there is no possible route that allows 
 opponents. This is a unique situation due to our simplifications and will be a cause for termination of the game when all
 three agents encounter this situation successively.
 
-### Resources
-We still have to think about this, but we have to specify the following:
-* The number of trains each agent has to claim routes;
-* The exact number of routes.
+### Design choices in implementation
+The code is build up such that all the parameters like number of route cards or trains for example can be changed easily. 
+For simplicity, we now assume that we have three agents that each received three unique route cards at the beginning
+of the game. Besides that, the agents all receive 45 trains which can be placed on connections.
 
+The code is implemented using Western European cities where the most west city is Lisboa and the most east is Brindisi.
+In total, there are 24 cities in the game, and the agents receive three out of a total of X route cards. On the Ticket
+to Ride board there are often double connections between cities which can be utilized if there are more than 3 players.
+As we have restricted ourselves to just three players, we only use single connections.
+
+#### An agent's turn
+Consider now an agent's turn given the simplifications and design choices. This agent considers three options, in this order:
+* Place trains on a connection between two cities to contribute to their own routes if they have the right number of train cards
+* Place trains on a connection between two cities to block another agent if they have the right number of train cards
+* draw train cards (either from the visible or not visible cards);
+
+In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
+it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
+With purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a connection on the
+shortest route of this opponent. In case an agent chooses to draw train cards, the agent can draw the first card from 
+either the (5) visible cards or the closed deck. If the agent does not draw a joker card from the visible cards,
+it can pick another card from either the visible cards (but not a joker card) or the closed deck.
+
+#### Shortest route
+Agents will always claim connections on the shortest path between the cities on the route cards. 
+We will use Uniform Cost Search (UCS) to find the shortest route between two cities on a route card.
+Here the number of trains that is needed to claim a connection are the edge costs. As it can happen that two options
+for claiming a connection are equally optimal, we choose that the agent will claim the connection on the route that is 
+worth most points. If the number of points are equal as well, we will perform a random choice.
+
+#### Blocking strategies
+
+#### End-game
+The game can be ended in three ways:
+* When an agent has claimed a connection, and it has only two trains left, every agent has only one turn left;
+* When an agent accomplished all route cards;
+* When all agents in subsequent turns cannot draw any cards anymore, neither from the open nor closed deck.
 
 ## Model
 
@@ -127,25 +176,8 @@ $$M \models p_{ij} \rightarrow K_i p_{ij}.$$
 
 ### An agent's turn
 
-Consider now an agent's turn, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
-This agent considers three options, in this order:
-* Place trains on a connection between two cities to contribute to their own routes if they have the right number of train cards
-* Place trains on a connection between two cities to block another agent if they have the right number of train cards
-* draw train cards (either from the visible or not visible cards);
-
-In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
-it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
-With purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a connection on the
-shortest route of this opponent.
-In case an agent chooses to draw train cards, the agent can draw the first card from either the (5) visible cards or the 
-closed deck.
-If the agent does not draw a joker card from the visible cards, it can pick another card from either the 
-visible cards (but not a joker card) or the closed deck. 
-
-Lastly, when an agent cannot claim any connection anymore, since, for example, there is no possible route for its 
-route card anymore, and it cannot purposefully block another agent. This will be explained later and is found to be necessary as otherwise the game might continue infinitely,
-as the agents might always pick train cards. When, after another agent's turn the agent can claim a connection again,
-this will be 'announced' too.
+Consider now an agent's turn given the simplifications and design choices, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
+Sverre, do your logic magic :sunglasses: 
 
 ### Public announcements
 If an agent completes a route from its route cards, this completion is (instantly) publicly announced to all agents. 
@@ -164,19 +196,8 @@ routes gives information to other agents as it must be one of the two.
 Consider the problem as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where each arc (connection) 
 $$a \in \mathcal{A}$$ has weight $$w_a$$, which is the number of trains that is needed to claim the connection.
 The nodes correspond to the cities.
-...
 
 
-### Shortest route
-We will use the A* path planner to find the shortest route between two cities. Here the number of trains that is 
-needed to claim a connection are the edge costs.
-
-
-### End-game
-The game can be ended in three ways:
-* When an agent has claimed a connection, and it has left only two trains, every agent has only one turn left;
-* When an agent accomplished all route cards;
-* When all agents 'announced' in subsequent turns that they cannot claim any routes anymore.
 
 ## Findings
 ...
