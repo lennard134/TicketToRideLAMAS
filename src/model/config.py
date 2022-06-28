@@ -67,14 +67,15 @@ PY_GAME_COLOUR_CONFIG = {
     'black': (0, 0, 0),
     'white': (255, 255, 255),
     'gray': (180, 180, 180),
+    'dark gray': (90, 90, 90),
     'background': (254, 235, 201),
     'background2': (191, 213, 232)
 }
 
 AGENT_COLOURS = {
-    'dark blue': (3, 0, 94),
-    'dark red': (174, 0, 3),
-    'yellow': (253, 208, 23),
-    'grass green': (0, 128, 0),
-    'light green': (39, 219, 216)
+    'dark blue': (3, 0, 114),
+    'red': (200, 0, 3),
+    'yellow': (215, 185, 42),
+    'dark pink': (163, 18, 134),
+    'light green': (39, 185, 185)
 }

@@ -70,14 +70,18 @@ class Agent(object):
         return claimable_connections[np.argmax(connection_value)]
 
     def print_agent_profile(self):
-        print(f"\n---\nProfile agent {self.agent_id}:")
+        print(f"\n------\nProfile agent {self.agent_id}:")
         print(f"* Owned train cards: {self.hand}")
         print(f"* Number of trains: {self.nr_of_trains}")
         print(f"* Owned connections:")
         for connection in self.game.board.connections:
             if connection.owner == self.agent_id:
                 print(f"* -- {connection.connection_name}")
-        print(f"---\n")
+        print(f"* Considered states:")
+        for state in self.game.model.worlds:
+            if state.has_agent_in_agent_list(self.agent_id, self.agent_id):
+                print(f"* -- {str(state)}")
+        print(f"------\n")
 
     def check_route_finished(self, route_card: RouteCard) -> bool:
         """

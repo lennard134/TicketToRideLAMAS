@@ -2,11 +2,6 @@
 Main file for the PyGame window responsible for both displaying the game board and the state space
 """
 
-# TODO: take care of ferries
-#       consider ownership
-#       check double connections
-#       Relations in state space
-
 # Modules
 import math
 import pygame
@@ -48,6 +43,8 @@ class Visualizer(object):
     def __init__(self, ttr: TicketToRide):
         self.ttr = ttr
         self.agent_colors = {}
+        self.state_coordinates = {}
+        self.selected_state_coordinates_tuple = None
 
         self._init_agent_colours()
 
@@ -161,6 +158,64 @@ class Visualizer(object):
         return SCREEN_WIDTH - PANEL_WIDTH + x_left <= mouse[0] \
                <= SCREEN_WIDTH - PANEL_WIDTH + x_right and y_top <= mouse[1] \
                <= y_bottom
+
+    def state_collision(self, mouse):
+        """
+        Returns True if mouse has collision with a circle from the set of state coordinates
+        :param mouse: tuple with mouse coordinates
+        :return: boolean indicating truth of collision
+        """
+        for world, coordinates in self.state_coordinates.items():
+            centerx, centery = coordinates
+            dist_x = mouse[0] - centerx
+            dist_y = mouse[1] - centery
+            # Calculate the length of the hypotenuse. If it's less than the
+            # radius, the mouse collides with the circle.
+            if math.hypot(dist_x, dist_y) < RADIUS:
+                if self.selected_state_coordinates_tuple and self.selected_state_coordinates_tuple == (world, centerx, centery):
+                    self.selected_state_coordinates_tuple = None
+                    return False
+                self.selected_state_coordinates_tuple = (world, centerx, centery)
+                print('collision')
+                return True
+        self.selected_state_coordinates_tuple = None
+        return False
+
+    def show_state_info(self, surface, text_left, text_height, font):
+        """
+        Adds information of selected world to the side panel
+        :param surface: PyGame surface object on which the text ought to be drawn
+        :param text_left: left coordinate of all text
+        :param text_height: height of text
+        :param font: font used in all other text of side panel
+        :return: updated surface with added state info
+        """
+        world, _, _ = self.selected_state_coordinates_tuple
+
+        text_height += BUTTON_HEIGHT
+        text = font.render(f"Selected world:", True, COLOURS['dark gray'])
+        txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+        surface.blit(text, (text_left, txt_top))
+
+        # print(f'world {world.get_name()} has agent_list {world._agent_list}')
+        for agent_id in self.agent_colors.keys():
+            if world.has_agent_in_agent_list(agent_id, agent_id):
+                color = self.agent_colors[agent_id]
+            else:
+                color = COLOURS['dark gray']
+
+            text_height += BUTTON_HEIGHT / 2
+            text = font.render(f"Agent {agent_id}:", True, color)
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            surface.blit(text, (text_left, txt_top))
+
+            for route_name in world.get_state(agent_id):
+                text_height += BUTTON_HEIGHT / 2
+                text = font.render(f"* {route_name}", True, color)
+                txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+                surface.blit(text, (text_left, txt_top))
+
+        return surface
 
     def draw_button(self, surface: pygame.Surface, button_x_left: int, button_y_top: int, button_x_right: int,
                     button_y_bottom: int, mouse: tuple[int, int],
@@ -284,10 +339,13 @@ class Visualizer(object):
         coordinates = self.compute_circular_coordinates(len(model.worlds))
         random.Random(69).shuffle(coordinates)
 
-        world_coordinate_tuples = {}
+        self.state_coordinates = {}
 
-        for world, coordinate_tuple in zip(model.worlds, coordinates):
-            world_coordinate_tuples[world] = coordinate_tuple
+        if len(model.worlds) == 1:
+            self.state_coordinates[model.worlds[0]] = (CONTENT_WIDTH / 2, SCREEN_HEIGHT / 2)
+        else:
+            for world, coordinate_tuple in zip(model.worlds, coordinates):
+                self.state_coordinates[world] = coordinate_tuple
 
         # draw relations with color per agent {'agent_id': [(world, world), ...], ...}
         for agent_id in model.relations.keys():
@@ -297,8 +355,8 @@ class Visualizer(object):
             for relation_tuple in relations_list:
                 world1, world2 = relation_tuple
 
-                start_pos = world_coordinate_tuples[world1]
-                end_pos = world_coordinate_tuples[world2]
+                start_pos = self.state_coordinates[world1]
+                end_pos = self.state_coordinates[world2]
 
                 pygame.draw.line(contents, color=agent_colour, start_pos=start_pos, end_pos=end_pos,
                                  width=LINE_THICKNESS_RELATION)
@@ -383,7 +441,7 @@ class Visualizer(object):
             side_panel.blit(text, (txt_left, txt_top))
 
             for route_card in agent.own_route_cards:
-                text_color = (0, 0, 0)
+                text_color = COLOURS['dark gray']
                 if route_card.is_finished:
                     text_color = self.agent_colors[agent.agent_id]
                 text_height += BUTTON_HEIGHT / 2
@@ -391,6 +449,9 @@ class Visualizer(object):
                 txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
                 side_panel.blit(text, (txt_left, txt_top))
             text_height += BUTTON_HEIGHT
+
+        if self.selected_state_coordinates_tuple:
+            side_panel = self.show_state_info(side_panel, txt_left, text_height, button_font)
 
         return side_panel
 
@@ -425,6 +486,10 @@ class Visualizer(object):
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
+                    # assert not clicked on state
+                    if not self.state_collision(mouse):
+                        self.selected_state_coordinates_tuple = None
+
                     # switch button
                     if self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2,
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
