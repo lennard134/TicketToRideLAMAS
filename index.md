@@ -123,7 +123,9 @@ it can pick another card from either the visible cards (but not a joker card) or
 
 #### Shortest route
 Agents will always claim connections on the shortest path between the cities on the route cards. 
-We will use Uniform Cost Search (UCS) to find the shortest route between two cities on a route card.
+We will use Uniform Cost Search (UCS) to find the shortest route between two cities on a route card. Calculating the
+shortest route only uses the information given by the board, which is available to all agents. Individual agent's hands
+are not considered as it will add unwanted uncertainty.
 Here the number of trains that is needed to claim a connection are the edge costs. As it can happen that two options
 for claiming a connection are equally optimal, we choose that the agent will claim the connection on the route that is 
 worth most points. If the number of points are equal as well, we will perform a random choice.
@@ -144,9 +146,11 @@ if an agent would not announce it knows and therefore blocks, other agents would
 for its own route or for blocking. In this situation, only public announcement would yield knowledge and an agent would never
 block as we only want an agent to block if it knows who is the owner of the route card.
 
+#### Drawing cards
+An agent can choose to draw a train card from the open deck based on what train cards it needs for the connections on
+the route cards. If there are multiple routes for which the agent needs a train card from the open deck, it will select the 
+train card that will add to the route card worth most points.
 
-#### Blocking strategies
-The knowledge
 #### End-game
 The game can be ended in three ways:
 * When an agent has claimed a connection, and it has only two trains left, every agent has only one turn left;
