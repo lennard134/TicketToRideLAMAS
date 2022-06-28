@@ -128,8 +128,25 @@ Here the number of trains that is needed to claim a connection are the edge cost
 for claiming a connection are equally optimal, we choose that the agent will claim the connection on the route that is 
 worth most points. If the number of points are equal as well, we will perform a random choice.
 
-#### Blocking strategies
+#### Obtaining knowledge 
+As mainly the knowledge determines the agent's strategy, we will have to define the different ways this knowledge can
+be obtained. The first and most straight forward method is that when an agent looks at its cards after they have been
+distributed. This will give the agent knowledge of its own cards. The next way is, when an agent finished a route card,
+it will announce this. The public announcement of this card results in a smaller Kripke model as some worlds are not
+possible anymore.
 
+By claiming a connection, an agent can give away which route card it has. As all agents know all cards and share the set of 
+shortest routes, a connection belonging to only one route card can give away which card the agent is working on. (EXAMPLE)
+This knowledge can be used to block an agent. If an agent cannot claim a connection itself, it explores the possibilities
+based on its knowledge to block another agent. When blocking, an agent publicly announces that it knows another agent's
+route card and then blocks a connection on that route. This gives other agents knowledge as well. This is done because
+if an agent would not announce it knows and therefore blocks, other agents would not know if this agent claims a connection
+for its own route or for blocking. In this situation, only public announcement would yield knowledge and an agent would never
+block as we only want an agent to block if it knows who is the owner of the route card.
+
+
+#### Blocking strategies
+The knowledge
 #### End-game
 The game can be ended in three ways:
 * When an agent has claimed a connection, and it has only two trains left, every agent has only one turn left;
