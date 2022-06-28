@@ -317,4 +317,3 @@ class Agent(object):
 
     def __str__(self):
         return f"Agent {self.agent_id}. "
-               # f"Has route cards {[card for ]}"

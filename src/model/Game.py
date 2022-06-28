@@ -94,8 +94,6 @@ class Game(object):
                 shortest_route = self.calculate_shortest_route(from_city, target_city, agent.agent_id)
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
-    # TODO: what if a connection can be for few route cards, then you know that the agent must have any of those set.
-
     def announce_claimed_connection(self, announcing_agent_id: int, claimed_connection: Connection):
         """
         Function updates Kripke model based on claimed connection by agent id
@@ -107,8 +105,6 @@ class Game(object):
             possible_singled_out = []
             if agent.agent_id != announcing_agent_id:
                 for route_card in self.route_cards.values():
-                    # known_route_cards = self.model.get_known_route_cards(agent_id=agent.agent_id,
-                    #                                                      target_agent_id=announcing_agent_id)
                     if route_card not in agent.own_route_cards and not route_card.is_finished:
                         if claimed_connection in route_card.shortest_routes[announcing_agent_id]:
                             possible_singled_out.append(route_card.route_name)

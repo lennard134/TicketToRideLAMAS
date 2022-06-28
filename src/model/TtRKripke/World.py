@@ -44,7 +44,6 @@ class World(object):
         """
         assert agent_asking == agent_targeting, f"Agent {agent_asking} may not ask about {agent_targeting}."
         return agent_targeting in self._agent_list
-        # return agent_id in self._agent_list
 
     def remove_agent_from_list(self, agent_id: int):
         """

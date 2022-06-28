@@ -414,8 +414,9 @@ class Visualizer(object):
                                       button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
                                       mouse, button_font, "Reset")
 
+        # show relevant information of agents
         text_height = 6 * BUTTON_HEIGHT
-        txt_left = button_x_left - BUTTON_WIDTH / 2  # TODO: magical number?
+        txt_left = BUFFER_FACTOR * 2
         for idx, agent in enumerate(self.ttr.agents):
             text = button_font.render(f"Agent {agent.agent_id}", True,
                                       self.agent_colors[agent.agent_id])
@@ -448,8 +449,22 @@ class Visualizer(object):
                 text = button_font.render(f"   - {route_card.route_name}", True, text_color)
                 txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
                 side_panel.blit(text, (txt_left, txt_top))
+
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"* last move:", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"   - {agent.last_move}", True,
+                                      self.agent_colors[agent.agent_id])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
+
             text_height += BUTTON_HEIGHT
 
+        # show information of selected state
         if self.selected_state_coordinates_tuple:
             side_panel = self.show_state_info(side_panel, txt_left, text_height, button_font)
 
@@ -460,7 +475,6 @@ class Visualizer(object):
         Main PyGame function responsible for keeping the screen up to date
         """
         pygame.init()
-        clock = pygame.time.Clock()
 
         screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         contents = screen.copy()
@@ -494,8 +508,6 @@ class Visualizer(object):
                     if self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2,
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
-                        # if not show_board:
-                        #     self.ttr.kripke.print_world_agent_list()
 
                     # turn button
                     elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
@@ -519,7 +531,6 @@ class Visualizer(object):
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
 
             pygame.display.update()
-            # clock.tick(1)
 
 
 if __name__ == "__main__":
