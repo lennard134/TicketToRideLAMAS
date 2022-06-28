@@ -527,6 +527,8 @@ class Visualizer(object):
 
             side_panel = self.draw_side_panel(side_panel, button_x_left, button_x_right, mouse)
 
+            # if
+
             screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
 
