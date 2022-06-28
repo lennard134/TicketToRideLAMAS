@@ -1,7 +1,7 @@
 # packages
 import argparse
 
-from src.model.TicketToRide import TicketToRide
+from model.TicketToRide import TicketToRide
 from Visualizer import Visualizer
 
 INPUT_FILE = 'input'

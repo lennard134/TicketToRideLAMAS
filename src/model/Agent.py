@@ -3,20 +3,20 @@ Object player that holds all information necessary for an agent to play the game
 """
 
 # settings
-from src.model.Game import Game
-from src.model.RouteCard import RouteCard
-from src.model.map.Connection import Connection, FerryConnection
-from src.model.Deck import TRAIN_COLOURS
-from src.model import config
+from .Game import Game
+from .RouteCard import RouteCard
+from .map.Connection import Connection, FerryConnection
+from .Deck import TRAIN_COLOURS
+from .config import *
 
 import numpy as np
 
 # Params in Agent Config
-START_SCORE = config.AGENT_CONFIG['START_SCORE']
-JOKER_COLOUR = config.DECK_CONFIG['JOKER_COLOUR']
-NR_CARDS_TO_DRAW = config.AGENT_CONFIG['NR_CARDS_TO_DRAW']
-GRAY_CONNECTION = config.BOARD_CONFIG['GRAY_COLOUR']
-TRAIN_POINTS = config.BOARD_CONFIG['TRAIN_POINTS']
+START_SCORE = AGENT_CONFIG['START_SCORE']
+JOKER_COLOUR = DECK_CONFIG['JOKER_COLOUR']
+NR_CARDS_TO_DRAW = AGENT_CONFIG['NR_CARDS_TO_DRAW']
+GRAY_CONNECTION = BOARD_CONFIG['GRAY_COLOUR']
+TRAIN_POINTS = BOARD_CONFIG['TRAIN_POINTS']
 
 
 class Agent(object):

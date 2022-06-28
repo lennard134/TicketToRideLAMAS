@@ -3,7 +3,7 @@ Contains a start point and an end point of a connection, the color and number of
 """
 
 # packages
-from src.model.map.City import City
+from ..map.City import City
 
 
 class Connection(object):

@@ -1,7 +1,7 @@
 # packages
 import itertools
 
-from src.model.TtRKripke.World import World
+from ..ttr_kripke.World import World
 
 
 class TtRKripke(object):

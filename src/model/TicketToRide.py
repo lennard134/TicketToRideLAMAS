@@ -4,25 +4,25 @@ Object Ticket to ride board game that has all the functionalities of the game
 
 # packages
 import random
-from src.model.Deck import Deck
-from src.model.map.Board import Board
-from src.model.Agent import Agent
-from src.model.RouteCard import RouteCard
-from src.model.Game import Game
-from src.model.TtRKripke.TtRKripke import TtRKripke
-from src.model import config
+from .Deck import Deck
+from .map.Board import Board
+from .Agent import Agent
+from .RouteCard import RouteCard
+from .Game import Game
+from .ttr_kripke.TtRKripke import TtRKripke
+from .config import *
 import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Data in TICKET_TO_RIDE_CONFIG
-NR_OF_AGENTS = config.TICKET_TO_RIDE_CONFIG['NR_OF_AGENTS']
-NR_OF_TRAINS = config.TICKET_TO_RIDE_CONFIG['NR_OF_TRAINS']
-NR_TRAIN_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
-NR_OF_DESTINATION_CARDS = config.TICKET_TO_RIDE_CONFIG['NR_OF_DESTINATION_CARDS']
-ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, config.TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
-MIN_TRAINS = config.TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
-MAX_TURNS = config.TICKET_TO_RIDE_CONFIG['MAX_TURNS']
+NR_OF_AGENTS = TICKET_TO_RIDE_CONFIG['NR_OF_AGENTS']
+NR_OF_TRAINS = TICKET_TO_RIDE_CONFIG['NR_OF_TRAINS']
+NR_TRAIN_CARDS = TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
+NR_OF_DESTINATION_CARDS = TICKET_TO_RIDE_CONFIG['NR_OF_DESTINATION_CARDS']
+ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
+MIN_TRAINS = TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
+MAX_TURNS = TICKET_TO_RIDE_CONFIG['MAX_TURNS']
 
 
 class TicketToRide(object):

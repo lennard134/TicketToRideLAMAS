@@ -2,14 +2,14 @@
 This class represents the deck of playing cards with coloured wagons and locomotives
 """
 import random
-from src.model import config
+from .config import *
 
 # Config in Deck Config
-NR_COLOUR_CARDS = config.DECK_CONFIG['NR_COLOUR_CARDS']
-NR_JOKERS = config.DECK_CONFIG['NR_JOKERS']
-NR_OPEN_CARDS = config.DECK_CONFIG['NR_OPEN_CARDS']
-TRAIN_COLOURS = config.DECK_CONFIG['TRAIN_COLOURS']
-JOKER_COLOUR = config.DECK_CONFIG['JOKER_COLOUR']
+NR_COLOUR_CARDS = DECK_CONFIG['NR_COLOUR_CARDS']
+NR_JOKERS = DECK_CONFIG['NR_JOKERS']
+NR_OPEN_CARDS = DECK_CONFIG['NR_OPEN_CARDS']
+TRAIN_COLOURS = DECK_CONFIG['TRAIN_COLOURS']
+JOKER_COLOUR = DECK_CONFIG['JOKER_COLOUR']
 
 
 class Deck(object):

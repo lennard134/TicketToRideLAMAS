@@ -3,7 +3,7 @@ The code in this class is adapted from: https://github.com/AndreasSoularidis/med
 """
 
 # packages
-from src.model.search_alg.Node import Node
+from ..search_alg.Node import Node
 
 
 class Graph:

@@ -2,12 +2,12 @@
 Game object containing all relevant game-items for the player
 """
 
-from src.model.map.Board import Board
-from src.model.Deck import Deck
-from src.model.RouteCard import RouteCard
-from src.model.TtRKripke.TtRKripke import TtRKripke
-from src.model.map.Connection import Connection
-from src.model.search_alg.Graph import Node, Graph
+from .map.Board import Board
+from .Deck import Deck
+from .RouteCard import RouteCard
+from .ttr_kripke.TtRKripke import TtRKripke
+from .map.Connection import Connection
+from .search_alg.Graph import Node, Graph
 
 
 class Game(object):

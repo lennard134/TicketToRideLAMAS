@@ -3,19 +3,19 @@ This class represents the board of the game
 """
 
 # packages
-from src.model.map.City import City
-from src.model.map.Connection import Connection, FerryConnection
-from src.model.Deck import TRAIN_COLOURS
-from src.model import config
+from ..map.City import City
+from ..map.Connection import Connection, FerryConnection
+from ..Deck import TRAIN_COLOURS
+from ..config import *
 
 import os
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # settings
-CITY_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CITY_FILE_PATH'])
-CONNECTION_FILE_PATH = os.path.join(ROOT_DIR, config.BOARD_CONFIG['CONNECTION_FILE_PATH'])
-GRAY_CONNECTION = config.BOARD_CONFIG['GRAY_COLOUR']
+CITY_FILE_PATH = os.path.join(ROOT_DIR, BOARD_CONFIG['CITY_FILE_PATH'])
+CONNECTION_FILE_PATH = os.path.join(ROOT_DIR, BOARD_CONFIG['CONNECTION_FILE_PATH'])
+GRAY_CONNECTION = BOARD_CONFIG['GRAY_COLOUR']
 
 
 class Board(object):
