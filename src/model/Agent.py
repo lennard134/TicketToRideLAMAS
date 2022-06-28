@@ -109,7 +109,6 @@ class Agent(object):
         possible_blocks = {}
         for agent in self.game.agent_list:
             if not agent.agent_id == self.agent_id:
-                # TODO: do we use knowledge???
                 known_routes_str = self.game.model.get_known_route_cards(self.agent_id, agent.agent_id)
                 for known_route_str in known_routes_str:
                     blockable_connections = self.game.route_cards[known_route_str].shortest_routes[agent.agent_id]
@@ -129,8 +128,8 @@ class Agent(object):
         :param block_tuple: Tuple containing route card and a connection
         """
         route_card, connection = block_tuple
-        self.game.model.public_announcement_route_card(agent_id_blocked, route_card)
-        self.claim_connection(connection)
+        self.game.model.public_announcement_route_card(agent_id_blocked, {route_card})
+        self.claim_connection(connection, 'block')
 
     def draw_card(self):
         """
@@ -230,7 +229,7 @@ class Agent(object):
 
         return claimable_connections
 
-    def claim_connection(self, connection: Connection):
+    def claim_connection(self, connection: Connection, claim_type='claim'):
         """
         Agent claims a connection by putting trains on a connection
         """
@@ -261,14 +260,17 @@ class Agent(object):
         for color in color_list:
             self.hand.remove(color)
 
-        self.game.announce_connection(self.agent_id, connection)
+        if claim_type == 'claim':
+            self.game.announce_claimed_connection(self.agent_id, connection)
+
+        self.game.recalculate_shortest_routes()
 
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
-                route_card.set_finished()
                 self.score += route_card.score  # Add score from finished route card
                 print(f"- Agent {self.agent_id} finished a route card with {route_card.score} points!")
-                self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card=route_card.route_name)
+                self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card={route_card.route_name})
+                route_card.set_finished()
 
     def choose_action(self):
         """
@@ -285,7 +287,8 @@ class Agent(object):
         claimable_connections = self.check_claim_connection()
         if claimable_connections:
             print(f"- Agent {self.agent_id} claims connection.")
-            self.claim_connection(self.select_connection_to_claim(claimable_connections))
+            claimed_connection = self.select_connection_to_claim(claimable_connections)
+            self.claim_connection(claimed_connection, 'claim')
         else:
             claimable_connections = self.check_block_connection()
             if claimable_connections:
@@ -294,7 +297,7 @@ class Agent(object):
                 agent_to_block = np.random.choice(list(claimable_connections.keys()))
                 block_tuple_idx = np.random.choice(range(len(claimable_connections[agent_to_block])))
                 block_tuple = claimable_connections[agent_to_block][block_tuple_idx]
-                self.block_connection(agent_to_block, block_tuple)  # block tuple : (route_card: str, connection)
+                self.block_connection(agent_to_block, block_tuple)
             else:
                 print(f"- Agent {self.agent_id} draws card.")
                 self.draw_card()

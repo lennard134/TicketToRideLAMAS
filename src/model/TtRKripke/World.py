@@ -38,11 +38,13 @@ class World(object):
             name += f",({','.join(self.state[agent_id])})"
         return name + "]"
 
-    def has_agent_in_agent_list(self, agent_id: int) -> bool:
+    def has_agent_in_agent_list(self, agent_asking: int, agent_targeting: int) -> bool:
         """
         Returns true if the provided agent_id is in the agent list
         """
-        return agent_id in self._agent_list
+        assert agent_asking == agent_targeting, f"Agent {agent_asking} may not ask about {agent_targeting}."
+        return agent_targeting in self._agent_list
+        # return agent_id in self._agent_list
 
     def remove_agent_from_list(self, agent_id: int):
         """

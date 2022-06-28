@@ -22,6 +22,13 @@ class TtRKripke(object):
         # print("worlds initialized")
         self._init_relations()
         # print("relations initialized")
+        # self._init_known_states()
+
+    # def _init_known_states(self):
+    #     for agent_id in self.agent_ids:
+    #         self.known_states[agent_id] = {}
+    #         for target_id in self.agent_ids:
+    #             self.known_states[agent_id][target_id] = []
 
     def _init_worlds(self):
         """
@@ -71,8 +78,12 @@ class TtRKripke(object):
         print(f"----------------------------------------------------------------------------------\n"
               f"Agent {agent_id} knows that itself has cards {route_cards}\n"
               f"----------------------------------------------------------------------------------\n")
+        # for route_card in route_cards:
+        #     self.known_states[agent_id][agent_id].append(route_card)
+
         update_dict = []
-        print(f"Agent first has {len(self.relations[agent_id])} relations")
+        # print(f"Agent first has {len(self.relations[agent_id])} relations")
+        # remove all relations for an agent between two states where that agent does not have the same cards
         for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
             # check if intersection is equal to route cards
             from_state = relation[0].get_state(agent_id)
@@ -84,22 +95,22 @@ class TtRKripke(object):
             #     print(f"Removing relation: {relation[0]}, {relation[1]}")
 
         self.relations[agent_id] = update_dict
-        print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
+        # print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
 
         # agents no longer consider the worlds that violate their own relations
-        total_removal = 0
+        # total_removal = 0
         for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id):
+            if world.has_agent_in_agent_list(agent_id, agent_id):  # TODO: check this
                 target_set = world.get_state(agent_id)
                 if route_cards.difference(target_set):
-                    print(f"removing {agent_id} from world {str(world)}")
-                    total_removal += 1
+                    # print(f"removing {agent_id} from world {str(world)}")
+                    # total_removal += 1
                     world.remove_agent_from_list(agent_id)
 
-        for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id):
-                print(f"{agent_id} still in {str(world)}")
-        print(f"TOTAL REMOVED = {total_removal}")
+        # for world in self.worlds:
+        #     if world.has_agent_in_agent_list(agent_id, agent_id):  # TODO: check this
+        #         print(f"{agent_id} still in {str(world)}")
+        # print(f"TOTAL REMOVED = {total_removal}")
 
     def update_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
         """
@@ -111,37 +122,111 @@ class TtRKripke(object):
         print(f"\n----------------------------------------------------------------------------------\n"
               f"Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}\n"
               f"----------------------------------------------------------------------------------\n")
+
         update_dict = []
-        print(f"Agent first has {len(self.relations[agent_id])} relations")
+        # print(f"Agent first has {len(self.relations[agent_id])} relations")
+        # Remove all relations from considered states by an agent where the above holds
         for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
-            # check if intersection is equal to route cards
-            from_state = relation[0].get_state(target_agent_id)
-            to_state = relation[1].get_state(target_agent_id)
-            # if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
-            #         route_cards.difference(from_state) and not route_cards.difference(to_state)):
-            if (route_cards.difference(from_state) or not route_cards.difference(to_state)) and (
-                    not route_cards.difference(from_state) or route_cards.difference(to_state)):
-                # true if all route cards are in first world, but not in second
-                # or if all route cards are in the second world, but not in the first (for symmetry)
-                update_dict.append(relation)
-            # else:
-            #     print(f"Removing relation: {relation[0]}, {relation[1]}")
+            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
+                # check if intersection is equal to route cards
+                from_state = relation[0].get_state(target_agent_id)
+                to_state = relation[1].get_state(target_agent_id)
+                if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
+                        route_cards.difference(from_state) and not route_cards.difference(to_state)):
+                    # removing relation if there is a difference between two states
+                    # print(f"Removing relation: {relation[0]}, {relation[1]}")
+                    continue
+            update_dict.append(relation)
 
         self.relations[agent_id] = update_dict
-        print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
+        # print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
 
         # agents no longer consider the worlds that violate their own relations
         total_removal = 0
         for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id):
+            if world.has_agent_in_agent_list(agent_id, agent_id):
                 target_set = world.get_state(target_agent_id)
                 if route_cards.difference(target_set):
-                    print(f"removing {agent_id} from world {str(world)}")
+                    # print(f"removing {agent_id} from world {str(world)}")
                     total_removal += 1
                     world.remove_agent_from_list(agent_id)
-        print(f"TOTAL REMOVED = {total_removal}")
+        # print(f"TOTAL REMOVED = {total_removal}")
 
-    def public_announcement_route_card(self, agent_id: int, route_card: str):
+    def update_possible_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
+        print(f"\n----------------------------------------------------------------------------------\n"
+              f"Agent {agent_id} knows that agent {target_agent_id} has at least one of cards {route_cards}\n"
+              f"----------------------------------------------------------------------------------\n")
+        if len(route_cards) == 1:
+            # certainty when there is only one considered route card.
+            self.update_relations(agent_id, target_agent_id, route_cards)
+            return
+
+        update_dict = []
+        # print(f"Agent first has {len(self.relations[agent_id])} relations")
+        # Remove all relations from considered states by an agent where the above holds
+        for relation in self.relations[agent_id]:  # agent0: (e) [(e,f),(d,c),(a,b)], [(e,d),(d,c),(a,b)]
+            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
+                # check if intersection is equal to route cards
+                from_state = relation[0].get_state(target_agent_id)
+                to_state = relation[1].get_state(target_agent_id)
+                # remove relations where you go from considered states to states that don't have the above property
+                if from_state.intersection(route_cards) and not to_state.intersection(route_cards):
+                    # print(f"Removing relation: {relation[0]}, {relation[1]}")
+                    continue
+            update_dict.append(relation)
+
+        self.relations[agent_id] = update_dict
+        # print(f"Agent {agent_id} remains with {len(self.relations[agent_id])} relations")
+
+        # agents no longer consider the worlds that violate the above property
+        total_removal = 0
+        for world in self.worlds:
+            if world.has_agent_in_agent_list(agent_id, agent_id):  # TODO: check this
+                target_set = world.get_state(target_agent_id)
+                if not route_cards.intersection(target_set):
+                    # print(f"removing {agent_id} from world {str(world)}")
+                    total_removal += 1
+                    world.remove_agent_from_list(agent_id)
+        # print(f"TOTAL REMOVED = {total_removal}")
+
+    def public_announcement_possibilities(self, agent_id: int, route_cards: set[str]):
+        print(f"----------------------------------------------------------------------------------\n"
+              f"Publicly known that agent {agent_id} has at least one of cards {route_cards}\n"
+              f"----------------------------------------------------------------------------------")
+
+        if len(route_cards) == 1:
+            self.public_announcement_route_card(agent_id, route_cards)
+
+        # remove relations
+        for agent in self.agent_ids:
+            update_dict = []
+            for relation in self.relations[agent]:
+                from_state = relation[0].get_state(agent_id)
+                to_state = relation[1].get_state(agent_id)
+                if from_state.intersection(route_cards) and to_state.intersection(route_cards):
+                    # keep state if one of route cards is in state
+                    update_dict.append(relation)
+                # else:
+                #     print(f"Removing relation: {relation[0]}, {relation[1]}")
+
+            self.relations[agent] = update_dict
+
+        # remove worlds
+        world_list = []
+        for world in self.worlds:
+            # print(f"card set = {card_set}")
+            # print(f"get state = {world.get_state(agent_id)}")
+            # print(f"difference = {card_set.difference(world.get_state(agent_id))}")
+            if route_cards.intersection(world.get_state(agent_id)):
+                # true if card is in state for agent_id
+                print(f"agent list of kept world {world.get_name()}: {world._agent_list}")
+                world_list.append(world)
+            else:
+                print(f"Removing world {str(world)}")
+        self.worlds = world_list
+
+
+    def public_announcement_route_card(self, agent_id: int, route_card: set[str]):
         """
         Method to do a public announcement of a route card and remove worlds that are no longer possible
         :param agent_id: Agent that has route card
@@ -150,14 +235,16 @@ class TtRKripke(object):
         print(f"\n----------------------------------------------------------------------------------\n"
               f"Publicly known that agent {agent_id} has card {route_card}\n"
               f"----------------------------------------------------------------------------------\n")
+
+        # TODO: remove too much worlds? NO!
+
         # remove relations
-        card_set = {route_card}
         for agent in self.agent_ids:
             update_dict = []
             for relation in self.relations[agent]:
                 from_state = relation[0].get_state(agent_id)
                 to_state = relation[1].get_state(agent_id)
-                if not card_set.difference(from_state) and not card_set.difference(to_state):
+                if not route_card.difference(from_state) and not route_card.difference(to_state):
                     # true if card in both states
                     update_dict.append(relation)
                 # else:
@@ -171,16 +258,16 @@ class TtRKripke(object):
             # print(f"card set = {card_set}")
             # print(f"get state = {world.get_state(agent_id)}")
             # print(f"difference = {card_set.difference(world.get_state(agent_id))}")
-            if not card_set.difference(world.get_state(agent_id)):
+            if not route_card.difference(world.get_state(agent_id)):
                 # true if card is in state for agent_id
-                print(f"agent list of kept world {world._agent_list}")
+                print(f"agent list of kept world {world.get_name()}: {world._agent_list}")
                 world_list.append(world)
             else:
                 print(f"Removing world {str(world)}")
 
         self.worlds = world_list
         print(f"Number of worlds left = {len(self.worlds)}")
-        print(f"Number of relations left for agent {agent_id} = {len(self.relations[agent_id])}")
+        # print(f"Number of relations left for agent {agent_id} = {len(self.relations[agent_id])}")
 
     def print_world_agent_list(self):
         empty_worlds = 0
@@ -204,7 +291,7 @@ class TtRKripke(object):
         possible_target_cards = {}
 
         for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id):
+            if world.has_agent_in_agent_list(agent_id, agent_id):  # TODO: CHECK THIS
                 world_counter += 1
                 for route_card in world.get_state(target_agent_id):
                     if route_card in possible_target_cards.keys():

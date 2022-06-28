@@ -125,6 +125,15 @@ class TicketToRide(object):
             route_card_dict[route_card.route_name] = route_card
         return route_card_dict
 
+    def get_true_state(self):
+        true_state = {}
+        for agent in self.agents:
+            route_cards = set([])
+            for route_card in agent.own_route_cards:
+                route_cards.add(route_card.route_name)
+            true_state[agent.agent_id] = route_cards
+        return true_state
+
     def announce_winner(self):
         print("\n\n-----------------------------------------------------------------\n"
               "........................AND THE WINNER IS........................\n"

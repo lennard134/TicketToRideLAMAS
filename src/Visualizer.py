@@ -304,8 +304,26 @@ class Visualizer(object):
                                  width=LINE_THICKNESS_RELATION)
 
         # draw worlds
-        for _, coordinate_tuple in world_coordinate_tuples.items():
-            pygame.draw.circle(contents, (255, 0, 0), coordinate_tuple, radius=RADIUS)
+        true_state = self.ttr.get_true_state()
+        found_true_state = False
+        for world, coordinate_tuple in self.state_coordinates.items():
+            x, y = coordinate_tuple
+            tuple_to_check = (world, x, y)
+            if tuple_to_check == self.selected_state_coordinates_tuple:
+                pygame.draw.circle(contents, (0, 0, 255), coordinate_tuple, radius=RADIUS)
+            else:
+                if not found_true_state:
+                    for agent in self.ttr.agents:
+                        if not true_state[agent.agent_id].symmetric_difference(world.get_state(agent.agent_id)):
+                            # true if no difference in states
+                            found_true_state = True
+                        else:
+                            found_true_state = False
+                            break
+                    if found_true_state:
+                        pygame.draw.circle(contents, (0, 255, 0), coordinate_tuple, radius=RADIUS)
+                        continue
+                pygame.draw.circle(contents, (255, 0, 0), coordinate_tuple, radius=RADIUS)
 
         return contents
 
@@ -411,8 +429,8 @@ class Visualizer(object):
                     if self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2,
                                                 button_x_right, BUTTON_HEIGHT / 2 + BUTTON_HEIGHT, mouse):
                         show_board = False if show_board else True
-                        if not show_board:
-                            self.ttr.kripke.print_world_agent_list()
+                        # if not show_board:
+                        #     self.ttr.kripke.print_world_agent_list()
 
                     # turn button
                     elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 2 * BUTTON_HEIGHT,
@@ -437,6 +455,7 @@ class Visualizer(object):
 
             pygame.display.update()
             # clock.tick(1)
+
 
 if __name__ == "__main__":
     ttr = TicketToRide()

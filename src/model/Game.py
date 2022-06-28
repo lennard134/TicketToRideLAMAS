@@ -94,27 +94,34 @@ class Game(object):
                 shortest_route = self.calculate_shortest_route(from_city, target_city, agent.agent_id)
                 route_card.add_shortest_route(agent.agent_id, shortest_route=shortest_route)
 
-    def announce_connection(self, announcing_agent_id: int, claimed_connection: Connection):
+    # TODO: what if a connection can be for few route cards, then you know that the agent must have any of those set.
+
+    def announce_claimed_connection(self, announcing_agent_id: int, claimed_connection: Connection):
         """
         Function updates Kripke model based on claimed connection by agent id
         :param announcing_agent_id: Agent that claims connection
         :param claimed_connection: Connection that is being claimed
         """
-        # check if some agent now knows a card from agent_id
+        # check if some agent now knows possible cards from agent_id
         for agent in self.agent_list:
             possible_singled_out = []
             if agent.agent_id != announcing_agent_id:
                 for route_card in self.route_cards.values():
-                    known_route_cards = self.model.get_known_route_cards(agent_id=agent.agent_id, target_agent_id=announcing_agent_id)
-                    if route_card not in agent.own_route_cards and not route_card.is_finished and route_card.route_name not in known_route_cards:
+                    # known_route_cards = self.model.get_known_route_cards(agent_id=agent.agent_id,
+                    #                                                      target_agent_id=announcing_agent_id)
+                    if route_card not in agent.own_route_cards and not route_card.is_finished:
                         if claimed_connection in route_card.shortest_routes[announcing_agent_id]:
                             possible_singled_out.append(route_card.route_name)
-                            if len(possible_singled_out) > 1:
-                                break
-                if len(possible_singled_out) == 1:
-                    route_to_update = set(possible_singled_out)
-                    self.model.update_relations(agent_id=agent.agent_id, target_agent_id=announcing_agent_id,
-                                                route_cards=route_to_update)
+                route_to_update = set(possible_singled_out)
+                self.model.update_possible_relations(agent_id=agent.agent_id, target_agent_id=announcing_agent_id,
+                                                     route_cards=route_to_update)
 
-        # Recalculate shortest route
-        self.recalculate_shortest_routes()
+        public_singled_out = set([])
+        for route_card in self.route_cards.values():
+            # only in one route_card
+            if claimed_connection in route_card.shortest_routes[announcing_agent_id] and not route_card.is_finished:
+                public_singled_out.add(route_card.route_name)
+
+        # possibilities
+        self.model.public_announcement_possibilities(announcing_agent_id, public_singled_out)
+
