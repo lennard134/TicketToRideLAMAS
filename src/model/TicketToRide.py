@@ -78,9 +78,9 @@ class TicketToRide(object):
             print(f"Deleting {left_over_cards} route cards.")
             del self.route_cards[-left_over_cards:]
 
-        print(f"Possible route cards")
+        print(f"Possible route cards:")
         for route_card in self.route_cards:
-            print(f"- {route_card}")
+            print(f"- {route_card.route_name}")
 
     def _init_kripke(self):
         agent_ids = []
@@ -145,7 +145,6 @@ class TicketToRide(object):
         agent_winner = max(points.keys(), key=(lambda idx: points[idx]))
 
         print(f"\nCONGRATULATIONS!!! Agent {agent_winner} has won with {points[agent_winner]} points!\n")
-        print(f"Thanks for playing with Crimineel, Snuifkuif en Geronimo!! They loved it!")
         print(r"""
          _____ _   _   ___   _   _  _   __ _____   ______ ___________   ______ _       _____   _______ _   _ _____    _____ _  ______ 
         |_   _| | | | / _ \ | \ | || | / //  ___|  |  ___|  _  | ___ \  | ___ \ |     / _ \ \ / /_   _| \ | |  __ \  |_   _| | | ___ \
@@ -154,6 +153,7 @@ class TicketToRide(object):
           | | | | | || | | || |\  || |\  \/\__/ /  | |   \ \_/ / |\ \   | |   | |____| | | || |  _| |_| |\  | |_\ \    | | | |_| |\ \ 
           \_/ \_| |_/\_| |_/\_| \_/\_| \_/\____/   \_|    \___/\_| \_|  \_|   \_____/\_| |_/\_/  \___/\_| \_/\____/    \_/  \__\_| \_|
         """)
+        print(f"Made by Jeroen, Lennard and Sverre!!")
 
     def is_finished(self, agent_turn: int) -> bool:
         """
@@ -164,9 +164,7 @@ class TicketToRide(object):
         for agent in self.agents:
             # check if an agent has finished all route_cards
             if agent.check_if_route_cards_done():
-                print(f"--------------------------------------------------------\n"
-                      f"-------- AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS -------------\n"
-                      f"--------------------------------------------------------")
+                print(f"--> AGENT {agent.agent_id} FINISHED ALL ROUTE CARDS")
                 return True
 
         # check if an agent has less than 3 trains left, then everyone has only one turn left
@@ -174,13 +172,9 @@ class TicketToRide(object):
             for agent in self.agents:
                 if agent.nr_of_trains < MIN_TRAINS:
                     self.last_turn = agent.agent_id
-                    print(f"--------------------------------------------------------\n"
-                          f"-------- AGENT {agent.agent_id} has less than {MIN_TRAINS} -------------\n"
-                          f"--------------------------------------------------------")
+                    print(f"--> AGENT {agent.agent_id} has less than {MIN_TRAINS}")
         elif agent_turn == self.last_turn:
-            print(f"--------------------------------------------------------\n"
-                  f"----------- AGENT {agent_turn} has played its last turn ---------------\n"
-                  f"--------------------------------------------------------")
+            print(f"--> AGENT {agent_turn} has played its last turn")
             return True
 
         # check if all agents could have drawn a card (deck nonempty)
@@ -189,9 +183,7 @@ class TicketToRide(object):
             if agent.can_draw_card:
                 finished = False
         if finished:
-            print(f"--------------------------------------------------------\n"
-                  f"----------- All agents could not have drawn cards ---------------\n"
-                  f"--------------------------------------------------------")
+            print(f"--> All agents could not have drawn cards. The deck is empty.")
         return finished
 
     def init_game(self):
@@ -238,9 +230,6 @@ class TicketToRide(object):
                 return
 
         self.turn_num += 1
-        if self.turn_num > MAX_TURNS:
-            print(f"Every agent played more than {MAX_TURNS} turns")
-            exit(0)
 
     def play(self):
         """

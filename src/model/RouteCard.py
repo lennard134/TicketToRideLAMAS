@@ -26,6 +26,11 @@ class RouteCard(object):
         self.is_finished = True
 
     def add_shortest_route(self, agent_id, shortest_route):
+        """
+        Function that adds shortest route to the player card field
+        :param agent_id: Agent for which the shortest route will be updated
+        :param shortest_route: The actual shortest route that is added
+        """
         self.shortest_routes[agent_id] = shortest_route
 
     def __str__(self):

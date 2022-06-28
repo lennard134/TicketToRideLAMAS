@@ -8,7 +8,7 @@ from src.model.Deck import Deck
 from src.model.RouteCard import RouteCard
 from src.model.TtRKripke.TtRKripke import TtRKripke
 from src.model.map.Connection import Connection
-from src.model.search_alg.graph import Node, Graph
+from src.model.search_alg.Graph import Node, Graph
 
 
 class Game(object):
@@ -42,7 +42,7 @@ class Game(object):
 
     def calculate_shortest_route(self, from_city: str, target_city: str, agent_id: int):
         self.graph.setup(from_city, target_city)
-        self.remake_graph_for_agent(agent_id)
+        self.update_graph_for_agent(agent_id)
         list_of_city_names = self.graph.get_shortest_route()
         if not list_of_city_names:
             return []

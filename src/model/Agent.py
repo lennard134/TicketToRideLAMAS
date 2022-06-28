@@ -34,6 +34,7 @@ class Agent(object):
         self.hand = []
         self.own_route_cards = []
         self.can_draw_card = True
+        self.last_move = ''
 
     def get_route_cards_str(self):
         route_cards = []
@@ -86,10 +87,15 @@ class Agent(object):
     def check_route_finished(self, route_card: RouteCard) -> bool:
         """
         Checks if an unfinished route card has been finished and sets the card to finished if so.
-        :param route_card: RouteCard that is evalueated
+        :param route_card: RouteCard that is evaluated
         :return: boolean True if route finished else False
         """
-        for connection in route_card.shortest_routes[self.agent_id]:
+        shortest_route = route_card.shortest_routes[self.agent_id]
+        if not shortest_route:
+            # shortest route is empty, so does not exist
+            return False
+
+        for connection in shortest_route:
             if not connection.owner == self.agent_id:
                 return False
 
@@ -272,7 +278,7 @@ class Agent(object):
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
                 self.score += route_card.score  # Add score from finished route card
-                print(f"- Agent {self.agent_id} finished a route card with {route_card.score} points!")
+                print(f"- Agent {self.agent_id} finished route card {route_card.route_name} with {route_card.score} points!")
                 self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card={route_card.route_name})
                 route_card.set_finished()
 
@@ -293,6 +299,7 @@ class Agent(object):
             print(f"- Agent {self.agent_id} claims connection.")
             claimed_connection = self.select_connection_to_claim(claimable_connections)
             self.claim_connection(claimed_connection, 'claim')
+            self.last_move = f'claims {claimed_connection.connection_name}'
         else:
             claimable_connections = self.check_block_connection()
             if claimable_connections:
@@ -302,9 +309,11 @@ class Agent(object):
                 block_tuple_idx = np.random.choice(range(len(claimable_connections[agent_to_block])))
                 block_tuple = claimable_connections[agent_to_block][block_tuple_idx]
                 self.block_connection(agent_to_block, block_tuple)
+                self.last_move = f'blocks agent {agent_to_block}: {block_tuple[1].connection_name}'
             else:
                 print(f"- Agent {self.agent_id} draws card.")
                 self.draw_card()
+                self.last_move = f'draws card'
 
     def __str__(self):
         return f"Agent {self.agent_id}. "
