@@ -279,8 +279,8 @@ class Agent(object):
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
                 self.score += route_card.score  # Add score from finished route card
-                print(f"- Agent {self.agent_id} finished route card {route_card.route_name} with "
-                      f"{route_card.score} points!")
+                print(f"\n### Agent {self.agent_id} finished route card {route_card.route_name} with "
+                      f"{route_card.score} points! ###\n")
                 self.game.model.public_announcement_route_card(agent_id=self.agent_id,
                                                                route_card={route_card.route_name})
                 route_card.set_finished()

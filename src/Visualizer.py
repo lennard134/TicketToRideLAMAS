@@ -466,6 +466,11 @@ class Visualizer(object):
         # show information of selected state
         if self.selected_state_coordinates_tuple:
             side_panel = self.show_state_info(side_panel, txt_left, text_height, button_font)
+        else:
+            text_height += BUTTON_HEIGHT / 2
+            text = button_font.render(f"No world selected", True, COLOURS['dark gray'])
+            txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
+            side_panel.blit(text, (txt_left, txt_top))
 
         return side_panel
 

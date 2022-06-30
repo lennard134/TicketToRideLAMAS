@@ -29,7 +29,6 @@ class TicketToRide(object):
         """
         Initialize the full game by initializing agent, board, deck and route cards individually
         """
-        print("\n--- INITIALIZING TICKET TO RIDE ---\n")
         self.deck = None
         self.board = None
         self.agents = []
@@ -140,7 +139,14 @@ class TicketToRide(object):
         return true_state
 
     def announce_winner(self):
-        print("\n\n-----------------------------------------------------------------\n"
+        print("\n------")
+        for agent in self.agents:
+            for route_card in agent.own_route_cards:
+                if not route_card.is_finished:
+                    print(f"- Agent {agent.agent_id} did not finish route card {route_card.route_name}: "
+                          f"subtracting {route_card.score} points...")
+                    agent.score -= route_card.score
+        print("\n-----------------------------------------------------------------\n"
               "........................AND THE WINNER IS........................\n"
               "-----------------------------------------------------------------\n")
         points = {}
@@ -158,7 +164,7 @@ class TicketToRide(object):
           | | | | | || | | || |\  || |\  \/\__/ /  | |   \ \_/ / |\ \   | |   | |____| | | || |  _| |_| |\  | |_\ \    | | | |_| |\ \ 
           \_/ \_| |_/\_| |_/\_| \_/\_| \_/\____/   \_|    \___/\_| \_|  \_|   \_____/\_| |_/\_/  \___/\_| \_/\____/    \_/  \__\_| \_|
         """)
-        print(f"Made by Jeroen, Lennard and Sverre!!")
+        print(f"Made by Jeroen, Lennard and Sverre!!\n\n")
 
     def is_finished(self, agent_turn: int) -> bool:
         """
@@ -188,13 +194,14 @@ class TicketToRide(object):
             if agent.can_draw_card:
                 finished = False
         if finished:
-            print(f"--> All agents could not have drawn cards. The deck is empty.")
+            print(f"--> All agents could not draw any cards since the deck is empty. Game stops.")
         return finished
 
     def init_game(self, num_agents: int, num_route_cards: int):
         """
         Initializer for the game
         """
+        print("\n--- INITIALIZING TICKET TO RIDE ---\n")
         self.deck = Deck()
         self.board = Board()
         self.agents = []

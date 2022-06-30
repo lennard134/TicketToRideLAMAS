@@ -173,7 +173,7 @@ class Graph:
             self.number_of_steps += 1
 
             if self.opened_is_empty():
-                print(f"No Solution Found after {self.number_of_steps} steps for {self.start} to {self.target}!!!")
+                # print(f"No route found for {self.start} to {self.target} after {self.number_of_steps} steps!!!")
                 return None
 
             selected_node = self.remove_from_opened()

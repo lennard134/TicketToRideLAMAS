@@ -24,6 +24,7 @@ class TtRKripke(object):
         """
         Initialize worlds by creating possible combinations of route cards
         """
+        print("- Initializing worlds...", end=" -> ")
         m_route_cards = len(self.route_cards_ids)
         n_agents = len(self.agent_ids)
         num_cards_per_agent, rem = divmod(m_route_cards, n_agents)
@@ -52,6 +53,7 @@ class TtRKripke(object):
         """
         Initialize relations for all worlds before agents knows their own card
         """
+        print(f"- Initializing relations...", end=" -> ")
         relation_list = []
         for relation in itertools.product(self.worlds, repeat=2):
             relation_list.append(relation)
