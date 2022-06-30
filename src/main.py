@@ -6,7 +6,7 @@ from Visualizer import Visualizer
 
 NUM_AGENTS = 'n'
 NUM_ROUTE_CARDS = 'm'
-ALLOWED_AGENTS = [1, 2, 3, 4, 5]
+ALLOWED_AGENTS = [2, 3, 4, 5]
 DEFAULT_NUM_AGENTS = 3
 DEFAULT_NUM_ROUTE_CARDS = 2
 
