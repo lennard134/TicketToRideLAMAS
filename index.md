@@ -21,6 +21,8 @@
 
 # Modelling Ticket to Ride
 
+_Authors: Sverre Brok, Lennard Froma and Jeroen van Gelder_
+
 ## Introduction
 ![Ticket to Ride board, source:(https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition)](Figures/backgroundStartpage.jpg)
 
@@ -198,13 +200,15 @@ public announcements upon completion of route cards by other agents. Such knowle
 causing agents to never block.
 
 #### End-game
-The game can be ended in three ways, the first way is when an agent has only two trains left, every agent can do a last turn
-after which the game is ended. The second way is when an agent has finished all route cards, the game ends directly.
-The last way to end a game is when all agents in subsequent turns cannot draw any card anymore, neither from the open, nor
-from the closed deck. In that case the game ends as well. The winner is determined based on the points scored.
-The score is based on the finished route cards which all have their own value. Besides that, an agent receives points 
-for individual connections. If an agent did not finish a route card it will receive a penalty by deducting the route 
-card's value from its score. 
+There are three different ways in which the game is ended. The first option is when one of the agent has two or less trains
+left after claiming a connection. If this happens, all other agents are allowed to make one more move before the final
+points are added up. The second option is when one of the agents completes all of its route cards. In this situation, 
+the game is immediately finished. The third option is where the agents are no longer able to make moves. This is identified
+when the deck of cards is empty. If this occurs, the game immediately terminates as well.
+
+After ending the game, the final scores are determined. As mentioned before, claimed connections and completed route
+cards yield agents points, whereas an incomplete route card gives penalty points, deducting the cards value from the
+agent's score. Finally, based on the end scores, the winner of the game is announced. 
 
 ## Kripke Model
 Uitwerken:
