@@ -58,7 +58,7 @@ def make_parser():
         Makes a parser for user input
     """
     parser = argparse.ArgumentParser(description='Ticket to Ride')
-    parser.add_argument(f"--num_agents", '-n', help=f"The number of agents. Options={{1,2,...,5}}.",
+    parser.add_argument(f"--num_agents", '-n', help=f"The number of agents. Options={{2,...,5}}.",
                         default=DEFAULT_NUM_AGENTS)
     parser.add_argument(f"--num_route_cards", '-m', help=f"The number of route cards per agent.",
                         default=DEFAULT_NUM_ROUTE_CARDS)
