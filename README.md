@@ -47,7 +47,7 @@ The **cities.txt** file can be expanded by adding more cities with coordinates f
 
 ## Additional (Important) Information
 We advise you to set your settings of screen scaling to 100%.
-In Windows, one can do this by navigating to _settings_, click _System_, and then under _Display_ and _Scale and layout_ change the size of text, apps, and other items to 100%.
+In Windows, one can do this by navigating to _settings_, click _System_, and then under _Display_ and _Scale and Layout_ change the _size of text, apps, and other items_ to 100%.
 This is because otherwise the screen might not capture the whole Ticket to Ride interface.
 
 Default values for number of agents is three and for number of route cards is three.
