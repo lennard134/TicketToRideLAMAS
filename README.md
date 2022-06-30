@@ -44,6 +44,7 @@ For example, to run the interface with three agents and two route cards, one can
 ## Data
 Data for the cities, route cards and train connections can be found in the data folder.
 The **cities.txt** file can be expanded by adding more cities with coordinates from the Ticket to Ride version Europe.
+The **route_cards_all.txt** and **train_connections_all.txt** files is taken from: https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9.
 
 ## Additional (Important) Information
 We advise you to set your settings of screen scaling to 100%.
@@ -59,6 +60,6 @@ The number of worlds and relations is exploding in the number of agents and rout
 ## Copyright
 Scripts (unless otherwise stated in the files) created by:
 
-Sverre Brok (s3200124),
-Jeroen van Gelder (s3813053),
-Lennard Froma (s2676699)
+Sverre Brok,
+Jeroen van Gelder,
+Lennard Froma
