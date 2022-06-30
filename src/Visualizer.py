@@ -37,8 +37,6 @@ BUTTON_COLOUR_DARK = (110, 110, 110)
 
 
 class Visualizer(object):
-    # def __init__(self, game: Game):
-    #     self.game = game
 
     def __init__(self, ttr: TicketToRide):
         self.ttr = ttr
@@ -54,7 +52,6 @@ class Visualizer(object):
         """
         colours = random.sample(list(AGENT_COLOURS.values()), len(self.ttr.agents))
         for agent, colour in zip(self.ttr.agents, colours):
-            # self.agent_colors[agent.agent_id] = color = list(np.random.choice(range(256), size=3))
             self.agent_colors[agent.agent_id] = colour
 
     def highest_xy(self, cities: list[City]) -> (int, int):
@@ -196,7 +193,6 @@ class Visualizer(object):
         txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
         surface.blit(text, (text_left, txt_top))
 
-        # print(f'world {world.get_name()} has agent_list {world._agent_list}')
         for agent_id in self.agent_colors.keys():
             if world.has_agent_in_agent_list(agent_id, agent_id):
                 color = self.agent_colors[agent_id]
@@ -213,6 +209,60 @@ class Visualizer(object):
                 text = font.render(f"* {route_name}", True, color)
                 txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
                 surface.blit(text, (text_left, txt_top))
+
+        return surface
+
+    def show_result(self, surface: pygame.Surface):
+        """
+        Adds the final game message after the game has finished
+        :param surface: surface on which the message should be displayed
+        :return: surface with message added
+        """
+        left = CONTENT_WIDTH / 4
+        width = CONTENT_WIDTH / 2
+        height = SCREEN_HEIGHT / 4
+        top = SCREEN_HEIGHT - height - 20
+
+        text_left = left + 40
+        text_height = top
+
+        large_font = pygame.font.SysFont('chalkduster.ttf', 32)
+        font = pygame.font.SysFont('chalkduster.ttf', 24)
+
+        pygame.draw.rect(surface, COLOURS['dark gray'], [left - 4, top - 4, width + 8, height + 8])
+        pygame.draw.rect(surface, COLOURS['background2'], [left, top, width, height])
+
+        # Who wins
+        winning_agent = None
+        for agent in self.ttr.agents:
+            if agent.check_if_route_cards_done():
+                winning_agent = agent.agent_id
+
+        if not winning_agent:
+            text_height += BUTTON_HEIGHT / 2
+            text = large_font.render(f"Game finished: deck empty, no more train cards!", True, COLOURS['black'])
+            surface.blit(text, (text_left, text_height))
+            text_height += BUTTON_HEIGHT
+        else:
+            text_height += BUTTON_HEIGHT / 2
+            text = large_font.render(f"Game finished: Agent {winning_agent} completed all routes", True, COLOURS['black'])
+            surface.blit(text, (text_left, text_height))
+            text_height += BUTTON_HEIGHT
+
+        # all points
+        points = {}
+        for agent in self.ttr.agents:
+            points[agent.agent_id] = agent.score
+            text_height += BUTTON_HEIGHT / 2 + 4
+            text = font.render(f"   Agent {agent.agent_id} has {agent.score} points", True, COLOURS['black'])
+            surface.blit(text, (text_left, text_height))
+
+        agent_winner = max(points.keys(), key=(lambda idx: points[idx]))
+
+        text_height += BUTTON_HEIGHT
+        text_height += BUTTON_HEIGHT / 2
+        text = font.render(f"Agent {agent_winner} has won with {points[agent_winner]} points!", True, COLOURS['black'])
+        surface.blit(text, (text_left, text_height))
 
         return surface
 
@@ -385,7 +435,7 @@ class Visualizer(object):
         return contents
 
     def draw_side_panel(self, side_panel: pygame.Surface, button_x_left: int, button_x_right: int,
-                        mouse: tuple[int, int]) -> pygame.Surface:
+                        mouse: tuple[int, int], board_visible: bool) -> pygame.Surface:
         """
         Returns the contents of the side panel
         :param side_panel: PyGame surface on which the side panel ought to be drawn
@@ -466,7 +516,7 @@ class Visualizer(object):
         # show information of selected state
         if self.selected_state_coordinates_tuple:
             side_panel = self.show_state_info(side_panel, txt_left, text_height, button_font)
-        else:
+        elif not board_visible:
             text_height += BUTTON_HEIGHT / 2
             text = button_font.render(f"No world selected", True, COLOURS['dark gray'])
             txt_top = BUTTON_HEIGHT / 2 + text_height + BUTTON_HEIGHT / 2 - 0.5 * text.get_height()
@@ -530,9 +580,10 @@ class Visualizer(object):
             else:
                 contents = self.draw_state_space(contents)
 
-            side_panel = self.draw_side_panel(side_panel, button_x_left, button_x_right, mouse)
+            if not self.ttr.in_game:
+                contents = self.show_result(contents)
 
-            # if
+            side_panel = self.draw_side_panel(side_panel, button_x_left, button_x_right, mouse, show_board)
 
             screen.blit(contents, (WIDTH_BUFFER / 2, HEIGHT_BUFFER / 2 - 1))
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
