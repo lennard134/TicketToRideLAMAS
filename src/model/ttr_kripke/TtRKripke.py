@@ -46,7 +46,7 @@ class TtRKripke(object):
                 for idx, agent_id in enumerate(self.agent_ids):
                     state[agent_id] = set(world_i[idx])
                 self.worlds.append(World(state, self.agent_ids.copy()))
-        print(f"Number of worlds = {len(self.worlds)}")
+        print(f"Number of Kripke worlds = {len(self.worlds)}")
 
     def _init_relations(self):
         """
@@ -57,12 +57,12 @@ class TtRKripke(object):
             relation_list.append(relation)
         for i in self.agent_ids:
             self.relations[i] = relation_list
+        print(f"Number of relations per agent = {len(relation_list)}\n")
 
     def update_once_cards_known(self, agent_id: int, route_cards: set[str]):
         """
         Update relations for agent_id that knows that target_agent has route_cards
         :param agent_id: Id of agent for which relations will be updated
-        :param target_agent_id: id of target agent of which the agent knows
         :param route_cards: Route cards of which agent knows
         """
         print(f"--> Agent {agent_id} knows that itself has cards {route_cards}")

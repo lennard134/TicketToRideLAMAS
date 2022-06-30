@@ -15,7 +15,6 @@ class Connection(object):
         :param end: End city of connection
         :param num_trains: Number of trains that fit in the connection
         :param color: Color of the connection
-        :param owner: Agent that owns the connection
         """
         self.start_point = start
         self.end_point = end
@@ -32,7 +31,7 @@ class FerryConnection(Connection):
 
     def __init__(self, start: City, end: City, num_trains: int, color: str, num_jokers: int):
         """
-        Sub class of connection to represent ferry connection, class is almost same as connection, only number of
+        Subclass of connection to represent ferry connection, class is almost same as connection, only number of
         jokers is added
         :param start: Start city of ferry connection
         :param end: End city of ferry connection
@@ -40,6 +39,5 @@ class FerryConnection(Connection):
         :param color: Color to represent the connection
         :param num_jokers: Number of jokers necessary to claim this connection
         """
-        super().__init__(start, end, num_trains, "gray")
+        super().__init__(start, end, num_trains, color)
         self.num_jokers = num_jokers
-

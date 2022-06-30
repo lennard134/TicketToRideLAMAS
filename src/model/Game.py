@@ -45,7 +45,7 @@ class Game(object):
         :param from_city: Start city of route card
         :param target_city: End city of route card
         :param agent_id: Agent for which the route is calculated
-        :return: List with shortest route
+        :return: List with the shortest route
         """
         self.graph.setup(from_city, target_city)
         self.update_graph_for_agent(agent_id)

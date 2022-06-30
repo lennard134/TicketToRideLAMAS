@@ -72,4 +72,3 @@ class Deck(object):
         self.used_cards = []
         while len(self.open_cards) < NR_OPEN_CARDS:  # add to open cards if less than NR_OPEN_CARDS
             self.open_cards.append(self.remove_closed_card())
-

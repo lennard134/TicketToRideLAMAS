@@ -237,9 +237,6 @@ class Agent(object):
                 if connection.owner is None and self.enough_cards_to_claim_train_card(connection) \
                         and self.nr_of_trains >= connection.num_trains:
                     claimable_connections.append(connection)
-                # else:
-                #     print(f"hand not sufficient for connection, needed {connection.num_trains} times {connection.color}")
-                    # print(self.hand)
 
         return claimable_connections
 
@@ -247,7 +244,7 @@ class Agent(object):
         """
         Agent claims a connection by putting trains on a connection
         """
-        print(f"-- Agent {self.agent_id} claims connection {connection.end_point.name}-{connection.start_point.name}"
+        print(f"-- Agent {self.agent_id} {claim_type}s connection {connection.end_point.name}-{connection.start_point.name}"
               f" with color {connection.color} and costs {connection.num_trains}.")
 
         connection.set_owner(self.agent_id)
@@ -282,8 +279,10 @@ class Agent(object):
         for route_card in self.own_route_cards:
             if not route_card.is_finished and self.check_route_finished(route_card):
                 self.score += route_card.score  # Add score from finished route card
-                print(f"- Agent {self.agent_id} finished route card {route_card.route_name} with {route_card.score} points!")
-                self.game.model.public_announcement_route_card(agent_id=self.agent_id, route_card={route_card.route_name})
+                print(f"- Agent {self.agent_id} finished route card {route_card.route_name} with "
+                      f"{route_card.score} points!")
+                self.game.model.public_announcement_route_card(agent_id=self.agent_id,
+                                                               route_card={route_card.route_name})
                 route_card.set_finished()
 
     def choose_action(self):
@@ -314,6 +313,7 @@ class Agent(object):
                 print(f"- Agent {self.agent_id} draws card.")
                 self.draw_card()
                 self.last_move = f'draws card'
+        print()
 
     def __str__(self):
         return f"Agent {self.agent_id}. "

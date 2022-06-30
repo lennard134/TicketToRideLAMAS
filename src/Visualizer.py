@@ -155,9 +155,8 @@ class Visualizer(object):
         :param mouse: tuple containing current mouse location
         :return: boolean indicating whether or not the mouse is situated within boundaries of rectangle
         """
-        return SCREEN_WIDTH - PANEL_WIDTH + x_left <= mouse[0] \
-               <= SCREEN_WIDTH - PANEL_WIDTH + x_right and y_top <= mouse[1] \
-               <= y_bottom
+        return SCREEN_WIDTH - PANEL_WIDTH + x_left <= mouse[0] <= SCREEN_WIDTH - PANEL_WIDTH + x_right and y_top <= \
+               mouse[1] <= y_bottom
 
     def state_collision(self, mouse):
         """
@@ -172,11 +171,11 @@ class Visualizer(object):
             # Calculate the length of the hypotenuse. If it's less than the
             # radius, the mouse collides with the circle.
             if math.hypot(dist_x, dist_y) < RADIUS:
-                if self.selected_state_coordinates_tuple and self.selected_state_coordinates_tuple == (world, centerx, centery):
+                if self.selected_state_coordinates_tuple and self.selected_state_coordinates_tuple == (
+                        world, centerx, centery):
                     self.selected_state_coordinates_tuple = None
                     return False
                 self.selected_state_coordinates_tuple = (world, centerx, centery)
-                print('collision')
                 return True
         self.selected_state_coordinates_tuple = None
         return False
@@ -287,7 +286,7 @@ class Visualizer(object):
             # draw edges
             if connection.owner is not None:
                 color = self.agent_colors[connection.owner]
-                line_width = 2*LINE_THICKNESS
+                line_width = 2 * LINE_THICKNESS
             else:
                 color = COLOURS[connection.color]
                 line_width = LINE_THICKNESS
@@ -518,7 +517,8 @@ class Visualizer(object):
                     elif self.rectangle_collision(button_x_left, BUTTON_HEIGHT / 2 + 4 * BUTTON_HEIGHT,
                                                   button_x_right, BUTTON_HEIGHT / 2 + 5 * BUTTON_HEIGHT,
                                                   mouse):
-                        self.ttr.init_game()
+                        self.ttr.init_game(num_agents=len(self.ttr.agents),
+                                           num_route_cards=len(self.ttr.route_cards) // len(self.ttr.agents))
 
             if show_board:
                 contents = self.draw_ttr_board(contents)
@@ -533,9 +533,3 @@ class Visualizer(object):
             screen.blit(side_panel, (CONTENT_WIDTH, 0))
 
             pygame.display.update()
-
-
-if __name__ == "__main__":
-    ttr = TicketToRide()
-    visualizer = Visualizer(ttr)
-    visualizer.run()

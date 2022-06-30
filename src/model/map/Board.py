@@ -26,11 +26,11 @@ class Board(object):
         """
         self.cities = {}
         self.connections = []
-        self.adjacency_list = {}  # city_name -> [list of connections]
+        self.adjacency_list = {}
 
         self._init_cities()
         self._init_connections()
-        self._make_adjacency_list()  # MUST BE AFTER CONNECTIONS TODO: Needed???
+        self._make_adjacency_list()
 
     def _make_adjacency_list(self):
         """
@@ -39,7 +39,7 @@ class Board(object):
         for city_name in self.cities.keys():
             self.adjacency_list[city_name] = []
 
-        for connection in self.connections:  # {"routeX": [a:Connection,b:Connection,c,f]}
+        for connection in self.connections:
             from_city = connection.start_point.name
             to_city = connection.end_point.name
             self.adjacency_list[from_city].append(connection)
@@ -84,18 +84,20 @@ class Board(object):
                 color = line_list[3]
 
                 is_new = True
+
                 for connection in self.connections:
                     city1_old = connection.start_point.name
                     city2_old = connection.end_point.name
-                    if (city1_old == city1.name and city2_old == city2.name) or (city1_old == city2.name and city2_old == city1.name):
+                    if (city1_old == city1.name and city2_old == city2.name) or (
+                            city1_old == city2.name and city2_old == city1.name):
                         is_new = False
-                        print(f"Connection {city1_old}-{city2_old} is double")
                         break
 
                 if is_new:
                     if color not in TRAIN_COLOURS and not color == GRAY_CONNECTION:
                         num_jokers = int(color)
-                        self.connections.append(FerryConnection(city1, city2, length, color, num_jokers))
+                        self.connections.append(FerryConnection(city1, city2, length, color=GRAY_CONNECTION,
+                                                                num_jokers=num_jokers))
                     else:
                         self.connections.append(Connection(city1, city2, length, color))
 

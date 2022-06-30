@@ -16,10 +16,8 @@ import os
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Data in TICKET_TO_RIDE_CONFIG
-NR_OF_AGENTS = TICKET_TO_RIDE_CONFIG['NR_OF_AGENTS']
 NR_OF_TRAINS = TICKET_TO_RIDE_CONFIG['NR_OF_TRAINS']
 NR_TRAIN_CARDS = TICKET_TO_RIDE_CONFIG['NR_TRAIN_CARDS']
-NR_OF_DESTINATION_CARDS = TICKET_TO_RIDE_CONFIG['NR_OF_DESTINATION_CARDS']
 ROUTE_CARDS_PATH = os.path.join(ROOT_DIR, TICKET_TO_RIDE_CONFIG['ROUTE_CARDS_PATH'])
 MIN_TRAINS = TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
 MAX_TURNS = TICKET_TO_RIDE_CONFIG['MAX_TURNS']
@@ -27,10 +25,11 @@ MAX_TURNS = TICKET_TO_RIDE_CONFIG['MAX_TURNS']
 
 class TicketToRide(object):
 
-    def __init__(self):
+    def __init__(self, num_agents: int, num_route_cards: int):
         """
         Initialize the full game by initializing agent, board, deck and route cards individually
         """
+        print("\n--- INITIALIZING TICKET TO RIDE ---\n")
         self.deck = None
         self.board = None
         self.agents = []
@@ -40,16 +39,16 @@ class TicketToRide(object):
         self.last_turn = None
         self.in_game = True
 
-        self.init_game()
+        self.init_game(num_agents, num_route_cards)
 
-    def _init_agents(self):
+    def _init_agents(self, num_agents):
         """
         Initialize all agents
         """
-        for idx in range(NR_OF_AGENTS):
+        for idx in range(num_agents):
             self.agents.append(Agent(idx, NR_OF_TRAINS))
 
-    def _init_route_cards(self):
+    def _init_route_cards(self, total_num_route_cards: int):
         """
         Read route cards from text file and create new RouteCard objects for every card which are stored in an array
         """
@@ -67,20 +66,22 @@ class TicketToRide(object):
                 self.route_cards.append(RouteCard(start, end, score))
 
         random.shuffle(self.route_cards)
-        print(f"Number of route cards = {len(self.route_cards)}")
+        print(f"Number of route cards available = {len(self.route_cards)}")
 
-        if len(self.route_cards) // NR_OF_AGENTS > NR_OF_DESTINATION_CARDS:
-            print(f"Removing {len(self.route_cards) - NR_OF_DESTINATION_CARDS * NR_OF_AGENTS} route cards")
-            del self.route_cards[-(len(self.route_cards) - NR_OF_DESTINATION_CARDS * NR_OF_AGENTS):]
+        if len(self.route_cards) > total_num_route_cards:
+            print(f"Removing {len(self.route_cards) - total_num_route_cards} route cards to get a total of "
+                  f"{total_num_route_cards} route cards.")
+            del self.route_cards[-(len(self.route_cards) - total_num_route_cards):]
 
-        left_over_cards = len(self.route_cards) % NR_OF_AGENTS
+        left_over_cards = len(self.route_cards) % len(self.agents)
         if left_over_cards > 0:
-            print(f"Deleting {left_over_cards} route cards.")
+            print(f"Deleting {left_over_cards} route cards to evenly distribute cards.")
             del self.route_cards[-left_over_cards:]
 
-        print(f"Possible route cards:")
+        print(f"\nPossible route cards (total={len(self.route_cards)}):")
         for route_card in self.route_cards:
             print(f"- {route_card.route_name}")
+        print()
 
     def _init_kripke(self):
         """
@@ -93,13 +94,14 @@ class TicketToRide(object):
         for route_card in self.route_cards:
             route_card_ids.append(route_card.route_name)
 
-        print(f"agent_ids = {agent_ids}, route_cards = {route_card_ids}")
+        print(f"agent_ids = {agent_ids}")
         self.kripke = TtRKripke(agent_ids=agent_ids, route_cards_ids=route_card_ids)
 
     def _distribute_route_cards(self):
         """
         Distribute route cards among the agents
         """
+        print("Distribute route cards:")
         random.shuffle(self.route_cards)
         step_size = len(self.route_cards) // len(self.agents)
         end = 0
@@ -189,7 +191,7 @@ class TicketToRide(object):
             print(f"--> All agents could not have drawn cards. The deck is empty.")
         return finished
 
-    def init_game(self):
+    def init_game(self, num_agents: int, num_route_cards: int):
         """
         Initializer for the game
         """
@@ -202,8 +204,8 @@ class TicketToRide(object):
         self.last_turn = None
         self.in_game = True
 
-        self._init_agents()
-        self._init_route_cards()
+        self._init_agents(num_agents)
+        self._init_route_cards(num_agents * num_route_cards)
         self._init_kripke()
         self._distribute_route_cards()
         self._distribute_train_cards()
@@ -215,6 +217,8 @@ class TicketToRide(object):
         for agent in self.agents:
             agent.set_game(game)
         game.init_shortest_routes()
+
+        print("\n---- GAME INITIALIZED ---\n")
 
     def turn(self):
         """
@@ -232,7 +236,7 @@ class TicketToRide(object):
 
         for agent in self.agents:
             agent.choose_action()
-            agent.print_agent_profile()
+            # agent.print_agent_profile()
             if self.is_finished(agent.agent_id):
                 self.in_game = False
                 self.announce_winner()
@@ -240,13 +244,10 @@ class TicketToRide(object):
 
         self.turn_num += 1
 
-    def play(self):
+    def play(self, num_agents: int, num_route_cards: int):
         """
         Game loop for the Ticket to Ride game
         """
-        self.init_game()
+        self.init_game(num_agents, num_route_cards)
         while self.in_game:
             self.turn()
-
-
-

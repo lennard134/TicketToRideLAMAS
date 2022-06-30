@@ -205,10 +205,8 @@ class Graph:
         return_val = self.search()
         if return_val is None:
             return []
-        else:
-            path, path_length = return_val
-        list_of_cities = self.calculate_path(self.target)
-        return list_of_cities
+        path, _ = return_val
+        return path
 
     def __str__(self):
         """

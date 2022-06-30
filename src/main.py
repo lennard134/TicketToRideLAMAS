@@ -4,31 +4,64 @@ import argparse
 from model.TicketToRide import TicketToRide
 from Visualizer import Visualizer
 
-INPUT_FILE = 'input'
-OUTPUT_FILE = 'output'
-DO = 'do'
-DO_OPTIONS = []
+NUM_AGENTS = 'n'
+NUM_ROUTE_CARDS = 'm'
+ALLOWED_AGENTS = [1, 2, 3, 4, 5]
+DEFAULT_NUM_AGENTS = 3
+DEFAULT_NUM_ROUTE_CARDS = 3
 
 
 def main():
-    game = TicketToRide()
-    # game.play()
+    """
+        Main function to play ticket to ride
+    """
+    parser = make_parser()
+    arguments = parse_args(parser)
 
-    visualizer = Visualizer(game)
+    ticket_to_ride_game = TicketToRide(num_agents=arguments[NUM_AGENTS],
+                                       num_route_cards=arguments[NUM_ROUTE_CARDS])
+
+    visualizer = Visualizer(ticket_to_ride_game)
     visualizer.run()
 
 
 def parse_args(parser) -> dict:
+    """
+        Parses arguments from user input
+    """
     args = parser.parse_args()
-    return_dict = {INPUT_FILE: args.input,
-                   OUTPUT_FILE: args.output,
-                   DO: args.do}
+
+    try:
+        num_agents = int(args.num_agents)
+    except ValueError:
+        print(f"\nINVALID NUMBER FOR NUMBER OF AGENTS. USING DEFAULT = {DEFAULT_NUM_AGENTS}.\n")
+        num_agents = DEFAULT_NUM_AGENTS
+
+    if num_agents not in ALLOWED_AGENTS:
+        print(f"\nINVALID NUMBER FOR NUMBER OF AGENTS. CHOOSE IN {ALLOWED_AGENTS}.\n"
+              f"USING DEFAULT = {DEFAULT_NUM_AGENTS}.\n")
+        num_agents = DEFAULT_NUM_AGENTS
+
+    try:
+        num_route_cards = int(args.num_route_cards)
+    except ValueError:
+        print(f"\nINVALID NUMBER FOR NUMBER OF ROUTE CARDS. USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.\n")
+        num_route_cards = DEFAULT_NUM_ROUTE_CARDS
+
+    return_dict = {NUM_AGENTS: num_agents,
+                   NUM_ROUTE_CARDS: num_route_cards}
     return return_dict
 
 
 def make_parser():
+    """
+        Makes a parser for user input
+    """
     parser = argparse.ArgumentParser(description='Ticket to Ride')
-    parser.add_argument(f"--{DO}", help=f"Do options are: {DO_OPTIONS}", default=None)
+    parser.add_argument(f"--num_agents", '-n', help=f"The number of agents. Options={{1,2,...,5}}.",
+                        default=DEFAULT_NUM_AGENTS)
+    parser.add_argument(f"--num_route_cards", '-m', help=f"The number of route cards per agent.",
+                        default=DEFAULT_NUM_ROUTE_CARDS)
     return parser
 
 

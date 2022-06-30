@@ -18,18 +18,16 @@ DECK_CONFIG = {
 }
 
 TICKET_TO_RIDE_CONFIG = {
-    'NR_OF_AGENTS': 3,
-    'NR_OF_DESTINATION_CARDS': 2,
     'NR_OF_TRAINS': 45,
     'NR_TRAIN_CARDS': 4,
-    'ROUTE_CARDS_PATH': "data/destinations_all.txt",
+    'ROUTE_CARDS_PATH': "data/route_cards_all.txt",
     'MIN_TRAINS': 2,
     'MAX_TURNS': 50
 }
 
 BOARD_CONFIG = {
     'CITY_FILE_PATH': "data/cities.txt",
-    'CONNECTION_FILE_PATH': "data/train_routes_all.txt",
+    'CONNECTION_FILE_PATH': "data/train_connections_all.txt",
     'GRAY_COLOUR': "gray",
     'TRAIN_POINTS': {
         1: 1,
