@@ -29,27 +29,34 @@ def parse_args(parser) -> dict:
     """
         Parses arguments from user input
     """
+    print()
     args = parser.parse_args()
 
     try:
         num_agents = int(args.num_agents)
     except ValueError:
-        print(f"\nINVALID NUMBER FOR NUMBER OF AGENTS. USING DEFAULT = {DEFAULT_NUM_AGENTS}.\n")
+        print(f"INVALID NUMBER FOR NUMBER OF AGENTS. USING DEFAULT = {DEFAULT_NUM_AGENTS}.")
         num_agents = DEFAULT_NUM_AGENTS
 
     if num_agents not in ALLOWED_AGENTS:
-        print(f"\nINVALID NUMBER FOR NUMBER OF AGENTS. CHOOSE IN {ALLOWED_AGENTS}.\n"
+        print(f"INVALID NUMBER FOR NUMBER OF AGENTS. CHOOSE IN {ALLOWED_AGENTS}. "
               f"USING DEFAULT = {DEFAULT_NUM_AGENTS}.\n")
         num_agents = DEFAULT_NUM_AGENTS
 
     try:
         num_route_cards = int(args.num_route_cards)
     except ValueError:
-        print(f"\nINVALID NUMBER FOR NUMBER OF ROUTE CARDS. USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.\n")
+        print(f"INVALID NUMBER FOR NUMBER OF ROUTE CARDS. USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.")
+        num_route_cards = DEFAULT_NUM_ROUTE_CARDS
+        
+    if num_route_cards < num_agents:
+        print(f"INVALID NUMBER FOR NUMBER OF ROUTE CARDS. MUST BE AT LEAST THE NUMBER OF AGENTS. "
+              f"USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.")
         num_route_cards = DEFAULT_NUM_ROUTE_CARDS
 
     return_dict = {NUM_AGENTS: num_agents,
                    NUM_ROUTE_CARDS: num_route_cards}
+    print()
     return return_dict
 
 
