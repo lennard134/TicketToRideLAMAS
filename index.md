@@ -126,55 +126,76 @@ In this section we will discuss the various element of our implementation of the
 the most important sections that determine the workings of the system and the behaviour of the agents.
 
 #### An agent's turn
-Consider now an agent's turn given the simplifications and design choices. This agent considers three options, in this order:
+Consider an agent's turn given the simplifications mentioned above. This agent considers three options, in this order:
 * Place trains on a connection between two cities to contribute to their routes if they have the right number of train cards
 * Place trains on a connection between two cities to block another agent if they have the right number of train cards
 * draw train cards (either from the visible or not visible cards);
 
 In case an agent chooses to place trains on a connection between two cities, it can only claim a connection when
-it is part of the resulting shortest route or when it purposefully blocks another agent on its shortest route.
-By purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a connection on the
-shortest route of this opponent. In case an agent chooses to draw train cards, the agent can draw the first card from 
-either the (5) visible cards or the closed deck. If the agent does not draw a joker card from the visible cards,
-it can pick another card from either the visible cards (but not a joker card) or the closed deck. 007 WAS HERE
+it is part of its version of the shortest route for that route card or when it purposefully blocks another agent on its 
+shortest route. By purposefully blocking an opponent, we mean that it must know the card of the agent, and it claims a 
+connection on the shortest route of this opponent. If agents cannot claim a connection, they will draw train cards based
+the general card drawing strategy, which will be expanded upon later.
 
-#### Card drawing strategy  
-An agent can choose to draw two train cards from the closed deck, or draw two train cards from the open deck where the second card
-may not be a joker. Before deciding which from which deck (open or closed) the agent will draw a train card, it will determine
-desired cards based on the routes it has to complete. For all routes, the agent checks how many train cards are needed to
-claim a connection on this route. Then, the agent checks the open deck and if there is a train card in the open deck
-which is also in the desired train cards, the agent will draw the card. Then, from the closed deck, another card is placed
-in the open deck. The agent will repeat this process with a constraint that it is not allowed to select the joker card.
+#### Claiming a connection
+As mentioned, an agent is only allowed to claim a connection that progresses it further on one of its own route cards,
+or when it blocks another agent. A connection can only be claimed when the agent has enough train cards in the colour
+corresponding to the colour of the connection. If a connection has a gray colour, the agent can choose which colour
+train cards it uses, so long as all train cards are of the same colour. If the agent's hand does not suffice for claiming
+a connection, it can choose to use joker cards to reach the required number of cards.
+
+When the connection is claimed, the train cards played by the agent are removed from its hand and added to a discard stack.
+This discard stack builds up with all played cards until the closed deck is empty. Then, the cards on the discard stack
+are shuffled and used as the new deck. The claiming of a connection will also influence on the shortest route for an agent
+for various route cards, hence all shortest routes are recalculated for all agents.
 
 #### Shortest route
-Agents will always claim connections on the shortest path between the cities on the route cards. 
-We will use Uniform Cost Search (UCS) to find the shortest route between two cities on a route card. Calculating the
-shortest route only uses the information given by the board, which is available to all agents. Individual agents' hands
-are not considered as it will add unwanted uncertainty.
-Here the number of trains that are needed to claim a connection is the edge costs. As two options
-for claiming a connection may be equally optimal, we choose that the agent will claim the connection on the route that is 
-worth the most points. If the number of points is equal as well, we will perform a random choice.
+Agents will always claim connections on the shortest path between the cities on the route cards. We use Uniform Cost 
+Search (UCS) to find the shortest route between two cities on a route card. Calculating the shortest route only uses the
+information given by the board, which is available to all agents. Individual agents' hands are not considered as it will 
+add unwanted uncertainty.
+
+The number of trains that are needed to claim a connection is regarded as the cost of an edge. If an agent is already
+owner of a connection in a possible shortest route, the cost of that edge will be zero for the owner. As two options
+for claiming a connection may be equally optimal, we will perform a random choice. Since all agents are aware of the optimal
+route for each other, this random choice will not influence the general knowledge about the state of the game.
+
+#### Card drawing strategy
+When drawing cards, an agent can choose to draw two coloured train cards from the closed deck. Alternatively, the agent 
+can opt to draw a card from one of the five opened coloured train cards. After drawing an open card, the agents can again
+choose to draw their second card from either the open or the closed train cards. However, if an agent takes a joker from 
+the open cards, it cannot take a second card. Likewise, the second drawn card may never be a joker from the open train 
+cards. 
+
+Before deciding from which deck (open or closed) the agent will draw a train card, it will determine desired cards 
+based on the routes it has to complete. For all routes, the agent checks how many train cards are needed to claim a 
+connection on this route. Then, the agent checks the open deck and if there is a train card in the open deck which is 
+also in the desired train cards, the agent will draw the card. Then, from the closed deck, another card is placed in the
+open deck. The agent will repeat this process with a constraint that it is not allowed to select the joker card.
+
+It should be noted that if a joker card is in the open deck and the agent has not yet drawn a card this turn, it will
+always take this card. This means it ignores any other desired cards, as the joker card can fill in for this.
 
 #### Obtaining knowledge 
-As mainly the knowledge determines the agent's strategy, we will have to define the different ways this knowledge can
-be obtained. The first and most straightforward method is when an agent looks at its cards after they have been
-distributed. This will give the agent knowledge of its cards. The next way is, when an agent finishes a route card,
-it will announce this. The public announcement of this card results in a smaller Kripke model as some worlds are not
-possible anymore.
+As the strategic element of an agent's actions comes from its knowledge, we must consider various ways of expanding this
+knowledge. The first and most straightforward method is when an agent looks at its cards after they have been
+distributed. This will give the agent knowledge of its own cards. 
+
+However, knowledge of ones own cards is not enough in most cases, thus agents must also be able to gather knowledge of
+other route cards of other agents. When an agent finishes a route card, it will announce which route card it completed.
+The public announcement of this card results in a smaller Kripke model as some worlds are now no longer possible.
 
 By claiming a connection, an agent can give away which route card it has. As all agents know all cards and share the set of 
-shortest routes, a connection belonging to only one route card can give away which card the agent is working on. (EXAMPLE)
-This knowledge can be used to block an agent. If an agent cannot claim a connection itself, it explores the possibilities
-based on its knowledge to block another agent. When blocking, an agent publicly announces that it knows another agent's
+shortest routes, a connection belonging to only one route card can give away which card the agent is working on. (TODO EXAMPLE)
+This knowledge can be used to block an agent. 
+
+If an agent cannot claim a connection for one of its own route cards, it will explore the possibilities of blocking
+another agent based on its knowledge. When blocking, an agent publicly announces that it knows another agent's
 route card and then blocks a connection on that route. This gives other agents knowledge as well. This is done because
 if an agent would not announce it knows and therefore blocks, other agents would not know if this agent claims a connection
-for its route or for blocking. In this situation, only a public announcement would yield knowledge and an agent would never
-block as we only want an agent to block if it knows who is the owner of the route card.
-
-#### Drawing cards
-An agent can choose to draw a train card from the open deck based on what train cards it needs for the connections on
-the route cards. If there are multiple routes for which the agent needs a train card from the open deck, it will select the 
-train card that will add to the route card worth the most points. 
+for its route or for blocking. Then we would end up in a situation where agents will only gather knowledge from the
+public announcements upon completion of route cards by other agents. Such knowledge would simply be too late to be useful,
+causing agents to never block.
 
 #### End-game
 The game can be ended in three ways, the first way is when an agent has only two trains left, every agent can do a last turn
