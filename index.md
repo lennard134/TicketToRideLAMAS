@@ -33,35 +33,40 @@ The length of the route determines the score a player receives for that part of 
 At the start of the game, each player is given the same number of unique target routes, which yield additional points upon completion.
 Failing to complete one or more routes will cause points to be subtracted at the end of the game.
 
-This project's research goal is to model and simulate (a simplification of) Ticket to Ride. The implementation should 
-use the acquired knowledge to determine what next action (within the given constraints) an agent should take. The knowledge is
-acquired by observing other agents, the board and their own cards.
+This project's research goal is simulate and model knowledge within (a simplification of) Ticket to Ride. The implementation should 
+use the acquired knowledge to determine what next action (within some given constraints) a player should take. The knowledge is
+acquired by observing other players, the board and their own cards.
 
-## The game
+## The original game Ticket to Ride
 The game consists of different cards and objects for which the meaning and function will be explained in this section.
 With this game, players should obtain as many points as possible. This is done by finishing route cards that are worth points.
-The **route cards** contain two cities between which the agent will have to create a route by placing trains on the connections 
-between cities. When the route is finished, the player obtains the number of points as indicated by the route card. 
+Each **route card** contains two cities between which the player will have to create a route. A route is constructed by claiming connections 
+by placing enough trains. A route card is completed when there is a route of adjoining connections owned by the player between
+the two cities on the route card. When the route is finished, the player obtains the number of points as indicated by the route card. 
 To place trains on a connection (i.e. claim a connection), a player can draw coloured **train cards**. The connections have different 
-colours indicating which colour train card is needed to claim that specific connection. The length of the connection indicates
+colours indicating which coloured train card is needed to claim that specific connection. The length of the connection indicates
 how many train cards of a particular colour are needed. Furthermore, there are multiple **joker cards** in the game that can 
 be used as any of the colours.
 
-In the original game, there are three different kinds of connections. Regular connections between cities, ferry connections,
-and tunnel connections. For claiming (i.e. placing trains on a connection) a regular connection, an agent must have several 
-train cards of a particular colour. The ferry connection requires regular cards combined with a minimum number of jokers,
-indicated as locomotive icons on the connection. The tunnel connection is a bit more complex. For a tunnel of length 2 and
-colour green, an agent would have to draw 3 new cards from the deck (this number does not depend on the length of the tunnel connection).
-Then, the number of cards that match, in this case, the colour green will have to be added by the agent. 
 
-Another option for a player to use a connection is to build a train station at an already claimed connection. Using this
-station it is possible to use another player's connection to complete a route card.
+In the original game, there are three different kinds of connections. Regular connections between cities, ferry connections,
+and tunnel connections. For claiming a regular connection, a player must have several train cards of a particular colour. 
+The number of train cards that are needed to claim a connection corresponds to the length of the connection.
+The ferry connection requires regular train cards combined with a minimum number of jokers,
+indicated as locomotive icons on the connection. The tunnel connection is a bit more complex. For example, for a tunnel of length two and
+colour green, a player would have to draw three new cards from the deck (this number does not depend on the length of the tunnel connection).
+Then, the number of cards that match, in this case, the colour green will have to be added by the player. 
+
+Another option for a player to complete a route is to place a train station on a city. 
+This train station can then be used at the end of the game to use a connection owned by another player that adjoins the corresponding city.
 
 In the original game, a player has four options at each turn. 
-1) First, the player can opt to gather coloured cards which allow them to claim certain colour-coded tracks in the next turn. 
-2) Another possibility for a player is to claim a specific route. 
-This is done by playing the number of cards of the length of the specific route, all with that route's colour. 
-Only one route can be claimed during a player's turn. 
+1) First, the player can opt to gather train cards which allow them to a claim connection in a consequent turn.
+Train cards can be drawn from a deck. The deck consists of an open pile (5 train cards that are visible to everyone) and a closed pile.
+A player may draw 2 cards from the open or closed pile (or a combination thereof), or only one joker card from the open pile.
+2) Another possibility for a player is to claim a specific connection.
+This is done by playing the number of train cards of the length of the specific connection, all with that connection's colour. 
+Only one route can be claimed during a player's turn.
 3) Additionally, a player can build a train station to utilize a route that has already been claimed by another player. 
 4) Lastly, a player can obtain new route cards from a selection of the remaining route cards. 
 
@@ -70,50 +75,55 @@ will be counted. Route cards that are not completed will give a penalty by subtr
 from the total.
 
 ## Simplifications of the game
-In the original version of Ticket to Ride Europe, there are 47 cities (nodes), 90 connections (edges), and 46 route
-cards and the game can be played by 2 to 5 players, as can be seen ([here](https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9)).
-For our research, this is too complex. Therefore, we simplify the game such that, by default, we have 3 agents playing 
-the game. This can be altered by the user upon initialization of the game.
 
-We will play our game with a subset of the original board layout. We choose to play the game using 24 European cities. KEI MOOI PLATJE HIER 
-With this default subset, the number of route cards will depend on the number of agents that play the game, and the
-number of route cards each agent has. Users can vary from 2 to 5 agents who, by default, have 3 route cards each. 
-There are a maximum of 16 route cards available for the subset of the game board used in this simplified implementation.
-Each agent must have the same number of route cards, hence there is an implicit limit of e.g. 3 route cards for 5 agents.
-Within this implicit limit, the user can vary the number of route cards per agent.
+In order for us to achieve a feasible implementation of Ticket to Ride with knowledge, some simplifications had to be
+made. These simplifications both address the scale of the game, and the removal of possible uncertainties when considering
+knowledge of the agents.
 
-We assume all agents have perfect knowledge about the possible routes in the game, that is, they know which route 
-cards are in the game. We also apply the simplification that all route cards are distributed among the agents. This
-automatically removes the possibility to use a turn to obtain new route cards.
+Firstly, the number of cities is reduced from the original 47 cities to a more reasonable 24. With this reduction of
+cities, this automatically reduces the number of connections as well. As mentioned, the regular game has both normal,
+ferry and tunnel connections. These connections can also be doubled between two cities. In our version, only the normal
+and ferry connections are considered. The removal of double connections and tunnel connections yields TODO!! connections
+against the usual 90.
 
-Additionally, to allow for knowledge to influence agent decisions, we limit the agents to only two
-ways to place trains: either claim a section of the railway such that you progress on one of your routes, or such that
-you hinder your opponent based on what you know about their route cards. This means that knowledge will directly
-influence the strategies of the agents. If an agent cannot claim any routes that are allowed within the limitations of
-the two possibilities, they can draw new train cards following the original game rules: two cards (open or closed), or 
-one open joker card. Lastly, we initially omit the placement of train stations to simplify the procedure of the game.
+<span style="color:red">KEI MOOI PLATJE HIER</span>.
 
-It should be noted that real-world agents obtain a degree of knowledge from what colour cards an opponent draws. This
-is however a very complex strategy to implement. It would require an agent to take into account all shortest routes with
-all colours that are relevant for those routes, and update its knowledge every round in which cards are drawn. Additionally,
-agents could draw certain cards to mislead agents that use knowledge about drawn cards. It is also possible that due to 
-certain routes being claimed, the shortest route is no longer available, and a certain colour might be drawn to cover a 
-specific detour, adding more complexity. For this reason, no such knowledge is used by our agents.
+With the reduced map size, we also reduce the number of possible route cards. The original game contains 46 different
+route cards, whereas our version only contains 16 different route cards. From this set of 16 route cards, all agents
+get assigned an equal number of route cards. Based on the chosen number of route cards per agent and the number of agents,
+this results in a subset of the total route card set. This subset is known to all agents, meaning they have perfect
+knowledge of the possible route cards in the game. Additionally, agents cannot draw new route cards during the game, as
+opposed to the original game where this is allowed.
 
-Since agents only have two possible moves when claiming routes, we can encounter a situation where no
-agent is allowed to claim a new route as there is no possible route that allows reaching the destination or hinder
-opponents. This is a unique situation due to our simplifications and will be a cause for termination of the game when all
-three agents encounter this situation successively.
+If an agent chooses the option to claim a route on the board, this is only allowed if it helps their own route, or if it
+directly blocks the route of another agent. This simplification is done to increase the available knowledge of all agents. Added
+to this is the fact that for each agent and each route card, the shortest route is known based on the state of the board.
+This means that if an agent claims a connection, other agents can verify which routes are possible routes of the placing
+agent.
 
-### Design choices in implementation
-The code is built up such that all the parameters like the number of route cards or trains for example can be changed easily. 
-For simplicity, we now assume that we have three agents that each received three unique route cards at the beginning
-of the game. Besides, the agents all receive 45 trains which can be placed on connections.
+Furthermore, if an agent performs a block, it is forced to publicly announce which route it blocks from which agent.
+Since blocking is only possible when being 100% certain about the owner of a route card, this public announcement allows
+other agents to increase their knowledge as well. Additionally, this requirement for a public announcement allows all
+agents to distinguish between a block and a regular claim by an agent. This public announcement might seem odd at first,
+but could be compared to a real player taunting its opponent when performing a block.
 
-The code is implemented using Western European cities where the most westerly city is Lisboa and the most easterly is Brindisi.
-In total, there are 24 cities in the game, and the agents receive three out of a total of 16 route cards. On the Ticket
-to Ride board, there are often double connections between cities which can be utilized if there are more than 3 players.
-As we have restricted ourselves to just three players by default, we only use single connections.
+The last simplification is made by removing the possibility to place train stations. This simplification is partly
+made to simplify the coding itself, as there now cannot be multiple owners of a single connection. But this also simplifies
+determining the shortest route, reduces computational complexity and keeps the knowledge extracted from the board more
+simple.
+
+___
+
+THIS SHOULD PERHAPS BE MENTIONED IN A DISCUSSION
+It should be noted that real-world agents might obtain a degree of knowledge from the colour cards that an opponent draws. 
+However, it would require an agent to take into account all shortest routes with all colours that are relevant for those routes, 
+and update its knowledge every round in which cards are drawn. Additionally,
+agents could draw certain cards to mislead agents that use knowledge about drawn cards.
+Hence, due to its complexity, we assume that no knowledge is acquired from drawing train cards. 
+
+## Implementation
+In this section we will discuss the various element of our implementation of the Ticket to Ride game. We will go over 
+the most important sections that determine the workings of the system and the behaviour of the agents.
 
 #### An agent's turn
 Consider now an agent's turn given the simplifications and design choices. This agent considers three options, in this order:
@@ -167,13 +177,20 @@ the route cards. If there are multiple routes for which the agent needs a train 
 train card that will add to the route card worth the most points. 
 
 #### End-game
-The game can be ended in three ways:
-* When an agent has claimed a connection, and it has only two trains left, every agent has only one turn left;
-* When an agent accomplished all route cards;
-* When all agents in subsequent turns cannot draw any cards anymore, neither from the open nor closed deck.
+The game can be ended in three ways, the first way is when an agent has only two trains left, every agent can do a last turn
+after which the game is ended. The second way is when an agent has finished all route cards, the game ends directly.
+The last way to end a game is when all agents in subsequent turns cannot draw any card anymore, neither from the open, nor
+from the closed deck. In that case the game ends as well. The winner is determined based on the points scored.
+The score is based on the finished route cards which all have their own value. Besides that, an agent receives points 
+for individual connections. If an agent did not finish a route card it will receive a penalty by deducting the route 
+card's value from its score. 
 
-## Model
-
+## Kripke Model
+Uitwerken:
+  - Claimed connection that gives information -> Common knowledge \[connection of shortest route V ... V ... V ...\]
+  - Public announcement after completing route -> Common knowledge
+  - Public announcement after block -> Common knowledge after announcement
+  
 Let us define the following sets:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
