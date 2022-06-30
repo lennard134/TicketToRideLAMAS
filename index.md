@@ -121,6 +121,14 @@ shortest route of this opponent. In case an agent chooses to draw train cards, t
 either the (5) visible cards or the closed deck. If the agent does not draw a joker card from the visible cards,
 it can pick another card from either the visible cards (but not a joker card) or the closed deck.
 
+#### Card drawing strategy  
+An agent can choose to draw two train cards from the closed deck, or draw two train cards from the open deck where the second card
+may not be a joker. Before deciding which from which deck (open or closed) the agent will draw a train card, it will determine
+desired cards based on the routes it has to complete. For all routes, the agent checks how many train cards are needed to
+claim a connection on this route. Then, the agent checks the open deck and if there is a train card in the open deck
+which is also in the desired train cards, the agent will draw the card. Then, from the closed deck, another card is placed
+in the open deck. The agent will repeat this process with a constraint that it is not allowed to select the joker card.
+
 #### Shortest route
 Agents will always claim connections on the shortest path between the cities on the route cards. 
 We will use Uniform Cost Search (UCS) to find the shortest route between two cities on a route card. Calculating the
