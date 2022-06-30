@@ -22,8 +22,8 @@
 # Modelling Ticket to Ride
 
 ## Introduction
-![Ticket to Ride board overview \label{intro}](Figures/backgroundStartpage.jpg)
-Test: figure is here: \ref{intro}.
+![Ticket to Ride board, source:(https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition)](Figures/backgroundStartpage.jpg)
+
 Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
 The end goal of the game is to build a railway network that yields the highest amount of points. 
 There are various versions of the game with different maps of parts of the world. 
@@ -221,7 +221,7 @@ Let us define the following sets:
 Here we take $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distributed among the agents. 
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}$$ is the set of 
+* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}l$$ is the set of 
 possible states;
 * $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$;
 * $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \, \vert \, s_j = t_j \text{ for all } j \in \{1,\dots,n\} \text{ where } 
