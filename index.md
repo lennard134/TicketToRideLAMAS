@@ -22,7 +22,7 @@
 # Modelling Ticket to Ride
 
 ## Introduction
-![title](Images/backgroundStartpage.png)
+![title](Images/backgroundStartpage.jpg)
 Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
 The end goal of the game is to build a railway network that yields the highest amount of points. 
 There are various versions of the game with different maps of parts of the world. 
