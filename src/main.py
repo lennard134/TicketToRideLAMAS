@@ -49,8 +49,8 @@ def parse_args(parser) -> dict:
         print(f"INVALID NUMBER FOR NUMBER OF ROUTE CARDS. USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.")
         num_route_cards = DEFAULT_NUM_ROUTE_CARDS
         
-    if num_route_cards < num_agents:
-        print(f"INVALID NUMBER FOR NUMBER OF ROUTE CARDS. MUST BE AT LEAST THE NUMBER OF AGENTS. "
+    if num_route_cards < 1:
+        print(f"INVALID NUMBER FOR NUMBER OF ROUTE CARDS. MUST BE AT LEAST 1. "
               f"USING DEFAULT = {DEFAULT_NUM_ROUTE_CARDS}.")
         num_route_cards = DEFAULT_NUM_ROUTE_CARDS
 
