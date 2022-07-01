@@ -85,10 +85,10 @@ knowledge of the agents.
 Firstly, the number of cities is reduced from the original 47 cities to a more reasonable 24. With this reduction of
 cities, this automatically reduces the number of connections as well. As mentioned, the regular game has both normal,
 ferry and tunnel connections. These connections can also be doubled between two cities. In our version, only the normal
-and ferry connections are considered. The removal of double connections and tunnel connections yields TODO!! connections
-against the usual 90.
+and ferry connections are considered. The removal of double connections and tunnel connections yields 41 connections
+against the usual 90. Below, the resulting game board can be seen. Here, ferry connections are marked as dashed connections.
 
-<span style="color:red">KEI MOOI PLATJE HIER</span>.
+![Simplified Ticket to Ride board](Figures/Examples/../Example/1.%20init%20board%20crop.png)
 
 With the reduced map size, we also reduce the number of possible route cards. The original game contains 46 different
 route cards, whereas our version only contains 16 different route cards. From this set of 16 route cards, all agents
@@ -113,15 +113,6 @@ The last simplification is made by removing the possibility to place train stati
 made to simplify the coding itself, as there now cannot be multiple owners of a single connection. But this also simplifies
 determining the shortest route, reduces computational complexity and keeps the knowledge extracted from the board more
 simple.
-
-___
-
-THIS SHOULD PERHAPS BE MENTIONED IN A DISCUSSION
-It should be noted that real-world agents might obtain a degree of knowledge from the colour cards that an opponent draws. 
-However, it would require an agent to take into account all shortest routes with all colours that are relevant for those routes, 
-and update its knowledge every round in which cards are drawn. Additionally,
-agents could draw certain cards to mislead agents that use knowledge about drawn cards.
-Hence, due to its complexity, we assume that no knowledge is acquired from drawing train cards. 
 
 ## Implementation
 In this section we will discuss the various element of our implementation of the Ticket to Ride game. We will go over 
@@ -277,14 +268,17 @@ The nodes correspond to the cities.
 
 
 ## Example
-In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model.
+In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model. The example uses the default game settings, thus we have three agents who are each given two route cards. In this example, the route cards are distributed as follows:
+* Agent 0 has route cards Brest - Marseille and Brest - Venezia
+* Agent 1 has route cards Madrid - Zurich and Zagrab - Brindisi
+* Agent 2 has route cards Paris - Zagrab and Zurich - Brindisi
 
-ADD TEXT FOR INITIALIZATION
+Let us start with considering the game board and the Kripke model upon initialization of the system. We see the same board state we saw earlier: no agent has claimed any routes. The Kripke model is only based on the fact that all agents know their own cards. This means that all relations only go between worlds where the state of that agent does not change. EXPAND FURTHER, TRUE STATE MARKED AS GREEN
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
           <img src="Figures/Example/1.%20init%20board%20crop.png" alt/>
-          <em>Board state upon initialization.</em>
+          <em>Fig. 3: Board state upon initialization.</em>
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/1.%20init%20model%20crop.png" alt/>
@@ -292,7 +286,7 @@ ADD TEXT FOR INITIALIZATION
      </div>
 </div>
 
-ADD TEXT FOR FIRST TURN
+In the first turn, Agent 0 draws train cards from the deck. Agent 1 opts to claim a connection for one of its route cards. It decides to claim the connection Madrid - Barcelona, which is used for its Madrid - Zurich route card. This can be seen by the thick connection in the colour of Agent 1. Agent 2 again draws train cards from the deck. The claiming of connection Madrid - Zurich gives additional knowledge to the other agents. EXPAND ON THIS
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -305,7 +299,7 @@ ADD TEXT FOR FIRST TURN
      </div>
 </div>
 
-ADD TEXT FOR SECOND TURN
+If we now proceed another round, all agents claim a connection. Agent 0 claims connection Zurich - Paris for its route card Brest - Venezia, Agent 1 claims connection Zagrab - Venezia for its route card Zagrab - Brindisi and Agent 2 claims connection Frankfurt - Munchen for its route card Paris - Zagrab. Again, the various claims yield additional information about each agents cards. EXPAND FURTHER ON THIS
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -318,7 +312,7 @@ ADD TEXT FOR SECOND TURN
      </div>
 </div>
 
-ADD TEXT FOR FOURTH TURN
+Skipping one turn, we now highlight another reduction of the Kripke model caused by various claimed connections. In this round, Agent 0 claims the connection Zurich - Venezia for its route card Brest - Venezia. Agent 1 draws train cards. Agent 2 claims the connection Zagrab - Wien for its route card Paris - Zagrab. The Kripke model is now reduced to only two possible worlds. EXPAND FURTHER ON THIS
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -331,7 +325,7 @@ ADD TEXT FOR FOURTH TURN
      </div>
 </div>
 
-ADD TEXT FOR FIFTH TURN
+In the next turn, the first blocking move occurs: Agent 2 claim the connection Roma - Venezia, blocking the route card Zagrab - Brindisi of Agent 1. In this round, both Agent 0 and Agent 1 draw train cards. With the blocking move, Agent 2 also makes the public announcement that Agent 1 has route card Zagrab - Brindisi, but this does not alter the Kripke model as this was already common knowledge.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -344,7 +338,7 @@ ADD TEXT FOR FIFTH TURN
      </div>
 </div>
 
-ADD TEXT FOR ELEVENTH TURN
+If we now skip a few turns and look at the eleventh turn, we see that Agent 0 blocks Agent 2 by claiming the connection Roma - Brindisi, which hinders Agent 2 in completing its route card Zurich - Brindisi. Likewise, Agent 1 claims connection Palermo - Brindisi, which again hinders Agent 2 in its route card Zurich - Brindisi. Both agents also publicly announce that they know Agent 0 has the route card Zurich - Brindisi. Agent 2 draws from the train cards deck. Since the previous Kripke model still contained uncertainty abouth whether Agent 1 knew the true state, this is now removed and only the true state is left. This indicates all agents know everyones cards, and also know that everyone knows this.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -357,7 +351,7 @@ ADD TEXT FOR ELEVENTH TURN
      </div>
 </div>
 
-ADD TEXT FOR SIXTEENTH AND LAST TURN
+We again skip forward a few turns and end up in the seventeenth, and last, turn. In this turn, Agent 0 claims the connection Brest - Dieppe, which completes both its route cards. As this is one of the ending conditions, the game terminates and the final scores are added up. Agent 0 wins this game with a score of 32 points. Having only completed one of his route cards, Agent 2 comes in second with 15 points after being penalized for the unfinished route card. Agent 1 comes in last with no completed route cards and a final score of a mere 2 points. The Kripke model is naturally identical to that after eleven turns as the true state was already known then.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -372,3 +366,18 @@ ADD TEXT FOR SIXTEENTH AND LAST TURN
 
 ## Findings
 ...
+
+## Discussion
+
+Evaluate project
+
+### Further work
+
+THIS SHOULD PERHAPS BE MENTIONED IN A DISCUSSION
+It should be noted that real-world agents might obtain a degree of knowledge from the colour cards that an opponent draws. 
+However, it would require an agent to take into account all shortest routes with all colours that are relevant for those routes, 
+and update its knowledge every round in which cards are drawn. Additionally,
+agents could draw certain cards to mislead agents that use knowledge about drawn cards.
+Hence, due to its complexity, we assume that no knowledge is acquired from drawing train cards. 
+
+hadden ook alleen kunnen zeggen wie we blocken en niet welke route van wie
