@@ -398,16 +398,22 @@ We again skip forward a few turns and end up in the seventeenth, and last, turn.
      </div>
 </div>
 
-## Findings
-...
-
 ## Discussion
+The goal of this project was to simulate and model knowledge within a simplified version of Ticket to Ride. Our aim was to have agents acquire knowledge to determine their next action, while keeping the representation of this knowledge up to date in a Kripke model. We will first go over the project, evaluating the model in full. After this, we will expand on some options for further work on the project.
 
-Evaluate project
+### Evaluation
+Let us first consider the speed of the progam. Since the system is developed in Python, this means it is inherently relatively slow. However, for the default setting with 3 agents and 2 route cards, there is no observable delay in the system. Given that after the cards are made known to the agents only 90 states remain, the full model size stays reasonable. Even with three route cards per agent, the model speed remained relatively fast, although initialization is significantly slower, having to compute 1680 worlds. Increasing beyond this has a serious impact on model speed.
+
+The speed of the model is in part due to the various simplifications made throughout the full scope of the game. Especially the reduction in map size and the number of train cards in the game drastically lowered the number of possible combinations. This in turn reduced the number of computations required. Even with these simplifications, the core principles of the game remained intact, allowing us to stay relatively true to the original game.
+
+Where we deviate further from the traditional Ticket to Ride game is with the agent's strategies. As mentioned, we remove the possibility for agents to place train stations and to obtain new route cards. These simplifications were all made in light of removing uncertainty and complexity of the knowledge that can be extracted from the game. However, while not entirely true to the original game, the core principles of claiming routes and drawing cards is left in place. The effects of these simplifications have shown through with the clarity and explainability of the behaviour of the agents.
+
+Expanding agents, specifically their knowledge, we can quite confidently say that the evolution of knowledge of the agents is very clearly visible in the implementation. In the view of the Kripke model, users are able to select various states to find which agents consider them to still be a possibility. This allows the user to gain a better understanding of the overall knowledge, and predict what next moves might be made by the agents. Furthermore, the visualization very clearly shows that the agents obtain a lot of knowledge from every connection that is claimed by an opponent.
+
+Lastly, we have found that a lot of the time, the reason for a game end is that the deck of coloured train cards runs out. Due to the general abundance of coloured train cards, this suggests that agents are not able to claim any connections any longer. The reason for this is the blocking strategy often resulting in one or more cities becomming unreachable, prohibiting agents from completing one or more of their route cards. While possibly not entirely realistic to the behaviour of a real human player, this does highlight both the effectiveness of the blocking strategy, and the general effectiveness of knowledge gathering by agents.
 
 ### Further work
-
-THIS SHOULD PERHAPS BE MENTIONED IN A DISCUSSION
+DIT MOET NOG GOED VERWOORD WORDEN
 It should be noted that real-world agents might obtain a degree of knowledge from the colour cards that an opponent draws. 
 However, it would require an agent to take into account all shortest routes with all colours that are relevant for those routes, 
 and update its knowledge every round in which cards are drawn. Additionally,
