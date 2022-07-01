@@ -282,9 +282,9 @@ the agents, and for the Kripke model.
 
 <p float="middle">
   <img src="Figures/Example/1.%20init%20board%20crop.png" width="49%"  alt/>
-  <em>Test caption</em>
   <img src="Figures/Example/1.%20init%20model%20crop.png" width="49%"  alt/>
-  <em>Test caption</em>
+  <em  Test caption  width="49%" />
+  <em>Test caption  width="49%"</em>
 </p>
 
 ## Findings
