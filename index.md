@@ -25,7 +25,7 @@ _Authors: Sverre Brok, Lennard Froma and Jeroen van Gelder_
 
 ## Introduction
 ![Ticket to Ride board, source:(https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition)](Figures/backgroundStartpage.jpg)
-*Fig. 1: Ticket to Ride board. Source: https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition*
+*Fig. 1: An example of a Ticket to Ride board. Source: https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition*
 
 Ticket to Ride is a popular board game (_see Fig. 1_) designed by Alan R. Moon and published by Days of Wonder. 
 The game's end goal is to build a railway network that yields the highest points. 
@@ -95,7 +95,7 @@ against the usual 90. Below, the resulting game board can be seen. Here, ferry c
 Data in text files of the cities, connections and route cards have been obtained from [here](https://towardsdatascience.com/playing-ticket-to-ride-like-a-computer-programmer-2129ac4909d9).
 
 ![Simplified Ticket to Ride board](Figures/Example/1.%20init%20board%20crop.png)
-*Fig. 2: a simplified version of the Ticket to Ride board.*
+*Fig. 2: A simplified version of the Ticket to Ride board.*
 
 With the reduced map size, we also reduce the number of possible route cards. The original game contains 46 different
 route cards, whereas our version only contains 16 different route cards. From this set of 16 route cards, all agents
@@ -154,8 +154,8 @@ This procedure is explained next.
 
 #### Shortest path
 Agents will always claim connections on the shortest path between the cities on the route cards. We use Uniform Cost 
-Search (UCS) ([code adapted from here](https://github.com/AndreasSoularidis/medium_articles/tree/main/UCSAlgorithm)) 
-to find the shortest path between two cities on a route card. Calculating the shortest path only uses the
+Search (UCS) to find the shortest path between two cities on a route card ([code adapted from here](https://github.com/AndreasSoularidis/medium_articles/tree/main/UCSAlgorithm)) . 
+Calculating the shortest path only uses the
 information given by the board, which is available to all agents. Individual agents' hands are not considered as it will 
 add unwanted uncertainty to the shortest path considered by the other agents.
 
@@ -215,22 +215,22 @@ cards yield agents points, whereas an incomplete route card gives penalty points
 agent's score. Finally, based on the end scores, the winner of the game is announced. 
 
 
-## Formal Model
-In this section, we will describe the kripke model behind the knowledge of the agents and how actions in the game change the knowledge.
+## Formal model
+In this section, we will describe the Kripke model behind the knowledge of the agents and how actions in the game change the model.
 For this, we need to formalize the map of Ticket to Ride as follows.
 
 Consider the Ticket to Ride map as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where $$\mathcal{N}$$ is the set of nodes (cities) and $$\mathcal{A}$$ is the set of arcs (connections).
-Each connection $$c \in \mathcal{A}$$ has weight $$w_{c}$$, which is the number of trains that is needed to claim the connection.
+Each connection $$c \in \mathcal{A}$$ has weight $$w_{c}$$, which is the number of trains that are needed to claim the connection.
 We will later use this definition to refer to the connections of the network.
 
-### Kripke Model
+### Kripke model
 
 Let us define the following sets:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
 * $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ route cards in the game;
 * $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$a_i$$ has route card $$d_j$$.
 
-Here we limit $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distributed among the agents. 
+Here we limit the fraction $$\frac{n}{m} \in \mathbb{N}$$, so the route cards can be evenly distributed among the agents. 
 Moreover, let us define $$D_i$$ as the set of route cards that is owned by agent $$a_i$$, $$i \in \{1,\dots,m\}$$.
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
@@ -243,43 +243,45 @@ Here, $$s_i$$ is the internal state of agent $$a_i$$, with $$i \in \{1,\dots,m\}
 Here, it must hold that every route card is given to one and only one agent.
 
 The valuation function $$\pi$$ assigns for each state a truth value to each predicate $$p_{ij} \in \mathbf{P}$$.
-A predicate $$p_{ij}$$ is true if and only if agent $$a_i$$ possess route card $$j$$.
-Initially, before the agents have looked at their cards, the set of relations for agent $$a_i$$ is all relations between two states.
+A predicate $$p_{ij}$$ is true if and only if agent $$a_i$$ possess route card $$d_j$$.
+Initially, before the agents have looked at their route cards, the set of relations for agent $$a_i$$ is all relations between two states.
 
-### An agent's turn
-After initialization of the game, the agents have looked at their route cards.
-Now, it is common knowledge that each agents knows its own set of route cards.
-Therefore, the new set of relations in Kripke model $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ is updated as follows:
+### Knowledge behaviour in the game
+After the initialization of the game, the agents looked at their route cards.
+Now, it is common knowledge that each agent knows its own set of route cards.
+Therefore, the relations in Kripke model $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ are updated as follows:
 
 $$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\, \vert\, s_i = t_i\} \text{ for each agent } a_i,\, i \in \{1,\dots,m\}.$$
 
-Note that in case of two agents, for example agent $$a_1$$ and $$a_2$$, both agents now know the true state, as agent $$a_2$$ possesses the cards that agent $$a_1$$ does not posses, and vice versa.
+Note that in the case of two agents, for example, agent $$a_1$$ and $$a_2$$, both agents now know the only true world, as agent $$a_2$$ possesses the cards that agent $$a_1$$ does not possess, and vice versa.
 
-Consider now an agent $$a_i$$ with $$i$$ such that $$a_i \in A$$.
-An agent has various options in their turn as described above.
-We will now consider the options claim connection and block connection and show how the knowledge and kripke model changes accordingly.
-The option to draw cards gives no knowledge to agents.
+Consider an agent $$a_i$$ with $$i$$ such that $$a_i \in A$$.
+This agent has various options in their turn as described above.
+Below, we will consider the options claim connection and block connection and show how the knowledge and Kripke model changes accordingly.
+The third and last option to draw cards gives no knowledge to agents and is therefore not considered.
 
 #### Claim connection
-When agent $$a_i$$ claims a connection, it gives information to the other agents. 
+When agent $$a_i$$ claims a connection, it provides information to all agents. 
 Since we assumed that an agent announces when it blocks an opponent, it is common knowledge that the connection (without a block announcement) is part of one of its own shortest paths.
 This is because an agent claims a connection only if it is part of the shortest path of one of its route cards.
-Moreover, the shortest path of every agent is known by everyone. EXPLAIN THIS EARLIER!
+Moreover, the shortest path of every agent is known by every agent.
 
-In particular, when agent $$a_i$$ claims connection $$c \in \mathcal{A}$$, there is an implicit public announcement that this agent has one of the route cards where this connection is part of the shortest path of the route cards.
+In particular, when agent $$a_i$$ claims connection $$c \in \mathcal{A}$$, there is an implicit public announcement that this agent possesses one of the route cards where this connection is part of the shortest path of the route cards.
 After this public announcement, it is common knowledge that this agent has one of the route cards where the claimed connection is part of the shortest path of that route card.
 Hence, we have
 
 $$[p_{ik} \lor \dots \lor p_{ij}]\, C(p_{ik} \lor \dots \lor p_{ij}),$$
 
-where $$k,j \in \{l \, \vert \, c \text{ in the shortest path for agent } a_i \text{ of } d_l \in D\}$$, that is, the set of indices $$l$$ of route cards $$d_l \in D$$ where $$c$$ is a connection in the shortest path for agent $$a_i$$.
+where $$k,j \in \{l \, \vert \, c \text{ in the shortest path for agent } a_i \text{ of } d_l \in D\}$$, that is, 
+the set of indices $$l$$ where $$c$$ is a connection in the shortest path of route card $$d_l \in D$$ for agent $$a_i$$.
 
 #### Block connection
-An agent can only block a shortest path from an agent when it knows that that agent has the particular route card.
+An agent can only block the shortest path from an agent when it knows that that agent has a particular route card.
 This results in the following.
 When agent $$a_i$$ blocks the shortest path for route card $$d_l$$, $$d_l \in D_j$$, that is owned by agent $$a_j$$, $$a_j \in A$$, agent $$a_i$$ publicly announces that it knows that agent $$a_j$$ has route card $$d_l$$, that is $$[K_i p_{jl}]$$.
 After the public announcement, every agent knows that agent $$a_i$$ knows that $$p_{jl}$$.
-In our model, this results in common knowledge of $$p_{jl}$$ as all worlds that do not have $$p_{jl}$$ are not considered anymore by the agents since there it does not hold that agent $$a_i$$ knows that $$p_{jl}$$ (note the reflexive relations for every agent in each world). 
+In our model, this results in common knowledge of $$p_{jl}$$ as all worlds that do not have $$p_{jl}$$ are not considered anymore by all the agents since, in those worlds, 
+it does not hold that agent $$a_i$$ knows that $$p_{jl}$$ (note the reflexive relations for every agent in each world). 
 Therefore, after the public announcement, it is common knowledge that agent $$a_j$$ has route card $$d_l$$, that is,
 
 $$[K_i p_{jl}]\, C p_{jl}.$$
@@ -293,12 +295,13 @@ This means that when agent $$a_i$$ completes route card $$d_l$$, we have:
 $$[p_{ij}]\, C p_{ij}.$$
 
 ### Kripke model view
-In the figure below, we show an example of a kripke model with three agents that have been assigned two route cards.
-The red circles indicate worlds and the green circle indicates the true world.
-The lines between the worlds indicate the relations and the different colours the different agents.
+In the figure below, we show an example of a Kripke model with three agents that have been assigned two route cards.
+The red circles indicate different worlds and the green circle indicates the true world.
+The worlds are randomly placed each time the model is updated.
+The lines between the worlds indicate the relations and the different colours of the different agents.
 
 ![Example Kripke Model](Figures/Example/1.%20init%20model%20crop.png)
-*Fig. 3: example of a Kripke model representing agent knowledge.*
+*Fig. 3: Example of a Kripke model representing agent knowledge.*
 
 The number of worlds in the Kripke model after initialization can be calculated using the following formula:
 
@@ -309,24 +312,31 @@ For example, in the case of three agents and six route cards (two route cards pe
 
 $${6 \choose 2} \cdot {4 \choose 2} \cdot {2 \choose 2} = 90.$$
 
-That is, from the available six route cards, the first agent gets assigned two route cards. Then, from the four route cards that are over, the second agent gets assigned two route cards.
+That is, from the available six route cards, the first agent gets assigned two route cards. Then, from the four route cards that are left, the second agent gets assigned two route cards.
 The last two route cards are given to the third agent.
 
-As one can verify by this formula, the number of worlds is exploding in the number of agents, $$n$$, and number of route cards, $$m$$.
+Using this formula, one can verify that the number of worlds is exploding in the number of agents, $$n$$, and the number of route cards, $$m$$.
 
-In each turn, the model is updated and the figure accordingly.
-After a public announcement, all relations and worlds are removed that do not satisfy the public announcement.
-
-RANDOM WORLDS
+In our simulation, the model is updated after an agent claims/blocks a connection, and the figure is updated accordingly.
+In the case of public announcements (which only change the model in our version), all relations and worlds are removed that do not satisfy the public announcement.
 
 
 ## Example
-In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model. The example uses the default game settings, thus we have three agents who are each given two route cards. In this example, the route cards are distributed as follows:
+In this section, we will go over an example of a complete game. 
+We will highlight interesting turns for both actions by the agents, and for the Kripke model. 
+The example uses the default game settings, thus we have three agents who are each given two route cards. 
+In this example, the route cards are distributed as follows:
 * Agent 0 (in dark blue) has route cards Brest - Marseille and Brest - Venezia
 * Agent 1 (in yellow) has route cards Madrid - Zurich and Zagrab - Brindisi
 * Agent 2 (in light blue) has route cards Paris - Zagrab and Zurich - Brindisi
 
-Let us start with considering the game board and the Kripke model upon initialization of the system (*Fig. 4*). We see the same board state we saw earlier: no agent has claimed any routes. The Kripke model (*Fig. 5*) is only based on the fact that all agents know their own cards. This means that all relations only go between worlds where the state of that agent does not change. With this constraint, there are 90 possible worlds in the model. The image of the Kripke model shows the true state in green.
+Let us start with considering the game board and the Kripke model upon initialization of the system, see *Fig. 4*. 
+We see the same board state we saw earlier: no agent has claimed any routes.
+In *Fig. 5*, one can see the Kripke model upon initialization.
+The Kripke model is only based on the fact that all agents know their own cards (so the agents have seen their cards). 
+This means that all relations only go between worlds where the state of that agent does not change. 
+With this constraint, there are 90 possible worlds in the model. 
+The image of the Kripke model shows the true state in green.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
