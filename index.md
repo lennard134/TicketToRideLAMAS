@@ -323,19 +323,19 @@ In the case of public announcements (which only change the model in our version)
 
 ## Example
 In this section, we will go over an example of a complete game. 
-We will highlight interesting turns for both actions by the agents, and for the Kripke model. 
+We will highlight interesting turns for both actions by the agents and the Kripke model. 
 The example uses the default game settings, thus we have three agents who are each given two route cards. 
 In this example, the route cards are distributed as follows:
 * Agent 0 (in dark blue) has route cards Brest - Marseille and Brest - Venezia
 * Agent 1 (in yellow) has route cards Madrid - Zurich and Zagrab - Brindisi
 * Agent 2 (in light blue) has route cards Paris - Zagrab and Zurich - Brindisi
 
-Let us start with considering the game board and the Kripke model upon initialization of the system, see *Fig. 4*. 
+Let us start by considering the game board and the Kripke model upon initialization of the system, see *Fig. 4*. 
 We see the same board state we saw earlier: no agent has claimed any routes.
 In *Fig. 5*, one can see the Kripke model upon initialization.
-The Kripke model is only based on the fact that all agents know their own cards (so the agents have seen their cards). 
+The Kripke model is only based on the fact that all agents know their cards (so the agents have seen their cards). 
 This means that all relations only go between worlds where the state of that agent does not change. 
-With this constraint, there are 90 possible worlds in the model. 
+With this constraint, there are 90 possible worlds in the model and 540 relations per agent.
 The image of the Kripke model shows the true state in green.
 
 <div style="display:flex">
@@ -345,13 +345,19 @@ The image of the Kripke model shows the true state in green.
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/1.%20init%20model%20crop.png" alt/>
-          <em>Fig. 5: Kripke model upon initialization</em>
+          <em>Fig. 5: Kripke model upon initialization.</em>
      </div>
 </div>
 
-In the first turn, Agent 0 draws train cards from the deck. Agent 1 opts to claim a connection for one of its route cards. It decides to claim the connection Madrid - Barcelona, which is used for its Madrid - Zurich route card. This can be seen by the thick connection in the colour of Agent 1 (*Fig. 6*). Agent 2 again draws train cards from the deck. 
+In the first turn, Agent 0 draws train cards from the deck. 
+Agent 1 opts to claim a connection for one of its route cards. 
+It decides to claim the connection Madrid - Barcelona, which is used for its Madrid - Zurich route card. 
+This can be seen by the thick connection in the colour of Agent 1 in *Fig. 6*. 
+Agent 2 again draws train cards from the deck. 
 
-The claiming of connection Madrid - Barcelona gives reveals to all agents that Agent 1 must have the route card Madrid - Zurich, as none of the other five route cards contain this connection in their shortest paths. This results in the removal of all worlds where Agent 1 does not have the route card Madrid - Zurich, leaving only 30 possible worlds in the Kripke model (*Fig. 7*).
+The claiming of connection Madrid - Barcelona reveals to all agents that Agent 1 must have the route card Madrid - Zurich, 
+as none of the other five route cards contains this connection in their shortest paths. 
+This results in the removal of all worlds where Agent 1 does not have the route card Madrid - Zurich, leaving only 30 possible worlds in the Kripke model, see *Fig. 7*.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -360,13 +366,24 @@ The claiming of connection Madrid - Barcelona gives reveals to all agents that A
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/2. turn 0 model crop.png" alt/>
-          <em>Fig. 7: Kripke model after the first turn</em>
+          <em>Fig. 7: Kripke model after the first turn.</em>
      </div>
 </div>
 
-If we now proceed another round, all agents claim a connection. Agent 0 claims connection Zurich - Paris for its route card Brest - Venezia, Agent 1 claims connection Zagrab - Venezia for its route card Zagrab - Brindisi and Agent 2 claims connection Frankfurt - Munchen for its route card Paris - Zagrab. The resulting situation on the board can be seen in *Fig. 8*.
+When we proceed to another round, all agents claim a connection. 
+Agent 0 claims connection Zurich - Paris for its route card Brest - Venezia, 
+Agent 1 claims connection Zagrab - Venezia for its route card Zagrab - Brindisi 
+and Agent 2 claims connection Frankfurt - Munchen for its route card Paris - Zagrab. 
+The resulting situation on the board can be seen in *Fig. 8*.
 
-The connection claimed by Agent 0 only occurs in either route card Paris - Zagrab, or route card Brest - Venezia, hence all worlds in which this does not hold are removed. The connection Zagrab - Venezia, claimed by Agent 1 only occurs in the shortest path of route cards Zagrab - Brindisi and Paris - Zagrab. Again, all worlds in which one of these route cards is not owned by Agent 1 is removed. Lastly, the connection claimed by Agent 2, Frankfurt - Munchen, only occurs in the shortest path of either Paris - Zagrab, or Brest - Venezia. Removing all worlds that violate this, leaves the model with four different worlds (*Fig. 9*). We already see that the route cards of Agent 1 have already been confirmed in this situation, as all states are connected for only the relations of Agent 1.
+The connection claimed by Agent 0 only occurs in either route card Paris - Zagrab, or route card Brest - Venezia.
+Hence, all worlds in which this does not hold are removed. 
+The connection Zagrab - Venezia, claimed by Agent 1 only occurs in the shortest path of route cards Zagrab - Brindisi and Paris - Zagrab. 
+Again, all worlds in which one of these route cards is not owned by Agent 1 are removed. 
+Lastly, the connection claimed by Agent 2, Frankfurt - Munchen, only occurs in the shortest path of either Paris - Zagrab, or Brest - Venezia. 
+Removing all worlds that violate this, leaves the model with four different worlds, see *Fig. 9*. 
+We already see that the route cards of Agent 1 have already been confirmed in this situation, as all states are connected for only the relations of Agent 1.
+Only Agent 1 is not sure of the cards of Agent 0 and Agent 2.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -379,9 +396,14 @@ The connection claimed by Agent 0 only occurs in either route card Paris - Zagra
      </div>
 </div>
 
-Skipping one turn, we now highlight another reduction of the Kripke model caused by various claimed connections. In this round, Agent 0 claims the connection Zurich - Venezia for its route card Brest - Venezia. Agent 1 draws train cards. Agent 2 claims the connection Zagrab - Wien for its route card Paris - Zagrab (*Fig. 10*).
+Skipping one turn, we now highlight another reduction of the Kripke model caused by various claimed connections. 
+In this round, Agent 0 claims the connection Zurich - Venezia for its route card Brest - Venezia. 
+Agent 1 draws train cards. 
+Agent 2 claims the connection Zagrab - Wien for its route card Paris - Zagrab (*Fig. 10*).
 
-The claim by Agent 0 means it is now publicly known that they either have route card Zurich - Brindisi, or route card Brest - Venezia. The claimed connection by Agent 2 reveal that they either have Paris - Zagrab, or Zagrab - Brindisi. The Kripke model is now reduced to only two possible worlds (*Fig. 11*).
+The claim by Agent 0 means it is now publicly known that Agent 0 either has route card Zurich - Brindisi, or route card Brest - Venezia. 
+The claimed connection by Agent 2 reveals that Agent 2 either has route card Paris - Zagrab, or route card Zagrab - Brindisi. 
+The Kripke model is now reduced to only two possible worlds, see *Fig. 11*.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -390,11 +412,13 @@ The claim by Agent 0 means it is now publicly known that they either have route 
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/4. turn 3 model crop.png" alt/>
-          <em>Fig. 11: Kripke model after four turns</em>
+          <em>Fig. 11: Kripke model after four turns.</em>
      </div>
 </div>
 
-In the next turn, the first blocking move occurs: Agent 2 claim the connection Roma - Venezia, blocking the route card Zagrab - Brindisi of Agent 1 (*Fig. 12*). In this round, both Agent 0 and Agent 1 draw train cards. With the blocking move, Agent 2 also makes the public announcement that Agent 1 has route card Zagrab - Brindisi, but this does not alter the Kripke model as this was already common knowledge, as can be seen in *Fig. 13*.
+In the next turn, the first blocking move occurs: Agent 2 claims the connection Roma - Venezia, blocking the route card Zagrab - Brindisi of Agent 1 (*Fig. 12*). 
+In this round, both Agent 0 and Agent 1 draw train cards. 
+With the blocking move, Agent 2 also makes the public announcement that Agent 1 has route card Zagrab - Brindisi, but this does not alter the Kripke model as this was already common knowledge, as can be seen in *Fig. 13*.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -407,9 +431,13 @@ In the next turn, the first blocking move occurs: Agent 2 claim the connection R
      </div>
 </div>
 
-If we now skip a few turns and look at the eleventh turn (*Fig. 14*), we see that Agent 0 blocks Agent 2 by claiming the connection Roma - Brindisi, which hinders Agent 2 in completing its route card Zurich - Brindisi. Likewise, Agent 1 claims connection Palermo - Brindisi, which again hinders Agent 2 in its route card Zurich - Brindisi. Both agents also publicly announce that they know Agent 0 has the route card Zurich - Brindisi. Agent 2 draws from the train cards deck. 
+If we now skip a few turns and look at the eleventh turn (*Fig. 14*), we see that Agent 0 blocks Agent 2 by claiming the connection Roma - Brindisi, which hinders Agent 2 in completing its route card Zurich - Brindisi. 
+Likewise, Agent 1 claims connection Palermo - Brindisi, which again hinders Agent 2 in its route card Zurich - Brindisi. 
+Both agents also publicly announce that they know Agent 0 has the route card Zurich - Brindisi. 
+Agent 2 draws from the train cards deck. 
 
-The public announcement that Agent 2 has route card Zurich - Brindisi removes the last alternative world from the Kripke model, leaving only the true state as the possible world (*Fig. 15*). This now means that all agents know the route cards of all agents, and also that they know this from each other.
+The public announcement that Agent 2 has route card Zurich - Brindisi removes the last alternative world from the Kripke model, leaving only the true state as the possible world, see *Fig. 15*. 
+This now means that all agents know the route cards of all agents, and also that they know this from each other, i.e. it is common knowledge which cards every agent possesses.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -422,7 +450,13 @@ The public announcement that Agent 2 has route card Zurich - Brindisi removes th
      </div>
 </div>
 
-We again skip forward a few turns and end up in the seventeenth, and last, turn. In this turn, Agent 0 claims the connection Brest - Dieppe, which completes both its route cards (*Fig. 16*). As this is one of the ending conditions, the game terminates and the final scores are added up. Agent 0 wins this game with a score of 32 points. Having only completed one of his route cards, Agent 2 comes in second with 15 points after being penalized for the unfinished route card. Agent 1 comes in last with no completed route cards and a final score of a mere 2 points. The Kripke model is naturally identical to that after eleven turns as the true state was already known then (*Fig. 17*).
+We again skip forward a few turns and end up in the seventeenth, and last, turn. 
+In this turn, Agent 0 claims the connection Brest - Dieppe, which completes both its route cards (*Fig. 16*). 
+As this is one of the ending conditions, the game terminates and the final scores are added up. 
+Agent 0 wins this game with a score of 32 points. 
+Having only completed one of his route cards, Agent 2 comes in second with 15 points after being penalized for the unfinished route card. 
+Agent 1 comes in last with no completed route cards and a final score of a mere 2 points. 
+The Kripke model is naturally identical to that after eleven turns as the true state was already known, see *Fig. 17*.
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
@@ -431,9 +465,10 @@ We again skip forward a few turns and end up in the seventeenth, and last, turn.
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/7. turn 16 model crop.png" alt/>
-          <em>Fig. 17: Kripke model at the end of the game after 17 turns</em>
+          <em>Fig. 17: Kripke model at the end of the game after 17 turns.</em>
      </div>
 </div>
+
 
 ## Discussion
 The goal of this project was to simulate and model knowledge within a simplified version of Ticket to Ride. Our aim was to have agents acquire knowledge to determine their next action, while keeping the representation of this knowledge up to date in a Kripke model. We will first go over the project, evaluating the model in full. After this, we will expand on some options for further work on the project.
