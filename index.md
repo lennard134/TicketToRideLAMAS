@@ -88,7 +88,7 @@ ferry and tunnel connections. These connections can also be doubled between two 
 and ferry connections are considered. The removal of double connections and tunnel connections yields 41 connections
 against the usual 90. Below, the resulting game board can be seen. Here, ferry connections are marked as dashed connections.
 
-![Simplified Ticket to Ride board](Figures/Examples/../Example/1.%20init%20board%20crop.png)
+![Simplified Ticket to Ride board](Figures/Example/1.%20init%20board%20crop.png)
 
 With the reduced map size, we also reduce the number of possible route cards. The original game contains 46 different
 route cards, whereas our version only contains 16 different route cards. From this set of 16 route cards, all agents
@@ -205,7 +205,7 @@ agent's score. Finally, based on the end scores, the winner of the game is annou
 In this section, we will describe the kripke model behind the knowledge of the agents and how actions in the game change the knowledge.
 For this, we need to formalize the map of Ticket to Ride as follows.
 
-Consider the Ticket to Ride map as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where $\mathcal{N}$ is the set of nodes (cities) and $\mathcal{A}$ is the set of arcs (connections).
+Consider the Ticket to Ride map as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where $$\mathcal{N}$$ is the set of nodes (cities) and $$\mathcal{A}$$ is the set of arcs (connections).
 Each connection $$c \in \mathcal{A}$$ has weight $$w_{c}$$, which is the number of trains that is needed to claim the connection.
 We will later use this definition to refer to the connections of the network.
 
@@ -220,29 +220,28 @@ Here we limit $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distrib
 Moreover, let us define $$D_i$$ as the set of route cards that is owned by agent $$a_i$$, $$i \in \{1,\dots,m\}$$.
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_m) \, \vert \, s_i \cap s_j = \emptyset \text{ for } i \not = j, \vert s_i \vert \in \frac{n}{m} \text{ and } \bigcup_{j=1}^m s_j = D\}$$ is the set of possible states, where $$S_i$$ is the internal state of agent $$a_i$$, $$i \in \{1,\dots,m\}$$;
+* $$S = \{(s_1,s_2,\dots,s_m) \, \vert \, s_i \cap s_j = \emptyset \text{ for } i \not = j, \vert s_i \vert \in \frac{n}{m} \text{ and } \bigcup_{j=1}^m s_j = D\}$$ is the set of possible states, where $$s_i$$ is the internal state of agent $$a_i$$, $$a_i \in A$$;
 * $$\pi : S \rightarrow (\mathbf{P} \rightarrow \{t, f\}$$);
-* $$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\} \text{ for } 1 \leq i \leq m$$.
+* $$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\} \text{ for } i \in \{1,\dots,m\}$$.
 
-The set of states, $$S$$ is simply all combinations of route card distributions over the agents, where each agent has the same amount of route cards, that is $$\frac{n}{m}$$.
-Here, $$S_i$$, $$i \in \{1,\dots,m\}$$, is the internal state of an agent and is the set of route cards that is attributed to that agent.
+The set of worlds, $$S$$, is simply all combinations of route card distributions over the agents, where each agent has the same amount of route cards, that is $$\frac{n}{m}$$.
+Here, $$s_i$$ is the internal state of agent $$a_i$$, with $$i \in \{1,\dots,m\}$$, and is the set of route cards that is attributed to that agent in that world.
 Here, it must hold that every route card is given to one and only one agent.
 
 The valuation function $$\pi$$ assigns for each state a truth value to each predicate $$p_{ij} \in \mathbf{P}$$.
 A predicate $$p_{ij}$$ is true if and only if agent $$a_i$$ possess route card $$j$$.
 Initially, before the agents have looked at their cards, the set of relations for agent $$a_i$$ is all relations between two states.
 
-AGENTS LOOK AT THEIR CARDS\\
+### An agent's turn
 After initialization of the game, the agents have looked at their route cards.
 Now, it is common knowledge that each agents knows its own set of route cards.
-Therefore, we the new set of relations in Kripke model $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ is updated as follows:
+Therefore, the new set of relations in Kripke model $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ is updated as follows:
 
 $$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\, \vert\, s_i = t_i\} \text{ for each agent } a_i,\, i \in \{1,\dots,m\}.$$
 
 Note that in case of two agents, for example agent $$a_1$$ and $$a_2$$, both agents now know the true state, as agent $$a_2$$ possesses the cards that agent $$a_1$$ does not posses, and vice versa.
 
-### An agent's turn
-Consider an agent $$a_i$$ with $$i$$ such that $$a_i \in A$$.
+Consider now an agent $$a_i$$ with $$i$$ such that $$a_i \in A$$.
 An agent has various options in their turn as described above.
 We will now consider the options claim connection and block connection and show how the knowledge and kripke model changes accordingly.
 The option to draw cards gives no knowledge to agents.
@@ -278,6 +277,18 @@ Hence, it is then common knowledge that this particular agent has that particula
 This means that when agent $$a_i$$ completes route card $$d_l$$, we have:
 
 $$[p_{ij}]\, C p_{ij}.$$
+
+### Kripke model view
+In the figure below, we show an example of a kripke model with three agents that have been assigned two route cards.
+The red circles indicate worlds and the green circle indicate the true world.
+The lines between the worlds indicate the relations and the different colours the different agents.
+
+![Example Kripke Model](Figures/Example/1.%20init%20model%20crop.png)
+
+In each turn, the model can be updated.
+After a public announcement, all relations and worlds are removed that do not satisfy the public announcement.
+After that, the figure is updated.
+
 
 ## Example
 In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model. The example uses the default game settings, thus we have three agents who are each given two route cards. In this example, the route cards are distributed as follows:
