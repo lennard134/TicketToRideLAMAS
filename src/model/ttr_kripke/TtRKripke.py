@@ -120,8 +120,7 @@ class TtRKripke(object):
             if route_cards.intersection(world.get_state(agent_id)):
                 # true if card is in state for agent_id
                 world_list.append(world)
-            # else:
-            #     print(f"Removing world {str(world)}")
+
         self.worlds = world_list
 
     def public_announcement_route_card(self, agent_id: int, route_card: set[str]):
@@ -150,8 +149,6 @@ class TtRKripke(object):
             if not route_card.difference(world.get_state(agent_id)):
                 # true if card is in state for agent_id
                 world_list.append(world)
-            # else:
-            #     print(f"Removing world {str(world)}")
 
         self.worlds = world_list
 
