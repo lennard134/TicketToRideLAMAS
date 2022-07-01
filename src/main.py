@@ -3,6 +3,9 @@ import argparse
 
 from model.TicketToRide import TicketToRide
 from Visualizer import Visualizer
+import random
+
+# random.seed(0)
 
 NUM_AGENTS = 'n'
 NUM_ROUTE_CARDS = 'm'
