@@ -28,6 +28,7 @@ LINE_THICKNESS_RELATION = PY_GAME_CONFIG['LINE_THICKNESS_RELATION']
 RADIUS = PY_GAME_CONFIG['RADIUS']
 COLOURS = PY_GAME_COLOUR_CONFIG
 AGENT_COLOURS = AGENT_COLOURS
+MIN_TRAINS = TICKET_TO_RIDE_CONFIG['MIN_TRAINS']
 
 # Button settings
 BUTTON_WIDTH = PY_GAME_CONFIG['BUTTON_WIDTH']
@@ -238,11 +239,20 @@ class Visualizer(object):
             if agent.check_if_route_cards_done():
                 winning_agent = agent.agent_id
 
-        if not winning_agent:
-            text_height += BUTTON_HEIGHT / 2
-            text = large_font.render(f"Game finished: deck empty, no more train cards!", True, COLOURS['black'])
-            surface.blit(text, (text_left, text_height))
-            text_height += BUTTON_HEIGHT
+        if winning_agent is None:
+            if self.ttr.last_turn:
+                for agent in self.ttr.agents:
+                    if agent.nr_of_trains < MIN_TRAINS and self.ttr.last_turn == agent.agent_id:
+                        text_height += BUTTON_HEIGHT / 2
+                        text = large_font.render(f"Game finished: Agent {agent.agent_id} has less than {MIN_TRAINS} trains!", True,
+                                                 COLOURS['black'])
+                        surface.blit(text, (text_left, text_height))
+                        text_height += BUTTON_HEIGHT
+            else:
+                text_height += BUTTON_HEIGHT / 2
+                text = large_font.render(f"Game finished: deck empty, no more train cards!", True, COLOURS['black'])
+                surface.blit(text, (text_left, text_height))
+                text_height += BUTTON_HEIGHT
         else:
             text_height += BUTTON_HEIGHT / 2
             text = large_font.render(f"Game finished: Agent {winning_agent} completed all routes", True, COLOURS['black'])

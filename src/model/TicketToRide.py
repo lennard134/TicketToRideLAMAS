@@ -201,6 +201,8 @@ class TicketToRide(object):
         """
         Initializer for the game
         """
+        # random.seed(0)
+
         print("\n--- INITIALIZING TICKET TO RIDE ---\n")
         self.deck = Deck()
         self.board = Board()
