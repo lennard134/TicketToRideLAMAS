@@ -292,7 +292,7 @@ When agent $$a_i$$ completes a route card $$d_l$$ from its assigned route cards,
 Hence, it is then common knowledge that this particular agent has that particular route card.
 This means that when agent $$a_i$$ completes route card $$d_l$$, we have:
 
-$$[p_{ij}]\, C p_{ij}.$$
+$$[p_{il}]\, C p_{il}.$$
 
 ### Kripke model view
 In the figure below, we show an example of a Kripke model with three agents that have been assigned two route cards.
