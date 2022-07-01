@@ -277,27 +277,98 @@ The nodes correspond to the cities.
 
 
 ## Example
-In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by
-the agents, and for the Kripke model.
+In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model.
+
+ADD TEXT FOR INITIALIZATION
 
 <div style="display:flex">
      <div style="flex:1;padding-right:10px;">
           <img src="Figures/Example/1.%20init%20board%20crop.png" alt/>
+          <em>Board state upon initialization.</em>
      </div>
      <div style="flex:1;padding-left:10px;">
           <img src="Figures/Example/1.%20init%20model%20crop.png" alt/>
+          <em>Kripke model upon initialization</em>
      </div>
 </div>
 
-[//]: # (<p float="middle">)
+ADD TEXT FOR FIRST TURN
 
-[//]: # (  <img src="Figures/Example/1.%20init%20board%20crop.png" width="49%"  alt/>)
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/2. turn 0 board crop.png" alt/>
+          <em>Board state after the first turn.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/2. turn 0 model crop.png" alt/>
+          <em>Kripke model after the first turn</em>
+     </div>
+</div>
 
-[//]: # (  <img src="Figures/Example/1.%20init%20model%20crop.png" width="49%"  alt/>)
+ADD TEXT FOR SECOND TURN
 
-[//]: # (  <em>Test caption  width="49%"</em>)
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/3. turn 1 board crop.png" alt/>
+          <em>Board state after two turns.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/3. turn 1 model crop.png" alt/>
+          <em>Kripke model after two turns.</em>
+     </div>
+</div>
 
-[//]: # (</p>)
+ADD TEXT FOR FOURTH TURN
+
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/4. turn 3 board crop.png" alt/>
+          <em>Board state after four turns.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/4. turn 3 model crop.png" alt/>
+          <em>Kripke model after four turns</em>
+     </div>
+</div>
+
+ADD TEXT FOR FIFTH TURN
+
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/5. turn 4 board crop.png" alt/>
+          <em>Board state after five turns.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/5. turn 4 model crop.png" alt/>
+          <em>Kripke model after five turns.</em>
+     </div>
+</div>
+
+ADD TEXT FOR ELEVENTH TURN
+
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/6. turn 10 board crop.png" alt/>
+          <em>Board state after eleven turns.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/6. turn 10 model crop.png" alt/>
+          <em>Kripke model after eleven turns.</em>
+     </div>
+</div>
+
+ADD TEXT FOR SIXTEENTH AND LAST TURN
+
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/7. turn 16 board crop.png" alt/>
+          <em>Board state at the end of the game after 17 turns.</em>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/7. turn 16 model crop.png" alt/>
+          <em>Kripke model at the end of the game after 17 turns</em>
+     </div>
+</div>
 
 ## Findings
 ...
