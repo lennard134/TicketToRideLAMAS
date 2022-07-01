@@ -26,23 +26,24 @@ _Authors: Sverre Brok, Lennard Froma and Jeroen van Gelder_
 ## Introduction
 ![Ticket to Ride board, source:(https://www.lotana.be/blog/ticket-to-ride-europe-anniversary-edition)](Figures/backgroundStartpage.jpg)
 
-Ticket to ride is a popular board game designed by Alan R. Moon and published by Days of Wonder. 
-The end goal of the game is to build a railway network that yields the highest amount of points. 
+Ticket to Ride is a popular board game (_see Fig. 1_) designed by Alan R. Moon and published by Days of Wonder. 
+The game's end goal is to build a railway network that yields the highest points. 
 There are various versions of the game with different maps of parts of the world. 
-On these maps, locations are marked as nodes, representing possible locations for a train station. 
-These nodes are connected with railway connections, which can be claimed by a player in their turn. 
-The length of the route determines the score a player receives for that part of the railway. 
+On these maps, locations/cities are marked as nodes, representing possible locations for a train station. 
+These nodes are connected with railway connections, which a player can claim in their turn. 
+The length of the connection determines the score a player receives for that part of the railway. 
 At the start of the game, each player is given the same number of unique target routes, which yield additional points upon completion.
 Failing to complete one or more routes will cause points to be subtracted at the end of the game.
 
-This project's research goal is simulate and model knowledge within (a simplification of) Ticket to Ride. The implementation should 
-use the acquired knowledge to determine what next action (within some given constraints) a player should take. The knowledge is
-acquired by observing other players, the board and their own cards.
+This project's research goal is to simulate and model knowledge within (a simplification of) Ticket to Ride. 
+The implementation should visualize the knowledge using a Kripke model and use the acquired knowledge to determine what the following action a player should take (within some given constraints). 
+The knowledge is acquired by observing other players, the board and their cards.
+
 
 ## The original game Ticket to Ride
 The game consists of different cards and objects for which the meaning and function will be explained in this section.
 With this game, players should obtain as many points as possible. This is done by finishing route cards that are worth points.
-Each **route card** contains two cities between which the player will have to create a route. A route is constructed by claiming connections 
+A **route card** contains two cities between which the player will have to create a route. A route is constructed by claiming connections 
 by placing enough trains. A route card is completed when there is a route of adjoining connections owned by the player between
 the two cities on the route card. When the route is finished, the player obtains the number of points as indicated by the route card. 
 To place trains on a connection (i.e. claim a connection), a player can draw coloured **train cards**. The connections have different 
