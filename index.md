@@ -280,12 +280,24 @@ The nodes correspond to the cities.
 In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by
 the agents, and for the Kripke model.
 
-<p float="middle">
-  <img src="Figures/Example/1.%20init%20board%20crop.png" width="49%"  alt/>
-  <img src="Figures/Example/1.%20init%20model%20crop.png" width="49%"  alt/>
-  <em  Test caption  width="49%" />
-  <em>Test caption  width="49%"</em>
-</p>
+<div style="display:flex">
+     <div style="flex:1;padding-right:10px;">
+          <img src="Figures/Example/1.%20init%20board%20crop.png" alt/>
+     </div>
+     <div style="flex:1;padding-left:10px;">
+          <img src="Figures/Example/1.%20init%20model%20crop.png" alt/>
+     </div>
+</div>
+
+[//]: # (<p float="middle">)
+
+[//]: # (  <img src="Figures/Example/1.%20init%20board%20crop.png" width="49%"  alt/>)
+
+[//]: # (  <img src="Figures/Example/1.%20init%20model%20crop.png" width="49%"  alt/>)
+
+[//]: # (  <em>Test caption  width="49%"</em>)
+
+[//]: # (</p>)
 
 ## Findings
 ...
