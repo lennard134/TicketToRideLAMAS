@@ -471,27 +471,39 @@ The Kripke model is naturally identical to that after eleven turns as the true s
 
 
 ## Discussion
-The goal of this project was to simulate and model knowledge within a simplified version of Ticket to Ride. Our aim was to have agents acquire knowledge to determine their next action, while keeping the representation of this knowledge up to date in a Kripke model. We will first go over the project, evaluating the model in full. After this, we will expand on some options for further work on the project.
+The goal of this project was to simulate and model knowledge within a simplified version of Ticket to Ride. 
+We aimed to have agents acquire knowledge to determine their next action while keeping the representation of this knowledge up to date in a Kripke model. 
+We will first go over the project, evaluating the model in full. After this, we will expand on some options for further work on the project.
 
 ### Evaluation
-Let us first consider the speed of the progam. Since the system is developed in Python, this means it is inherently relatively slow. However, for the default setting with 3 agents and 2 route cards, there is no observable delay in the system. Given that after the cards are made known to the agents only 90 states remain, the full model size stays reasonable. Even with three route cards per agent, the model speed remained relatively fast, although initialization is significantly slower, having to compute 1680 worlds. Increasing beyond this has a serious impact on model speed.
+Let us first consider the speed of the program. Since the system is developed in Python, this means it is inherently relatively slow. 
+However, for the default setting with 3 agents and 2 route cards, there is no observable delay in the system. 
+Given that after the cards are made known to the agents only 90 states remain, the full model size stays reasonable. 
+Even with three route cards per agent, the model speed remained relatively fast, although initialization is significantly slower, having to compute 1680 worlds and 2.822.400 relations. 
+Increasing beyond this has a serious impact on model speed, especially in the initialization phase.
 
-The speed of the model is in part due to the various simplifications made throughout the full scope of the game. Especially the reduction in map size and the number of train cards in the game drastically lowered the number of possible combinations. This in turn reduced the number of computations required. Even with these simplifications, the core principles of the game remained intact, allowing us to stay relatively true to the original game.
+The speed of the model is in part due to the various simplifications made throughout the full scope of the game. 
+Especially the reduction in map size and the number of train cards in the game drastically lowered the number of possible combinations. 
+This in turn reduced the number of computations required. Even with these simplifications, the core principles of the game remained intact, allowing us to stay relatively true to the original game.
+However, we made the model in such a way that the map size can be increased quite easily by adding more cities with their corresponding coordinates.
 
-Where we deviate further from the traditional Ticket to Ride game is with the agent's strategies. As mentioned, we remove the possibility for agents to place train stations and to obtain new route cards. These simplifications were all made in light of removing uncertainty and complexity of the knowledge that can be extracted from the game. However, while not entirely true to the original game, the core principles of claiming routes and drawing cards is left in place. The effects of these simplifications have shown through with the clarity and explainability of the behaviour of the agents.
+Where we deviate further from the traditional Ticket to Ride game is with the agent's strategies. As mentioned, we remove the possibility for agents to place train stations and obtain new route cards. These simplifications were all made in light of removing the uncertainty and complexity of the knowledge that can be extracted from the game. However, while not entirely true to the original game, the core principles of claiming routes and drawing cards are left in place. The effects of these simplifications have shown through the clarity and explainability of the behaviour of the agents.
 
-Expanding agents, specifically their knowledge, we can quite confidently say that the evolution of knowledge of the agents is very clearly visible in the implementation. In the view of the Kripke model, users are able to select various states to find which agents consider them to still be a possibility. This allows the user to gain a better understanding of the overall knowledge, and predict what next moves might be made by the agents. Furthermore, the visualization very clearly shows that the agents obtain a lot of knowledge from every connection that is claimed by an opponent.
+Expanding agents, specifically their knowledge, we can quite confidently say that the evolution of knowledge of the agents is very clearly visible in the implementation. In the view of the Kripke model, users can select various states to find which agents consider them to still be a possibility. This allows the user to gain a better understanding of the overall knowledge, and predict what next moves might be made by the agents. Furthermore, the visualization very clearly shows that the agents obtain a lot of knowledge from every connection that is claimed by an opponent.
 
-Lastly, we have found that a lot of the time, the reason for a game end is that the deck of coloured train cards runs out. Due to the general abundance of coloured train cards, this suggests that agents are not able to claim any connections any longer. The reason for this is the blocking strategy often resulting in one or more cities becomming unreachable, prohibiting agents from completing one or more of their route cards. While possibly not entirely realistic to the behaviour of a real human player, this does highlight both the effectiveness of the blocking strategy, and the general effectiveness of knowledge gathering by agents.
+Lastly, we have found that a lot of the time, the reason for a game end is that the deck of coloured train cards runs out. Due to the general abundance of coloured train cards, this suggests that agents are not able to claim any connections any longer. The reason for this is the blocking strategy often results in one or more cities becoming unreachable, prohibiting agents from completing one or more of their route cards. While possibly not entirely realistic to the behaviour of a real human player, this does highlight both the effectiveness of the blocking strategy and the general effectiveness of knowledge gathering by agents.
 
 ### Further work
-DIT MOET NOG GOED VERWOORD WORDEN
-It should be noted that real-world agents might obtain a degree of knowledge from the colour cards that an opponent draws. 
-However, it would require an agent to take into account all shortest paths with all colours that are relevant for those routes, 
-and update its knowledge every round in which cards are drawn. Additionally,
-agents could draw certain cards to mislead agents that use knowledge about drawn cards.
-Hence, due to its complexity, we assume that no knowledge is acquired from drawing train cards. 
-
-Knowing all cards in the game give an immense advantage in being able to remove worlds
-
-hadden ook alleen kunnen zeggen wie we blocken en niet welke route van wie
+Various points can be made to build upon our work.
+First, the blocking strategy could still be made more general by implementing that an agent only announces which agent it blocks, but not what card the other agent has.
+Because of an idea that came too late regarding implementing knowledge, we did not have time to change this idea of blocking.
+This idea of blocking would be more realistic to the true game of Ticket to Ride and still enables one to model knowledge by using that the connection should be on the shortest path of one of the route cards.
+Second, because of computational limitations, we simplified the game to only using a subset of route cards and agents having perfect knowledge of the route cards in the game.
+Since the model explodes in the number of route cards, we did not consider agents being able to draw new route cards.
+This can be used in further work.
+Moreover, the subset of route cards is now chosen randomly, yielding a different amount of points for each agent.
+One can look at distributing route cards where the number of points is evenly distributed among the agents, making it a fairer game.
+However, in the real game of Ticket to Ride, cards are also randomly distributed, so there is also some randomness involved.
+Lastly, it should be noted that real-world agents might obtain a degree of knowledge/belief from the colour cards that an opponent draws, as these colours indicate connections that an agent might find interesting.
+However, agents could draw certain cards to mislead agents that use knowledge about drawn cards.
+Although we assume that no knowledge is acquired from drawing train cards due to their complexity, it might be an interesting topic for further work.
