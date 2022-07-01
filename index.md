@@ -201,71 +201,83 @@ After ending the game, the final scores are determined. As mentioned before, cla
 cards yield agents points, whereas an incomplete route card gives penalty points, deducting the cards value from the
 agent's score. Finally, based on the end scores, the winner of the game is announced. 
 
-## Kripke Model
-Uitwerken:
-  - Claimed connection that gives information -> Common knowledge \[connection of shortest route V ... V ... V ...\]
-  - Public announcement after completing route -> Common knowledge
-  - Public announcement after block -> Common knowledge after announcement
-  
+## Formal Model
+In this section, we will describe the kripke model behind the knowledge of the agents and how actions in the game change the knowledge.
+For this, we need to formalize the map of Ticket to Ride as follows.
+
+Consider the Ticket to Ride map as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where $\mathcal{N}$ is the set of nodes (cities) and $\mathcal{A}$ is the set of arcs (connections).
+Each connection $$c \in \mathcal{A}$$ has weight $$w_{c}$$, which is the number of trains that is needed to claim the connection.
+We will later use this definition to refer to the connections of the network.
+
+### Kripke Model
+
 Let us define the following sets:
 * $$A=\{a_1,a_2,\dots,a_m\}$$ be the set of $$m$$ agents;
-* $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ destination cards in the game;
-* $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ 
-  denotes agent $$i$$ has destination card $$j$$.
+* $$D=\{d_1,d_2,\dots,d_n\}$$ be the set of $$n$$ route cards in the game;
+* $$\mathbf{P}=\{p_{ij} \, \vert \, 1 \leq i \leq m, 1 \leq j \leq n\}$$ be the set of predicates where $$p_{ij}$$ denotes agent $$a_i$$ has route card $$d_j$$.
 
-Here we take $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distributed among the agents. 
+Here we limit $$\frac{n}{m} \in \mathbb{N}$$, so the cards can be evenly distributed among the agents. 
+Moreover, let us define $$D_i$$ as the set of route cards that is owned by agent $$a_i$$, $$i \in \{1,\dots,m\}$$.
 
 Now, let $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ be the Kripke model where
-* $$S = \{(s_1,s_2,\dots,s_n) \, \vert \, s_i \text{ is the agent that owns the } i \text{-th card}\}l$$ is the set of 
-possible states;
-* $$\pi : S \rightarrow \mathbf{P} \rightarrow \{t, f\}$$;
-* $$R_i = \{\langle \mathbf{s}, \mathbf{t} \rangle \, \vert \, s_j = t_j \text{ for all } j \in \{1,\dots,n\} \text{ where } 
-s_j = a_i\} \text{ for } 1 \leq i \leq m$$.
+* $$S = \{(s_1,s_2,\dots,s_m) \, \vert \, s_i \cap s_j = \emptyset \text{ for } i \not = j, \vert s_i \vert \in \frac{n}{m} \text{ and } \bigcup_{j=1}^m s_j = D\}$$ is the set of possible states, where $$S_i$$ is the internal state of agent $$a_i$$, $$i \in \{1,\dots,m\}$$;
+* $$\pi : S \rightarrow (\mathbf{P} \rightarrow \{t, f\}$$);
+* $$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\} \text{ for } 1 \leq i \leq m$$.
 
-The set of states, $$S$$ is simply all combinations of route card distributions over the agents, where each agent has the
-same amount of route cards. The valuation function $$\pi$$ assigns for each state a truth value to each predicate 
-$$p_{ij} \in \mathbf{P}$$. The set of relations for agent $$i$$ is all relations between two states in which agent $$i$$
-has the same route cards.
+The set of states, $$S$$ is simply all combinations of route card distributions over the agents, where each agent has the same amount of route cards, that is $$\frac{n}{m}$$.
+Here, $$S_i$$, $$i \in \{1,\dots,m\}$$, is the internal state of an agent and is the set of route cards that is attributed to that agent.
+Here, it must hold that every route card is given to one and only one agent.
 
-At the start of the game, when the cards are evenly distributed among the agents, but the agents have not looked at their 
-route cards, each agent knows that each agent has $$\frac{n}{m}$$ route cards. Moreover, each agent
-knows that only one of the agents has a specific train card, that is, for all 
-$$j \in \{1,\dots,n\}$$ and $$i \in \{1,\dots,m\}$$
+The valuation function $$\pi$$ assigns for each state a truth value to each predicate $$p_{ij} \in \mathbf{P}$$.
+A predicate $$p_{ij}$$ is true if and only if agent $$a_i$$ possess route card $$j$$.
+Initially, before the agents have looked at their cards, the set of relations for agent $$a_i$$ is all relations between two states.
 
-$$M \models K_i (p_{1j} \lor \dots \lor p_{mj}),$$
+AGENTS LOOK AT THEIR CARDS\\
+After initialization of the game, the agents have looked at their route cards.
+Now, it is common knowledge that each agents knows its own set of route cards.
+Therefore, we the new set of relations in Kripke model $$M=\langle S, \pi, R_1, \dots, R_m \rangle$$ is updated as follows:
 
-and for all $$i \in \{1,\dots,m\}$$, for all $$l \in \{1,\dots,m\}\backslash\{i\}$$
+$$R_i = \{((s1,s2,\dots,s_m), (t_1,t_2,\dots,t_m))\, \vert\, s_i = t_i\} \text{ for each agent } a_i,\, i \in \{1,\dots,m\}.$$
 
-$$M \models K_i p_{ij} \rightarrow K_i \lnot p_{lj}.$$
-
-After the agents have looked at their route cards, the agents know which card they have, so for all 
-$$i \in \{1,\dots,m\}$$ and all $$j \in \{1,\dots,n\}$$
-
-$$M \models p_{ij} \rightarrow K_i p_{ij}.$$
+Note that in case of two agents, for example agent $$a_1$$ and $$a_2$$, both agents now know the true state, as agent $$a_2$$ possesses the cards that agent $$a_1$$ does not posses, and vice versa.
 
 ### An agent's turn
+Consider an agent $$a_i$$ with $$i$$ such that $$a_i \in A$$.
+An agent has various options in their turn as described above.
+We will now consider the options claim connection and block connection and show how the knowledge and kripke model changes accordingly.
+The option to draw cards gives no knowledge to agents.
 
-Consider now an agent's turn given the simplifications and design choices, say agent $$i$$, $$i\in\{1,\dots,m\}$$.
-Sverre, do your logic magic :sunglasses: 
+#### Claim connection
+When agent $$a_i$$ claims a connection, it gives information to the other agents. 
+Since we assumed that an agent announces when it blocks an opponent, it is common knowledge that the connection (without a block announcement) is part of one of its own shortest routes.
+This is because an agent claims a connection only if it is part of the shortest route of one of its route cards.
+Moreover, the shortest route of every agent is known by everyone. EXPLAIN THIS EARLIER!
 
-### Public announcements
-If an agent completes a route from its route cards, this completion is (instantly) publicly announced to all agents. 
-This means that upon route completion:
+In particular, when agent $$a_i$$ claims connection $$c \in \mathcal{A}$$, there is an implicit public announcement that this agent has one of the route cards where this connection is part of the shortest route of the route cards.
+After this public announcement, it is common knowledge that this agent has one of the route cards where the claimed connection is part of the shortest route of that route card.
+Hence, we have
 
-$$[p_{ij}] p_{ij}$$
+$$[p_{ik} \lor \dots \lor p_{ij}]\, C(p_{ik} \lor \dots \lor p_{ij}),$$
 
-With this, the model changes such that all states in which $$\neg p_{ij}$$ holds, can be removed for simplification. 
+where $$k,j \in \{l \, \vert \, c \text{ in the shortest route for agent } a_i \text{ of } d_l \in D\}$$, that is, the set of indices $$l$$ of route cards $$d_l \in D$$ where $$c$$ is a connection in the shortest route for agent $$a_i$$.
 
-Another 'announcement' that modifies the model is that of claiming routes. When an agent claims a route, it gives
-information to the other agents. As earlier mentioned, an agent may only claim a route, when it is part of the shortest 
-route of one of its route cards, or when it purposefully blocks an opponent (see explanation above). Hence, claiming
-routes gives information to other agents as it must be one of the two.
+#### Block connection
+An agent can only block a shortest route from an agent when it knows that that agent has the particular route card.
+This results in the following.
+When agent $$a_i$$ blocks the shortest route for route card $$d_l$$, $$d_l \in D_j$$, that is owned by agent $$a_j$$, $$a_j \in A$$, agent $$a_i$$ publicly announces that it knows that agent $$a_j$$ has route card $$d_l$$, that is $$[K_i p_{jl}]$$.
+After the public announcement, every agent knows that agent $$a_i$$ knows that $$p_{jl}$$.
+In our model, this results in common knowledge of $$p_{jl}$$ as all worlds that do not have $$p_{jl}$$ are not considered anymore by the agents since there it does not hold that agent $$a_i$$ knows that $$p_{jl}$$ (note the reflexive relations for every agent in each world). 
+Therefore, after the public announcement, it is common knowledge that agent $$a_j$$ has route card $$d_l$$, that is,
 
-### Map
-Consider the problem as a network $$\mathcal{G} = (\mathcal{N}, \mathcal{A})$$, where each arc (connection) 
-$$a \in \mathcal{A}$$ has weight $$w_a$$, which is the number of trains that is needed to claim the connection.
-The nodes correspond to the cities.
+$$[K_i p_{jl}]\, C p_{jl}.$$
 
+
+#### Route completion
+When agent $$a_i$$ completes a route card $$d_l$$ from its assigned route cards, $$d_l \in D_i$$, this completion is (instantly) publicly announced.
+Hence, it is then common knowledge that this particular agent has that particular route card.
+This means that when agent $$a_i$$ completes route card $$d_l$$, we have:
+
+$$[p_{ij}]\, C p_{ij}.$$
 
 ## Example
 In this section, we will go over an example of a complete game. We will highlight interesting turns for both actions by the agents, and for the Kripke model. The example uses the default game settings, thus we have three agents who are each given two route cards. In this example, the route cards are distributed as follows:
