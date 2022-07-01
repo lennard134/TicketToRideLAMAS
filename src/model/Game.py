@@ -113,18 +113,6 @@ class Game(object):
         :param announcing_agent_id: Agent that claims connection
         :param claimed_connection: Connection that is being claimed
         """
-        # check if some agent now knows possible cards from agent_id
-        for agent in self.agent_list:
-            possible_singled_out = []
-            if agent.agent_id != announcing_agent_id:
-                for route_card in self.route_cards.values():
-                    if route_card not in agent.own_route_cards and not route_card.is_finished:
-                        if claimed_connection in route_card.shortest_routes[announcing_agent_id]:
-                            possible_singled_out.append(route_card.route_name)
-                route_to_update = set(possible_singled_out)
-                self.model.update_possible_relations(agent_id=agent.agent_id, target_agent_id=announcing_agent_id,
-                                                     route_cards=route_to_update)
-
         public_singled_out = set([])
         for route_card in self.route_cards.values():
             # only in one route_card
@@ -133,3 +121,15 @@ class Game(object):
 
         # possibilities
         self.model.public_announcement_possibilities(announcing_agent_id, public_singled_out)
+
+        # Legacy function:
+        # for agent in self.agent_list:
+        #     possible_singled_out = []
+        #     if agent.agent_id != announcing_agent_id:
+        #         for route_card in self.route_cards.values():
+        #             if route_card not in agent.own_route_cards and not route_card.is_finished:
+        #                 if claimed_connection in route_card.shortest_routes[announcing_agent_id]:
+        #                     possible_singled_out.append(route_card.route_name)
+        #         route_to_update = set(possible_singled_out)
+        #         self.model.update_possible_relations(agent_id=agent.agent_id, target_agent_id=announcing_agent_id,
+        #                                              route_cards=route_to_update)

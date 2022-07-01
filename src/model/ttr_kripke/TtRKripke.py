@@ -91,76 +91,6 @@ class TtRKripke(object):
             # In case of two agents, all route cards are publicly known
             self.public_announcement_route_card(agent_id, route_cards)
 
-    def update_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
-        """
-        Update relations for agent_id that knows that target_agent has route_cards
-        :param agent_id: Id of agent for which relations will be updated
-        :param target_agent_id: id of target agent of which the agent knows
-        :param route_cards: Route cards of which agent knows
-        """
-        print(f"--> Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}")
-
-        update_dict = []
-        # Remove all relations from considered states by an agent where the above holds
-        for relation in self.relations[agent_id]:
-            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
-                # check if intersection is equal to route cards
-                from_state = relation[0].get_state(target_agent_id)
-                to_state = relation[1].get_state(target_agent_id)
-                if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
-                        route_cards.difference(from_state) and not route_cards.difference(to_state)):
-                    # removing relation if there is a difference between two states
-                    continue
-            update_dict.append(relation)
-
-        self.relations[agent_id] = update_dict
-
-        # agents no longer consider the worlds that violate their own relations
-        total_removal = 0
-        for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id, agent_id):
-                target_set = world.get_state(target_agent_id)
-                if route_cards.difference(target_set):
-                    total_removal += 1
-                    world.remove_agent_from_list(agent_id)
-
-    def update_possible_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
-        """
-        Function that updates relations, relations are either removed or nothing happens
-        :param agent_id: Agent for which the relations are updated
-        :param target_agent_id: Target agent of which the agent knows
-        :param route_cards: Route card of which agent knows
-        """
-        print(f"--> Agent {agent_id} knows that agent {target_agent_id} has at least one of cards {route_cards}")
-        if len(route_cards) == 1:
-            # certainty when there is only one considered route card.
-            self.update_relations(agent_id, target_agent_id, route_cards)
-            return
-
-        update_dict = []
-
-        # Remove all relations from considered states by an agent where the above holds
-        for relation in self.relations[agent_id]:
-            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
-                # check if intersection is equal to route cards
-                from_state = relation[0].get_state(target_agent_id)
-                to_state = relation[1].get_state(target_agent_id)
-                # remove relations where you go from considered states to states that don't have the above property
-                if from_state.intersection(route_cards) and not to_state.intersection(route_cards):
-                    continue
-            update_dict.append(relation)
-
-        self.relations[agent_id] = update_dict
-
-        # agents no longer consider the worlds that violate the above property
-        total_removal = 0
-        for world in self.worlds:
-            if world.has_agent_in_agent_list(agent_id, agent_id):
-                target_set = world.get_state(target_agent_id)
-                if not route_cards.intersection(target_set):
-                    total_removal += 1
-                    world.remove_agent_from_list(agent_id)
-
     def public_announcement_possibilities(self, agent_id: int, route_cards: set[str]):
         """
         Function that publicly announces the states agents think of as possible true states
@@ -266,3 +196,80 @@ class TtRKripke(object):
                 name += "\n"
 
         return name
+
+
+"""
+Legacy functions:
+
+    def update_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
+        ###
+        Update relations for agent_id that knows that target_agent has route_cards
+        :param agent_id: Id of agent for which relations will be updated
+        :param target_agent_id: id of target agent of which the agent knows
+        :param route_cards: Route cards of which agent knows
+        ###
+        print(f"--> Agent {agent_id} knows that agent {target_agent_id} has cards {route_cards}")
+
+        update_dict = []
+        # Remove all relations from considered states by an agent where the above holds
+        for relation in self.relations[agent_id]:
+            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
+                # check if intersection is equal to route cards
+                from_state = relation[0].get_state(target_agent_id)
+                to_state = relation[1].get_state(target_agent_id)
+                if (not route_cards.difference(from_state) and route_cards.difference(to_state)) or (
+                        route_cards.difference(from_state) and not route_cards.difference(to_state)):
+                    # removing relation if there is a difference between two states
+                    continue
+            update_dict.append(relation)
+
+        self.relations[agent_id] = update_dict
+
+        # agents no longer consider the worlds that violate their own relations
+        total_removal = 0
+        for world in self.worlds:
+            if world.has_agent_in_agent_list(agent_id, agent_id):
+                target_set = world.get_state(target_agent_id)
+                if route_cards.difference(target_set):
+                    total_removal += 1
+                    world.remove_agent_from_list(agent_id)
+
+    def update_possible_relations(self, agent_id: int, target_agent_id: int, route_cards: set[str]):
+        ###
+        Function that updates relations, relations are either removed or nothing happens
+        :param agent_id: Agent for which the relations are updated
+        :param target_agent_id: Target agent of which the agent knows
+        :param route_cards: Route card of which agent knows
+        ###
+        
+        print(f"--> Agent {agent_id} knows that agent {target_agent_id} has at least one of cards {route_cards}")
+        if len(route_cards) == 1:
+            # certainty when there is only one considered route card.
+            self.update_relations(agent_id, target_agent_id, route_cards)
+            return
+
+        update_dict = []
+
+        # Remove all relations from considered states by an agent where the above holds
+        for relation in self.relations[agent_id]:
+            if relation[0].has_agent_in_agent_list(agent_id, agent_id):
+                # check if intersection is equal to route cards
+                from_state = relation[0].get_state(target_agent_id)
+                to_state = relation[1].get_state(target_agent_id)
+                # remove relations where you go from considered states to states that don't have the above property
+                if from_state.intersection(route_cards) and not to_state.intersection(route_cards):
+                    continue
+            update_dict.append(relation)
+
+        self.relations[agent_id] = update_dict
+
+        # agents no longer consider the worlds that violate the above property
+        total_removal = 0
+        for world in self.worlds:
+            if world.has_agent_in_agent_list(agent_id, agent_id):
+                target_set = world.get_state(target_agent_id)
+                if not route_cards.intersection(target_set):
+                    total_removal += 1
+                    world.remove_agent_from_list(agent_id)
+
+"""
